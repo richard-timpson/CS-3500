@@ -5,12 +5,35 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
-
+/// <summary>
+/// Used to evaluate formulas. 
+/// </summary>
 namespace FormulaEvaluator
 {
+    /// <summary>
+    /// Class for evaluting infix expressions
+    /// </summary>
     public class Evaluator
     {
+        /// <summary>
+        /// The delegate declarator for a lookup function that will 
+        /// 'lookup' the value of a variable used in the expression. 
+        /// </summary>
+        /// <param name="s">The name of the variable</param>
+        /// <returns>The value of the variable</returns>
         public delegate int Lookup(String s);
+        /// <summary>
+        /// The main evaluate function for the infix expression
+        /// It breaks the expression into substrings and uses
+        /// a switch case statement to handle the different cases
+        /// for the different tokens. It will use the 
+        /// Lookup evaluator to perform the correct calculations on variables.
+        /// Also checks for valid tokens in the expressions and throws exceptions
+        /// for ones that aren't.
+        /// </summary>
+        /// <param name="input">The expression to evaluate</param>
+        /// <param name="Evaluator">The Lookup delegate for variable tokens</param>
+        /// <returns>The value of the infix expression</returns>
         public static int Evaluate(String input, Lookup Evaluator)
         {
             input.Trim();
@@ -120,7 +143,7 @@ namespace FormulaEvaluator
         /// <summary>
         /// Printing the substrings of the inputted strings for testing purposes. 
         /// </summary>
-        /// <param name="substrings"></param>
+        /// <param name="substrings">The array of strings to be printed</param>
         public static void PrintString(string[] substrings)
         {
             foreach (String s in substrings)
@@ -136,16 +159,34 @@ namespace FormulaEvaluator
                 }
 
             }
-            //Console.Read();
         }
+        /// <summary>
+        /// Checks the top of the stack, using the IsOnTop stack extension, to see if the variable is either a '+' or '-'
+        /// </summary>
+        /// <param name="operandStack">The operator stack to check</param>
+        /// <returns>True or False, based on the IsOnTop extension check for both operators</returns>
         public static bool IsPlusOrMinus(Stack<string> operandStack)
         {
             return (operandStack.IsOnTop("+") || operandStack.IsOnTop("-"));
         }
+        /// <summary>
+        /// Checks the top of the stack, using the IsOnTop stack extension, to see if the variable is either a '*' or '/'. 
+        /// Similar to IsMultiplyOrDivide
+        /// </summary>
+        /// <param name="operandStack">The operator stack to check</param>
+        /// <returns>True or False, based on the IsOnTop extension check for both operators</returns>
         public static bool IsMultiplyOrDivide(Stack<string> operandStack)
         {
             return (operandStack.IsOnTop("*") || operandStack.IsOnTop("/"));
         }
+        /// <summary>
+        /// Makes simple computations based on the values passed in and the operator to use. 
+        /// Similar to IsPlusOrMinus
+        /// </summary>
+        /// <param name="value1">One of the values for computation</param>
+        /// <param name="value2">The other value for computation</param>
+        /// <param name="op">The operation to perform</param>
+        /// <returns>The value of the computation after it is finished. If an incorrect operator was passed in, 0 will be returned</returns>
         public static int ComputeValue(int value1, int value2, string op)
         {
             switch (op)
@@ -162,6 +203,15 @@ namespace FormulaEvaluator
                     return 0;
             }
         }
+        /// <summary>
+        /// Uses the Compute Value function to perform a plus or minus computation. 
+        /// It does so by popping two values from the valueStack given,
+        /// and using the operation from the operator stack. 
+        /// Similar to PerformMultiplyDivideComputation
+        /// </summary>
+        /// <param name="operatorStack">The operator </param>
+        /// <param name="valueStack">The value stack</param>
+        /// <returns>The computed value</returns>
         public static int PerformPlusMinusComputation(Stack<string> operatorStack, Stack<int> valueStack)
         {
             // pop the top two values from the value stack
@@ -176,6 +226,17 @@ namespace FormulaEvaluator
 
             return computedValue;
         }
+        /// <summary>
+        /// Uses the Compute Value function to perform a plus or minus computation. 
+        /// It does so by popping two values from the valueStack given,
+        /// or by popping only one value from the valueStack, and using a value passed in.
+        /// Similar to PerformMultiplyDivideComputation
+        /// </summary>
+        /// <param name="operatorStack">Operator Stack</param>
+        /// <param name="valueStack">Value Stack</param>
+        /// <param name="value">Value to use for computation, only if you don't want to use two variables from value stack</param>
+        /// <param name="isTokenInt">If True, it will assume the value passed will be used for computation. If false, it will calculate with two values from value stack</param>
+        /// <returns></returns>
         public static int PerformMultiplyDivideComputation(Stack<string> operatorStack, Stack<int> valueStack, int value, bool isTokenInt)
         {
             // if the token is an integer, perform the multiply/divide computation by taking in a variable, and popping from stack
@@ -197,6 +258,12 @@ namespace FormulaEvaluator
             }
 
         }
+        /// <summary>
+        /// Performs the same computation for both integers and variables, when given the value. 
+        /// </summary>
+        /// <param name="operatorStack">Operator Stack</param>
+        /// <param name="valueStack">value Stack</param>
+        /// <param name="value">The value used for the computation. should come from integer token or variable token</param>
         public static void HandleIntOrVariable(Stack<string> operatorStack, Stack<int> valueStack, int value)
         {
             if (IsMultiplyOrDivide(operatorStack))
@@ -207,6 +274,12 @@ namespace FormulaEvaluator
             else
                 valueStack.Push(value);
         }
+        /// <summary>
+        /// Checks if a token is a valid integer token. 
+        /// Will throw argument exception if it isn't. 
+        /// </summary>
+        /// <param name="token">The token to check</param>
+        /// <returns>0 if not valid, or the value of the integer if it is valid</returns>
         public static int IsValidTokenInt(string token)
         {
             int value = 0;
@@ -216,6 +289,12 @@ namespace FormulaEvaluator
             return value;
 
         }
+        /// <summary>
+        /// Checks if a token is a valid variable token. 
+        /// Will throw ArgumentExceptions if it isn't
+        /// </summary>
+        /// <param name="token"The token to check></param>
+        /// <returns>True if valid token. </returns>
         public static bool IsValidTokenVariable(string token)
         {
             if (token.Length >= 2)
@@ -259,8 +338,18 @@ namespace FormulaEvaluator
             return true;
         }
     }
+    /// <summary>
+    /// Providing one extension for the Stack class. 
+    /// </summary>
     static class Extensions
     {
+        /// <summary>
+        /// Extension for the stack class to check if a certain value is at the top of the stack. 
+        /// </summary>
+        /// <typeparam name="t"></typeparam>
+        /// <param name="stack">The stack to check</param>
+        /// <param name="op">The value to check</param>
+        /// <returns>True or false, depending on the value of the stack peek and the value passed in. </returns>
         public static bool IsOnTop<t>(this Stack<t> stack, t op)
         {
             if (stack.Count == 0)
