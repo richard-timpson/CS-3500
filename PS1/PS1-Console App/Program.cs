@@ -12,7 +12,7 @@ namespace PS1_Console_App
     {
         static void Main(string[] args)
         {
-            string test = "(1+1) - (4*5) /(9-7) - A5 / A6 + 5";
+            string test = "(2+1) - (4*5) /(9-7) - A5 / A6 + 5";
             //string test = "(1+1) -(4*5)/(9-7)";
             Evaluator.Lookup evaluate = lookupFunction;
             int value = Evaluator.Evaluate(test, evaluate);
