@@ -20,8 +20,8 @@ namespace FormulaEvaluator
             Stack<int> valueStack = new Stack<int>();
             foreach (String s in substrings)
             {
-                string trimmed = s.Trim();
-                switch (trimmed)
+                string token = s.Trim();
+                switch (token)
                 {
                     case "(":
                         Console.WriteLine("Left Parenthesis");
@@ -44,7 +44,7 @@ namespace FormulaEvaluator
                         if (IsMultiplyOrDivide(operatorStack))
                         {
                             //doing a / or * divide computation, but using two values from stack, instead of using value passed in. Setting isTokenInt to false. 
-                            int computedValue = PerformMultiplyDivideComputation(operatorStack,  valueStack, 0, false);
+                            int computedValue = PerformMultiplyDivideComputation(operatorStack, valueStack, 0, false);
                             valueStack.Push(computedValue);
                         }
                         break;
@@ -63,8 +63,9 @@ namespace FormulaEvaluator
                         // if '+' or '-' is at top of stack 
                         if (IsPlusOrMinus(operatorStack))
                         {
+                            //computing the operation
                             int computedValue = PerformPlusMinusComputation(operatorStack, valueStack);
-                            //push computed value onto value stack
+                            //pushing computed value onto value stack
                             valueStack.Push(computedValue);
                         }
                         //push + to operator stack
@@ -75,6 +76,7 @@ namespace FormulaEvaluator
                         // if + or - is at top of stack 
                         if (IsPlusOrMinus(operatorStack))
                         {
+                            //computing the operation
                             int computedValue = PerformPlusMinusComputation(operatorStack, valueStack);
                             //push computed value onto value stack
                             valueStack.Push(computedValue);
@@ -82,55 +84,43 @@ namespace FormulaEvaluator
                         //push - to operator stack
                         operatorStack.Push("-");
                         break;
-                    case " ":
+                    case "":
                         Console.WriteLine("White Space");
                         break;
                     default:
-
-                        int value;
                         //checking for integer token. 
-                        if (int.TryParse(trimmed, out value))
+                        //if IsValidTokenInt returns 0, that means that it is not a valid integer expression. 
+                        int intToken = IsValidTokenInt(token);
+
+                        if (intToken != 0)
                         {
+                            //handling the token by passing in the correct value, 'intToken'
+                            HandleIntOrVariable(operatorStack, valueStack, intToken);
                             Console.WriteLine("Integer");
-                            HandleIntOrVariable(operatorStack, valueStack, value);
                             break;
                         }
-                        // checking for variable token
-                        else if (trimmed.Length == 2 && Char.IsLetter(trimmed, 0) && Char.IsDigit(trimmed[1]))
+                        if (IsValidTokenVariable(token))
                         {
-                            Console.WriteLine("Correct Variable", trimmed);
-                            value = Evaluator(trimmed);
+                            Console.WriteLine("Correct Variable", token);
+                            int value = Evaluator(token);
+                            //Handling the token by passing in the correct value from the evaluator delegate function, 'value'.
                             HandleIntOrVariable(operatorStack, valueStack, value);
-                            break;
-                        }
-                        //handling exceptions
-
-
-                        //checking if the variable string's length is greater than 0
-                        else if (trimmed.Length > 2)
-                        {
-                            throw new System.ArgumentException("Variable Length is longer than 2");
-                        }
-                        //Checking if the first character in the variable input is a letter
-                        else if (trimmed.Length == 2 && Char.IsLetter(trimmed, 0) == false)
-                        {
-                            throw new System.ArgumentException("The first character in the variable is not a letter");
-                        }
-                        // Checking if the second number in the variable input is a number
-                        else if (trimmed.Length == 2 && Char.IsDigit(trimmed[1]) == false)
-                        {
-                            throw new System.ArgumentException("The second character in the variable is not a number");
                         }
                         break;
-
                 }
-            }
+            } //at the end of the input string
+            //if there are no more operators
             if (operatorStack.Count == 0)
+                //return the value (which should be the only one left) of the value stack. 
                 return valueStack.Pop();
             else
+                //else perform one last computation 
                 return PerformPlusMinusComputation(operatorStack, valueStack);
         }
-
+        /// <summary>
+        /// Printing the substrings of the inputted strings for testing purposes. 
+        /// </summary>
+        /// <param name="substrings"></param>
         public static void PrintString(string[] substrings)
         {
             foreach (String s in substrings)
@@ -174,7 +164,6 @@ namespace FormulaEvaluator
         }
         public static int PerformPlusMinusComputation(Stack<string> operatorStack, Stack<int> valueStack)
         {
-
             // pop the top two values from the value stack
             int firstValue = valueStack.Pop();
             int secondValue = valueStack.Pop();
@@ -183,7 +172,7 @@ namespace FormulaEvaluator
             string op = operatorStack.Pop();
 
             //compute value
-            int computedValue = ComputeValue(firstValue, secondValue, op);
+            int computedValue = ComputeValue(secondValue, firstValue, op);
 
             return computedValue;
         }
@@ -200,10 +189,10 @@ namespace FormulaEvaluator
             // if the token is not an integer, and a ')', perform the multiply/divide computation by popping the two values from the valuestack, and performing computation
             else
             {
-                int value1 = valueStack.Pop();
-                int value2 = valueStack.Pop();
+                int firstValue = valueStack.Pop();
+                int secondValue = valueStack.Pop();
                 string op = operatorStack.Pop();
-                int computedValue = ComputeValue(value1, value2, op);
+                int computedValue = ComputeValue(secondValue, firstValue, op);
                 return computedValue;
             }
 
@@ -218,15 +207,66 @@ namespace FormulaEvaluator
             else
                 valueStack.Push(value);
         }
+        public static int IsValidTokenInt(string token)
+        {
+            int value = 0;
+            bool isInt = int.TryParse(token, out value);
+            if (isInt && value < 0)
+                throw new ArgumentException("Integer token is negative");
+            return value;
+
+        }
+        public static bool IsValidTokenVariable(string token)
+        {
+            if (token.Length >= 2)
+            {
+                if (!Char.IsLetter(token[0]))
+                {
+                    throw new ArgumentException("The first character in the token variable is not a letter.");
+                }
+                else if (!Char.IsDigit(token[token.Length - 1]))
+                {
+                    throw new ArgumentException("The last character in the token variable is not an integer");
+                }
+                bool atNumbers = false;
+                char previous = 'a';
+                foreach (char c in token)
+                {
+                    if (!Char.IsLetter(c) && !Char.IsDigit(c))
+                    {
+                        throw new ArgumentException("Token variable contains character that is not a letter or a number");
+                    }
+                    else if (Char.IsLetter(c) && atNumbers && Char.IsDigit(previous))
+                    {
+                        throw new ArgumentException("Token variable does not end with a sequence of numbers");
+                    }
+                    else if (Char.IsDigit(c))
+                    {
+                        if (!atNumbers)
+                        {
+                            atNumbers = true;
+                            previous = c;
+                        }
+                        else
+                            previous = c;
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Token either needs to be one of 4 operands, a valid integer, or a valid variable.");
+            }
+            return true;
+        }
     }
     static class Extensions
     {
-        public static bool IsOnTop<t>(this Stack<t> stack, t  op)
+        public static bool IsOnTop<t>(this Stack<t> stack, t op)
         {
             if (stack.Count == 0)
                 return false;
             return stack.Peek().Equals(op);
         }
     }
-    
+
 }
