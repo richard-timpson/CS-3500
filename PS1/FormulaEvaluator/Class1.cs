@@ -10,6 +10,34 @@ using System.Text.RegularExpressions;
 /// </summary>
 namespace FormulaEvaluator
 {
+    //Invalid
+    //Two operands in a row
+    //Two operators in a row
+    //unbalanced ()
+    //invalid token "a7a or a&"
+
+    //Valid
+    //"1 + 1" (one operator)
+    //order of operations (2 - 3) vs (3 -2)
+    //test all basic operators individually with OOO
+    //parenthesis changing 000
+    //something that overflows
+    //giant integer literal -> TryParse will throw
+
+         
+    // /0
+    // misplaced parentheses
+    // two operators in a row
+    // two operands in a row
+    // < 2 operands for an operator
+    // missing variable
+
+
+
+
+
+        
+
     /// <summary>
     /// Class for evaluting infix expressions
     /// </summary>
