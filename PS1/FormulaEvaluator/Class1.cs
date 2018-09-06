@@ -157,6 +157,7 @@ namespace FormulaEvaluator
                 {
                     Console.WriteLine(trimmed);
                 }
+ 
 
             }
         }
@@ -196,6 +197,10 @@ namespace FormulaEvaluator
                 case "-":
                     return value1 - value2;
                 case "/":
+                    if (value2 == 0) 
+                    {
+                        throw new ArgumentException("Division by 0");
+                    }
                     return value1 / value2;
                 case "*":
                     return value1 * value2;
@@ -266,6 +271,8 @@ namespace FormulaEvaluator
         /// <param name="value">The value used for the computation. should come from integer token or variable token</param>
         public static void HandleIntOrVariable(Stack<string> operatorStack, Stack<int> valueStack, int value)
         {
+
+
             if (IsMultiplyOrDivide(operatorStack))
             {
                 int computedValue = PerformMultiplyDivideComputation(operatorStack, valueStack, value, true);

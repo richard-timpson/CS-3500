@@ -31,10 +31,32 @@ namespace PS1_Console_App
                 return 2;
             }
         }
+        public static bool ValidTest(string expression, Evaluator.Lookup lookup , int expected) 
+        {
+            try {
+               return Evaluator.Evaluate(expression, lookup) == expected;
+            }
+            catch {
+                return false;
+            }
 
+        }
+        public static bool InvalidTest(string expression, Evaluator.Lookup lookup)
+        {
+            try 
+            {
+                Evaluator.Evaluate(expression, lookup);
+                return false;
+            }
+            catch (ArgumentException) 
+            {
+                return true;
+            }
+            catch(Exception) 
+            {
+                return false;
+            }
 
-
-
-
+        }
     }
 }
