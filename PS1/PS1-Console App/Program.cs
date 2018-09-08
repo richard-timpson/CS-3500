@@ -12,29 +12,27 @@ namespace PS1_Console_App
     {
         static void Main(string[] args)
         {
-            string test = "(1+1) - (4*5) /(9-7) - A5 / A6 + 5";
-            //string test = "(1+1) -(4*5)/(9-7)";
-            Evaluator.Lookup evaluate = LookupFunction;
-            int value = Evaluator.Evaluate(test, evaluate);
-            Console.WriteLine(value);
+            Evaluator.Lookup lookup = lookupFunction; 
+ 
+
             Console.Read();
 
         }
-        public static int LookupFunction(string input)
+        public static int lookupFunction(string input)
         {
             if (input == "A5")
             {
                 return 10;
             }
-            else
+            else if (input == "A6")
             {
                 return 2;
             }
+            else
+            {
+                throw new ArgumentException("Invalid variable");
+            }
         }
-
-
-
-
 
     }
 }

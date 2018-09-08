@@ -66,7 +66,7 @@ namespace FormulaEvaluator
         {
             input.Trim();
             string[] substrings = Regex.Split(input, "(\\()|(\\))|(-)|(\\+)|(\\*)|(/)");
-            PrintString(substrings);
+            //PrintString(substrings);
             Stack<string> operatorStack = new Stack<string>();
             Stack<int> valueStack = new Stack<int>();
             foreach (String s in substrings)
@@ -90,6 +90,10 @@ namespace FormulaEvaluator
                             valueStack.Push(computedValue);
                         }
                         //popping next operator off the stack, which should be a ')'
+                        if (operatorStack.Count == 0 || operatorStack.Peek() != "(")
+                        {
+                            throw new ArgumentException("Parenthesis are not set up correctly");
+                        }
                         operatorStack.Pop();
                         //if the top of stack is / or *
                         if (IsMultiplyOrDivide(operatorStack))
@@ -141,9 +145,10 @@ namespace FormulaEvaluator
                     default:
                         //checking for integer token. 
                         //if IsValidTokenInt returns 0, that means that it is not a valid integer expression. 
-                        int intToken = IsValidTokenInt(token);
+                        int intToken;
+                        bool isValidInt = TryTokenInt(token, out intToken);
 
-                        if (intToken != 0)
+                        if (isValidInt)
                         {
                             //handling the token by passing in the correct value, 'intToken'
                             HandleIntOrVariable(operatorStack, valueStack, intToken);
@@ -162,11 +167,27 @@ namespace FormulaEvaluator
             } //at the end of the input string
             //if there are no more operators
             if (operatorStack.Count == 0)
+            { 
                 //return the value (which should be the only one left) of the value stack. 
+                if (valueStack.Count == 0)
+                {
+                    throw new ArgumentException("Not a correct amount of operands with operators");
+                }
                 return valueStack.Pop();
+            }
             else
+            {
+                if (operatorStack.Count != 1)
+                {
+                    throw new ArgumentException("Isn't one operator on the value stack at the end of the algorithm");
+                }
+                else if (valueStack.Count !=2 )
+                {
+                    throw new ArgumentException("Aren't 2 operators in the value stack at the end of the algorithm");
+                }
                 //else perform one last computation 
                 return PerformPlusMinusComputation(operatorStack, valueStack);
+            }
         }
         /// <summary>
         /// Printing the substrings of the inputted strings for testing purposes. 
@@ -185,6 +206,7 @@ namespace FormulaEvaluator
                 {
                     Console.WriteLine(trimmed);
                 }
+ 
 
             }
         }
@@ -224,6 +246,10 @@ namespace FormulaEvaluator
                 case "-":
                     return value1 - value2;
                 case "/":
+                    if (value2 == 0) 
+                    {
+                        throw new ArgumentException("Division by 0");
+                    }
                     return value1 / value2;
                 case "*":
                     return value1 * value2;
@@ -242,6 +268,10 @@ namespace FormulaEvaluator
         /// <returns>The computed value</returns>
         public static int PerformPlusMinusComputation(Stack<string> operatorStack, Stack<int> valueStack)
         {
+            if (valueStack.Count < 2)
+            {
+                throw new ArgumentException("Trying to add or minus without enough values");
+            }
             // pop the top two values from the value stack
             int firstValue = valueStack.Pop();
             int secondValue = valueStack.Pop();
@@ -296,6 +326,10 @@ namespace FormulaEvaluator
         {
             if (IsMultiplyOrDivide(operatorStack))
             {
+                if (valueStack.Count == 0)
+                {
+                    throw new ArgumentException("Value stack is empty, trying to perform integer operation");
+                }
                 int computedValue = PerformMultiplyDivideComputation(operatorStack, valueStack, value, true);
                 valueStack.Push(computedValue);
             }
@@ -308,13 +342,13 @@ namespace FormulaEvaluator
         /// </summary>
         /// <param name="token">The token to check</param>
         /// <returns>0 if not valid, or the value of the integer if it is valid</returns>
-        public static int IsValidTokenInt(string token)
+        public static bool TryTokenInt(string token, out int intToken)
         {
-            int value = 0;
-            bool isInt = int.TryParse(token, out value);
-            if (isInt && value < 0)
+
+            bool isInt = int.TryParse(token, out intToken);
+            if (isInt && intToken < 0)
                 throw new ArgumentException("Integer token is negative");
-            return value;
+            return isInt;
 
         }
         /// <summary>
