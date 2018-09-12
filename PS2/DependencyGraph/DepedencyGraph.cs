@@ -60,11 +60,16 @@ namespace SpreadsheetUtilities
         {
             get
             {
+                if (dependents.Count == 0)
+                    return 0;
+                else
+                {
                 int size = 0;
                 foreach (KeyValuePair<string, HashSet<string>> dependent in dependents) {
                     size += dependent.Value.Count();
                 }
                 return size;
+                }
             }
         }
 
