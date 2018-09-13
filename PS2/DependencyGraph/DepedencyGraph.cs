@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -64,11 +65,12 @@ namespace SpreadsheetUtilities
                     return 0;
                 else
                 {
-                int size = 0;
-                foreach (KeyValuePair<string, HashSet<string>> dependent in dependents) {
-                    size += dependent.Value.Count();
-                }
-                return size;
+                    int size = 0;
+                    foreach (KeyValuePair<string, HashSet<string>> dependent in dependents)
+                    {
+                        size += dependent.Value.Count();
+                    }
+                    return size;
                 }
             }
         }
@@ -133,8 +135,8 @@ namespace SpreadsheetUtilities
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
-            if (dependents.ContainsKey(s))
-                return dependents[s];
+            if (dependees.ContainsKey(s))
+                return dependees[s];
             else
                 return Enumerable.Empty<string>();
         }
@@ -152,10 +154,84 @@ namespace SpreadsheetUtilities
         /// <param name="t"> t cannot be evaluated until s is</param>        /// 
         public void AddDependency(string s, string t)
         {
-
-            if (dependents[s].Add(t))
+            if (dependents.ContainsKey(s) && dependees.ContainsKey(s))
+            {
+                Debug.WriteLine("Trying to add duplicate dependency");
+            }
+            // We need two new hashsets, that we append to both 
+            else if (!dependents.ContainsKey(s) && !dependees.ContainsKey(t))
+            {
+                //create two new hashsets for both
+                HashSet<string> dependentsHash = new HashSet<string>();
+                HashSet<string> dependeesHash = new HashSet<string>();
+                // add t to dependents hashset, and s to dependees hashset
+                dependentsHash.Add(t);
+                dependeesHash.Add(s);
+                // add s and new hashset to dependents, 
+                dependents.Add(s, dependentsHash);
+                // add t and new dependees to dependees
+                dependees.Add(t, dependeesHash);
+            }
+            // We need one new hashset for the dependees
+            else if (dependents.ContainsKey(s) && !dependees.ContainsKey(t))
+            {
+                // create new hashset for dependees
+                HashSet<string> dependeesHash = new HashSet<string>();
+                // add s to new dependees hashset
+                dependeesHash.Add(s);
+                // add new dependee hashset to dependenes, at the key t
+                dependees.Add(t, dependeesHash);
+                // add t to the already existing hashset for dependents, at key s
+                dependents[s].Add(t);
+            }
+            else if (!dependents.ContainsKey(s) && dependees.ContainsKey(t))
+            {
+                // create new hashset for dependents
+                HashSet<string> dependentsHash = new HashSet<string>();
+                // add t to new dependents hashset
+                dependentsHash.Add(t);
+                // and new dependents hashset to dependees, at the key s
+                dependents.Add(s, dependentsHash);
+                // add t to the already existing hashsett for dependees, at key t
                 dependees[t].Add(s);
+            }
         }
+        private void AddDependencyRecursive(string s, string t)
+        {
+
+        }
+
+
+
+
+
+
+
+            //if (!dependents.ContainsKey(s))
+            //{
+            //    HashSet<string> dependentsValue = new HashSet<string>();
+            //    dependentsValue.Add(t);
+            //    dependents.Add(s, dependentsValue);
+
+            //    HashSet<string> dependeesValue = new HashSet<string>();
+            //    dependeesValue.Add(s);
+            //    dependees.Add(t, dependeesValue);
+            //}
+            //else if (!dependees.ContainsKey(t))
+            //{
+            //    HashSet<string> dependeesValue = new HashSet<string>();
+            //    dependeesValue.Add(s);
+            //    dependees.Add(t, dependeesValue);
+
+            //    dependents[s].Add(t);
+            //}
+            //else
+            //{
+            //    dependents[s].Add(t);
+            //    dependees[t].Add(s);
+            //}
+        
+
 
 
         /// <summary>
@@ -165,8 +241,11 @@ namespace SpreadsheetUtilities
         /// <param name="t"></param>
         public void RemoveDependency(string s, string t)
         {
-            if (dependents[s].Remove(t))
-                dependees[t].Remove(s);
+            if (dependents.ContainsKey(s))
+            {
+                if (dependents[s].Remove(t))
+                    dependees[t].Remove(s);
+            }
         }
 
 
@@ -180,6 +259,7 @@ namespace SpreadsheetUtilities
             {
                 HashSet<string> newDep = new HashSet<string>();
                 newDep.UnionWith(newDependents);
+                dependents.Add(s, newDep);
             }
         }
 
@@ -194,6 +274,7 @@ namespace SpreadsheetUtilities
             {
                 HashSet<string> newDep = new HashSet<string>();
                 newDep.UnionWith(newDependees);
+                dependees.Add(s, newDep);
             }
         }
 
