@@ -196,44 +196,6 @@ namespace SpreadsheetUtilities
                 dependees[t].Add(s);
             }
         }
-        private void AddDependencyRecursive(string s, string t)
-        {
-
-        }
-
-
-
-
-
-
-
-            //if (!dependents.ContainsKey(s))
-            //{
-            //    HashSet<string> dependentsValue = new HashSet<string>();
-            //    dependentsValue.Add(t);
-            //    dependents.Add(s, dependentsValue);
-
-            //    HashSet<string> dependeesValue = new HashSet<string>();
-            //    dependeesValue.Add(s);
-            //    dependees.Add(t, dependeesValue);
-            //}
-            //else if (!dependees.ContainsKey(t))
-            //{
-            //    HashSet<string> dependeesValue = new HashSet<string>();
-            //    dependeesValue.Add(s);
-            //    dependees.Add(t, dependeesValue);
-
-            //    dependents[s].Add(t);
-            //}
-            //else
-            //{
-            //    dependents[s].Add(t);
-            //    dependees[t].Add(s);
-            //}
-        
-
-
-
         /// <summary>
         /// Removes the ordered pair (s,t), if it exists
         /// </summary>
@@ -241,10 +203,29 @@ namespace SpreadsheetUtilities
         /// <param name="t"></param>
         public void RemoveDependency(string s, string t)
         {
-            if (dependents.ContainsKey(s))
+            if (dependents.ContainsKey(s) && dependees.ContainsKey(t))
             {
-                if (dependents[s].Remove(t))
-                    dependees[t].Remove(s);
+                dependents[s].Remove(t);
+                dependees[t].Remove(s);
+                if (dependents[s].Count == 0)
+                    dependents.Remove(s);
+                if (dependees[t].Count == 0)
+                    dependees.Remove(t);
+            }
+            else if (dependees.ContainsKey(s) && dependents.ContainsKey(t))
+            {
+                dependees[s].Remove(t);
+                dependents[t].Remove(s);
+
+                if (dependees[s].Count == 0)
+                    dependees.Remove(s);
+                if (dependents[t].Count == 0)
+                    dependents.Remove(t);
+                   
+            }
+            else
+            {
+                Debug.WriteLine("Trying to remove a dependency that does not exist");
             }
         }
 
@@ -255,12 +236,24 @@ namespace SpreadsheetUtilities
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
-            if (dependents.Remove(s))
+            if (dependents.ContainsKey(s))
             {
-                HashSet<string> newDep = new HashSet<string>();
-                newDep.UnionWith(newDependents);
-                dependents.Add(s, newDep);
+                foreach (string t in dependents[s].ToList())
+                {
+                    RemoveDependency(s, t);
+                }
+                foreach (string t in newDependents.ToList())
+                {
+                    AddDependency(s, t);
+                }
             }
+
+            //if (dependents.Remove(s))
+            //{
+            //    HashSet<string> newDep = new HashSet<string>();
+            //    newDep.UnionWith(newDependents);
+            //    dependents.Add(s, newDep);
+            //}
         }
 
 
@@ -270,11 +263,16 @@ namespace SpreadsheetUtilities
         /// </summary>
         public void ReplaceDependees(string s, IEnumerable<string> newDependees)
         {
-            if (dependees.Remove(s))
+            if (dependees.ContainsKey(s))
             {
-                HashSet<string> newDep = new HashSet<string>();
-                newDep.UnionWith(newDependees);
-                dependees.Add(s, newDep);
+                foreach (string t in dependees[s].ToList())
+                {
+                    RemoveDependency(s, t);
+                }
+                foreach (string t in newDependees.ToList())
+                {
+                    AddDependency(t, s);
+                }
             }
         }
 
