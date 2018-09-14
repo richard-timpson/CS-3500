@@ -73,6 +73,10 @@ namespace SpreadsheetUtilities
                     return size;
                 }
             }
+            private set
+            {
+                Size = value;
+            }
         }
 
 
@@ -87,7 +91,7 @@ namespace SpreadsheetUtilities
         {
             get
             {
-                if (dependees.ContainsKey(s))
+                if (HasDependees(s))
                     return dependees[s].Count();
                 else
                     return 0;
@@ -124,8 +128,11 @@ namespace SpreadsheetUtilities
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
-            if (dependents.ContainsKey(s))
-                return dependents[s];
+            if (HasDependents(s))
+            {
+                HashSet<string> dependentCopy = new HashSet<string>(dependents[s]);
+                return dependentCopy;
+            }
             else
                 return Enumerable.Empty<string>();
         }
@@ -135,8 +142,11 @@ namespace SpreadsheetUtilities
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
-            if (dependees.ContainsKey(s))
-                return dependees[s];
+            if (HasDependees(s))
+            {
+                HashSet<string> dependeesCopy = new HashSet<string>(dependees[s]);
+                return dependeesCopy;
+            }
             else
                 return Enumerable.Empty<string>();
         }
@@ -154,44 +164,53 @@ namespace SpreadsheetUtilities
         /// <param name="t"> t cannot be evaluated until s is</param>        /// 
         public void AddDependency(string s, string t)
         {
-            if (dependents.ContainsKey(s) && dependees.ContainsKey(s))
+            if (HasDependents(s) && HasDependees(s))
             {
                 Debug.WriteLine("Trying to add duplicate dependency");
             }
             // We need two new hashsets, that we append to both 
-            else if (!dependents.ContainsKey(s) && !dependees.ContainsKey(t))
+            else if (!HasDependents(s) && !HasDependees(t))
             {
                 //create two new hashsets for both
                 HashSet<string> dependentsHash = new HashSet<string>();
                 HashSet<string> dependeesHash = new HashSet<string>();
+
                 // add t to dependents hashset, and s to dependees hashset
                 dependentsHash.Add(t);
                 dependeesHash.Add(s);
+
                 // add s and new hashset to dependents, 
                 dependents.Add(s, dependentsHash);
+
                 // add t and new dependees to dependees
                 dependees.Add(t, dependeesHash);
             }
             // We need one new hashset for the dependees
-            else if (dependents.ContainsKey(s) && !dependees.ContainsKey(t))
+            else if (HasDependents(s) && !HasDependees(t))
             {
                 // create new hashset for dependees
                 HashSet<string> dependeesHash = new HashSet<string>();
+
                 // add s to new dependees hashset
                 dependeesHash.Add(s);
+
                 // add new dependee hashset to dependenes, at the key t
                 dependees.Add(t, dependeesHash);
+
                 // add t to the already existing hashset for dependents, at key s
                 dependents[s].Add(t);
             }
-            else if (!dependents.ContainsKey(s) && dependees.ContainsKey(t))
+            else if (!HasDependents(s) && HasDependees(t))
             {
                 // create new hashset for dependents
                 HashSet<string> dependentsHash = new HashSet<string>();
+
                 // add t to new dependents hashset
                 dependentsHash.Add(t);
+
                 // and new dependents hashset to dependees, at the key s
                 dependents.Add(s, dependentsHash);
+
                 // add t to the already existing hashsett for dependees, at key t
                 dependees[t].Add(s);
             }
@@ -203,7 +222,7 @@ namespace SpreadsheetUtilities
         /// <param name="t"></param>
         public void RemoveDependency(string s, string t)
         {
-            if (dependents.ContainsKey(s) && dependees.ContainsKey(t))
+            if (HasDependents(s) && HasDependees(t))
             {
                 dependents[s].Remove(t);
                 dependees[t].Remove(s);
@@ -212,7 +231,7 @@ namespace SpreadsheetUtilities
                 if (dependees[t].Count == 0)
                     dependees.Remove(t);
             }
-            else if (dependees.ContainsKey(s) && dependents.ContainsKey(t))
+            else if (HasDependees(s) && HasDependents(t))
             {
                 dependees[s].Remove(t);
                 dependents[t].Remove(s);
@@ -221,22 +240,19 @@ namespace SpreadsheetUtilities
                     dependees.Remove(s);
                 if (dependents[t].Count == 0)
                     dependents.Remove(t);
-                   
             }
             else
             {
                 Debug.WriteLine("Trying to remove a dependency that does not exist");
             }
         }
-
-
         /// <summary>
         /// Removes all existing ordered pairs of the form (s,r).  Then, for each
         /// t in newDependents, adds the ordered pair (s,t).
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
-            if (dependents.ContainsKey(s))
+            if (HasDependents(s))
             {
                 foreach (string t in dependents[s].ToList())
                 {
@@ -247,23 +263,14 @@ namespace SpreadsheetUtilities
                     AddDependency(s, t);
                 }
             }
-
-            //if (dependents.Remove(s))
-            //{
-            //    HashSet<string> newDep = new HashSet<string>();
-            //    newDep.UnionWith(newDependents);
-            //    dependents.Add(s, newDep);
-            //}
         }
-
-
         /// <summary>
         /// Removes all existing ordered pairs of the form (r,s).  Then, for each 
         /// t in newDependees, adds the ordered pair (t,s).
         /// </summary>
         public void ReplaceDependees(string s, IEnumerable<string> newDependees)
         {
-            if (dependees.ContainsKey(s))
+            if (HasDependees(s))
             {
                 foreach (string t in dependees[s].ToList())
                 {

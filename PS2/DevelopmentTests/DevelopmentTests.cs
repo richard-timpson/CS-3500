@@ -221,7 +221,44 @@ namespace DevelopmentTests
         }
 
 
+        [TestMethod()]
+        public void StressTest1()
+        {
+            DependencyGraph t = new DependencyGraph();
 
+            const int SIZE = 10;
+            const int LETTER_SIZE = 11;
+            string[] letters = new string[LETTER_SIZE];
+            for (int i = 0; i < LETTER_SIZE; i++)
+            {
+                letters[i] = ("" + (char)('a' + i));
+            }
+            HashSet<string>[] dents = new HashSet<string>[SIZE];
+            HashSet<string>[] dees = new HashSet<string>[SIZE];
+
+            for (int i = 0; i < SIZE; i++)
+            {
+                dents[i] = new HashSet<string>();
+                dees[i] = new HashSet<string>();
+            }
+            for (int i = 0; i < SIZE; i++)
+            {
+                t.AddDependency(letters[i], letters[i + 1]);
+                dents[i].Add(letters[i]);
+                dees[i].Add(letters[i + 1]);
+            }
+            for (int i = 0; i < SIZE; i++)
+            {
+                Console.WriteLine(dents[i]);
+                Console.WriteLine(t.GetDependents(letters[i]));
+                Console.WriteLine(dees[i]);
+                Console.WriteLine(t.GetDependees(letters[i]));
+
+
+                Assert.IsTrue(dents[i].SetEquals(new HashSet<string>(t.GetDependents(letters[i]))));
+                Assert.IsTrue(dees[i].SetEquals(new HashSet<string>(t.GetDependees(letters[i]))));
+            }
+        }
         /// <summary>
         ///Using lots of data
         ///</summary>
@@ -299,9 +336,422 @@ namespace DevelopmentTests
                 Assert.IsTrue(dees[i].SetEquals(new HashSet<string>(t.GetDependees(letters[i]))));
             }
         }
+        /// <summary>
+        /// simple size test
+        /// </summary>
+        [TestMethod()]
+        public void RichardSizeTest1()
+        {
+            DependencyGraph t = new DependencyGraph();
 
+            t.AddDependency("a", "b");
+            t.AddDependency("a", "c");
+            t.AddDependency("b", "c");
+            t.AddDependency("c", "d");
+
+            Assert.AreEqual(4, t.Size);
+        }
+        /// <summary>
+        /// Testing the indexer
+        /// </summary>
+        [TestMethod()]
+        public void RichardIndexerTest1()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("a", "b");
+            t.AddDependency("a", "c");
+            t.AddDependency("b", "c");
+            t.AddDependency("c", "d");
+
+            int size = t["c"];
+
+            Assert.AreEqual(2, size);
+        }
+        /// <summary>
+        /// Testing the indexer with remove
+        /// </summary>
+        [TestMethod()]
+        public void RichardIndexerTest2()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("a", "b");
+            t.RemoveDependency("a", "b");
+
+            t.AddDependency("a", "c");
+            t.RemoveDependency("a", "c");
+
+            t.AddDependency("b", "c");
+            t.RemoveDependency("b", "c");
+
+            t.AddDependency("c", "d");
+            t.AddDependency("e", "c");
+
+
+            int size = t["c"];
+
+            Assert.AreEqual(1, size);
+        }
+        /// <summary>
+        /// Testing the indexer with no value
+        /// </summary>
+        [TestMethod()]
+        public void RichardIndexerTest3()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("a", "b");
+            t.RemoveDependency("a", "b");
+
+            t.AddDependency("a", "c");
+            t.RemoveDependency("a", "c");
+
+            t.AddDependency("b", "c");
+            t.RemoveDependency("b", "c");
+
+            t.AddDependency("c", "d");
+            t.AddDependency("e", "c");
+            t.RemoveDependency("e", "c");
+
+
+            int size = t["c"];
+
+            Assert.AreEqual(0, size);
+        }
+        /// <summary>
+        /// Testing with value that isn't an ordered pair
+        /// </summary>
+        [TestMethod()]
+        public void RichardIndexerTest4()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("a", "b");
+
+            int size = t["c"];
+
+            Assert.AreEqual(0, size);
+        }
+        /// <summary>
+        /// Testing add
+        /// </summary>
+        [TestMethod()]
+        public void RichardGetDependentsTest1()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("a", "b");
+            IEnumerator<string> e = t.GetDependents("a").GetEnumerator();
+
+            Assert.IsTrue(e.MoveNext());
+            Assert.AreEqual("b", e.Current);
+        }
+        /// <summary>
+        /// Testing add with multiple
+        /// </summary>
+        [TestMethod()]
+        public void RichardGetDependentsTest2()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("a", "b");
+
+            t.AddDependency("b", "c");
+            t.AddDependency("c", "d");
+            t.AddDependency("d", "e");
+
+
+            IEnumerator<string> depDict = t.GetDependents("a").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("b", depDict.Current);
+
+            depDict = t.GetDependents("b").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("c", depDict.Current);
+
+            depDict = t.GetDependents("c").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("d", depDict.Current);
+        }
+        /// <summary>
+        /// Testing add with remove to none
+        /// </summary>
+        [TestMethod()]
+        public void RichardGetDependentsTest3()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("a", "b");
+
+            t.AddDependency("b", "c");
+            t.AddDependency("c", "d");
+            t.AddDependency("d", "e");
+
+
+            IEnumerator<string> depDict = t.GetDependents("a").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("b", depDict.Current);
+
+            depDict = t.GetDependents("b").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("c", depDict.Current);
+
+            depDict = t.GetDependents("c").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("d", depDict.Current);
+
+            t.RemoveDependency("a", "b");
+
+            depDict = t.GetDependents("a").GetEnumerator();
+
+            Assert.IsFalse(depDict.MoveNext());
+
+        }
+        /// <summary>
+        /// Testing add multiple dependents to one dependee
+        /// </summary>
+        [TestMethod()]
+        public void RichardGetDependentsTest4()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("a", "b");
+            t.AddDependency("a", "c");
+            t.AddDependency("a", "d");
+            t.AddDependency("a", "e");
+
+
+            IEnumerator<string> depDict = t.GetDependents("a").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("b", depDict.Current);
+
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("c", depDict.Current);
+
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("d", depDict.Current);
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("e", depDict.Current);
+        }
+        /// <summary>
+        /// testing add with multiple dependents to one dependee, and remove multiple dependents with one dependee
+        /// </summary>
+        [TestMethod()]
+        public void RichardGetDependentsTest5()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("a", "b");
+            t.AddDependency("a", "c");
+            t.AddDependency("a", "d");
+            t.AddDependency("a", "e");
+
+
+            IEnumerator<string> depDict = t.GetDependents("a").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("b", depDict.Current);
+
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("c", depDict.Current);
+
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("d", depDict.Current);
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("e", depDict.Current);
+
+            t.RemoveDependency("a", "b");
+            t.RemoveDependency("a", "c");
+
+            depDict = t.GetDependents("a").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("d", depDict.Current);
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("e", depDict.Current);
+
+            Assert.IsFalse(depDict.MoveNext());
+
+        }
+        /// <summary>
+        /// Testing add with multiple dependee's to one dependent
+        /// </summary>
+        [TestMethod()]
+        public void RichardGetDependentsTest6()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("b", "a");
+            t.AddDependency("c", "a");
+            t.AddDependency("d", "a");
+            t.AddDependency("e", "a");
+
+
+            IEnumerator<string> depDict = t.GetDependents("b").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("a", depDict.Current);
+
+            depDict = t.GetDependents("c").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("a", depDict.Current);
+
+            depDict = t.GetDependents("d").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("a", depDict.Current);
+
+            depDict = t.GetDependents("e").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("a", depDict.Current);
+
+            Assert.IsFalse(depDict.MoveNext());
+        }
+        /// <summary>
+        /// Testing add with multiple dependee's to one dependent
+        /// </summary>
+        [TestMethod()]
+        public void RichardGetDependentsTest7()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("b", "a");
+            t.AddDependency("c", "a");
+            t.AddDependency("d", "a");
+            t.AddDependency("e", "a");
+
+
+            IEnumerator<string> depDict = t.GetDependents("b").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("a", depDict.Current);
+
+            depDict = t.GetDependents("c").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("a", depDict.Current);
+
+            depDict = t.GetDependents("d").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("a", depDict.Current);
+
+            depDict = t.GetDependents("e").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("a", depDict.Current);
+
+            t.RemoveDependency("d", "a");
+            t.RemoveDependency("b", "a");
+
+            Assert.IsFalse(depDict.MoveNext());
+        }
+        /// <summary>
+        /// Testing add 
+        /// </summary>
+        [TestMethod()]
+        public void RichardGetDependeesTest1()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("a", "b");
+            IEnumerator<string> e = t.GetDependees("b").GetEnumerator();
+
+            Assert.IsTrue(e.MoveNext());
+            Assert.AreEqual("a", e.Current);
+        }
+        /// <summary>
+        /// testing add with multiple
+        /// </summary>
+        [TestMethod()]
+        public void RichardGetDependeesTest2()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("a", "b");
+
+            t.AddDependency("b", "c");
+            t.AddDependency("c", "d");
+            t.AddDependency("d", "e");
+
+
+            IEnumerator<string> depDict = t.GetDependees("b").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("a", depDict.Current);
+
+            depDict = t.GetDependees("c").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("b", depDict.Current);
+
+            depDict = t.GetDependees("d").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("c", depDict.Current);
+        }
+        /// <summary>
+        /// Testing add and remove with none
+        /// </summary>
+        [TestMethod()]
+        public void RichardGetDependeesTest3()
+        {
+            DependencyGraph t = new DependencyGraph();
+
+            t.AddDependency("a", "b");
+
+            t.AddDependency("b", "c");
+            t.AddDependency("c", "d");
+            t.AddDependency("d", "e");
+
+
+            IEnumerator<string> depDict = t.GetDependees("b").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("a", depDict.Current);
+
+            depDict = t.GetDependees("c").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("b", depDict.Current);
+
+            depDict = t.GetDependees("d").GetEnumerator();
+
+            Assert.IsTrue(depDict.MoveNext());
+            Assert.AreEqual("c", depDict.Current);
+
+            t.RemoveDependency("a", "b");
+
+            depDict = t.GetDependents("a").GetEnumerator();
+
+            Assert.IsFalse(depDict.MoveNext());
+
+        }
+
+        public void RichardRemoveTest()
+        {
+
+        }
     }
 }
+
 
 
 
