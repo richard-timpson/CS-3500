@@ -74,6 +74,12 @@ namespace SpreadsheetUtilities
             else
                 return false;
         }
+        /// <summary>
+        /// Helper method to see if a specific dependee already exsits. 
+        /// </summary>
+        /// <param name="s">The key for dependee</param>
+        /// <param name="t">The value of the dependent to check</param>
+        /// <returns>True or false</returns>
         private bool HasSpecificDependent(string s, string t )
         {
             if (HasDependents(s) && dependents[s].Contains(t))
@@ -81,6 +87,12 @@ namespace SpreadsheetUtilities
             else
                 return false;
         }
+        /// <summary>
+        /// Helper method to see if a specific dependee already exsits. 
+        /// </summary>
+        /// <param name="s">The key for dependee</param>
+        /// <param name="t">The value of the dependent to check</param>
+        /// <returns>True or false</returns>
         private bool HasSpecificDependee(string s, string t)
         {
             if (HasDependees(t) && dependees[t].Contains(s))
@@ -91,6 +103,7 @@ namespace SpreadsheetUtilities
 
         /// <summary>
         /// Returns an enumerator with  the dependents of 's'.
+        /// Otherwise returns empty enumerator. 
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
@@ -104,7 +117,8 @@ namespace SpreadsheetUtilities
         }
 
         /// <summary>
-        /// Returns an enumerator with  the dependees of 's'.
+        /// Returns an enumerator with the dependees of 's', if it exists. 
+        /// Otherwise returns empty enumerator. 
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
@@ -116,7 +130,11 @@ namespace SpreadsheetUtilities
             else
                 return Enumerable.Empty<string>();
         }
-
+        /// <summary>
+        /// Helper method to add dependent. Used for AddDependency function
+        /// </summary>
+        /// <param name="s">Add 's' first</param>
+        /// <param name="t">Add 't' after 's'</param>
         private void AddDependent(string s, string t)
         {
             if (HasDependents(s))
@@ -130,7 +148,11 @@ namespace SpreadsheetUtilities
                 dependents.Add(s, dependentsHash);
             }
         }
-
+        /// <summary>
+        /// Helper method to add dependee.Used for AddDependency function
+        /// </summary>
+        /// <param name="s">Add 's' first</param>
+        /// <param name="t">Add 't' after 's' </param>
         private void AddDependee(string s, string t)
         {
             if (HasDependees(t))
@@ -151,6 +173,7 @@ namespace SpreadsheetUtilities
         /// <param name="t"> t cannot be evaluated until s is</param>        /// 
         public void AddDependency(string s, string t)
         {
+            //if the dependency does not already exist
             if (!(HasSpecificDependent(s,t) && HasSpecificDependee(s, t)))
             {
                 AddDependee(s, t);
@@ -184,19 +207,6 @@ namespace SpreadsheetUtilities
                     dependees.Remove(t);
                 Size -= 1;
             }
-            else if (HasSpecificDependee(s,t) && HasSpecificDependent(s,t))
-            {
-                //remove dependency of form (t,s)
-                RemoveActualDependency(t, s);
-
-
-                //remove hashset from dictionary if empty
-                if (dependees[s].Count == 0)
-                    dependees.Remove(s);
-                if (dependents[t].Count == 0)
-                    dependents.Remove(t);
-                Size -= 1;
-            }
             else
             {
                 Debug.WriteLine("Trying to remove a dependency that does not exist");
@@ -208,24 +218,20 @@ namespace SpreadsheetUtilities
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
+            // removing dependents if there are any
             if (HasDependents(s))
             {
                 foreach (string t in dependents[s].ToList())
                 {
                     RemoveDependency(s, t);
                 }
-                foreach (string t in newDependents.ToList())
-                {
-                    AddDependency(s, t);
-                }
             }
-            else
+            //adding newdependents from list
+            foreach (string t in newDependents.ToList())
             {
-                foreach (string t in newDependents.ToList())
-                {
-                    AddDependency(s,t);
-                }
+                AddDependency(s, t);
             }
+            
         }
         /// <summary>
         /// Removes all existing ordered pairs of the form (r,s).  Then, for each 
@@ -233,23 +239,18 @@ namespace SpreadsheetUtilities
         /// </summary>
         public void ReplaceDependees(string s, IEnumerable<string> newDependees)
         {
+            //removing dependees if there are any 
             if (HasDependees(s))
             {
                 foreach (string t in dependees[s].ToList())
                 {
-                    RemoveDependency(t,s);
-                }
-                foreach (string t in newDependees.ToList())
-                {
-                    AddDependency(t, s);
+                    RemoveDependency(t, s);
                 }
             }
-            else
+            //adding new dependencies from list
+            foreach (string t in newDependees.ToList())
             {
-                foreach ( string t in newDependees.ToList())
-                {
-                    AddDependency(t, s);
-                }
+                AddDependency(t, s);
             }
         }
 
