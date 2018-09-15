@@ -1,8 +1,8 @@
-﻿// Skeleton implementation written by Joe Zachary for CS 3500, September 2013.
-// Version 1.1 (Fixed error in comment for RemoveDependency.)
-// Version 1.2 - Daniel Kopta 
-//               (Clarified meaning of dependent and dependee.)
-//               (Clarified names in solution/project structure.)
+﻿// PS2 - Dependency Graph Implementation. 
+// Richard Timpson
+// CS 3500 - Software Practice
+// 9/14/18
+// University of Utah
 
 using System;
 using System.Collections.Generic;
@@ -14,36 +14,13 @@ namespace SpreadsheetUtilities
 {
 
     /// <summary>
-    /// (s1,t1) is an ordered pair of strings
-    /// t1 depends on s1; s1 must be evaluated before t1
-    /// 
-    /// A DependencyGraph can be modeled as a set of ordered pairs of strings.  Two ordered pairs
-    /// (s1,t1) and (s2,t2) are considered equal if and only if s1 equals s2 and t1 equals t2.
-    /// Recall that sets never contain duplicates.  If an attempt is made to add an element to a 
-    /// set, and the element is already in the set, the set remains unchanged.
-    /// f
-    /// Given a DependencyGraph DG:
-    /// 
-    ///    (1) If s is a string, the set of all strings t such that (s,t) is in DG is called dependents(s).
-    ///        (The set of things that depend on s)    
-    ///        
-    ///    (2) If s is a string, the set of all strings t such that (t,s) is in DG is called dependees(s).
-    ///        (The set of things that s depends on) 
-    //
-    // For example, suppose DG = {("a", "b"), ("a", "c"), ("b", "d"), ("d", "d")}
-    //     dependents("a") = {"b", "c"}
-    //     dependents("b") = {"d"}
-    //     dependents("c") = {}
-    //     dependents("d") = {"d"}
-    //     dependees("a") = {}
-    //     dependees("b") = {"a"}
-    //     dependees("c") = {"a"}
-    //     dependees("d") = {"b", "d"}
+    /// A dependency graph implementation with several add, remove, and get methods. 
     /// </summary>
     public class DependencyGraph
     {
         /// <summary>
-        /// Creates an empty DependencyGraph.
+        /// Creates an empty DependencyGraph, using two Dictionaries dependents and dependees
+        /// With a string as their key, and a Hashset as their value. 
         /// </summary>
         private readonly Dictionary<string, HashSet<string>> dependents;
         private readonly Dictionary<string, HashSet<string>> dependees;
@@ -57,35 +34,11 @@ namespace SpreadsheetUtilities
         /// <summary>
         /// The number of ordered pairs in the DependencyGraph.
         /// </summary>
-        public int Size
-        {
-            get
-            {
-                if (dependents.Count == 0)
-                    return 0;
-                else
-                {
-                    int size = 0;
-                    foreach (KeyValuePair<string, HashSet<string>> dependent in dependents)
-                    {
-                        size += dependent.Value.Count();
-                    }
-                    return size;
-                }
-            }
-            private set
-            {
-                Size = value;
-            }
-        }
+        public int Size{ get; private set;}
 
 
         /// <summary>
         /// The size of dependees(s).
-        /// This property is an example of an indexer.  If dg is a DependencyGraph, you would
-        /// invoke it like this:
-        /// dg["a"]
-        /// It should return the size of dependees("a")
         /// </summary>
         public int this[string s]
         {
@@ -121,10 +74,23 @@ namespace SpreadsheetUtilities
             else
                 return false;
         }
-
+        private bool HasSpecificDependent(string s, string t )
+        {
+            if (HasDependents(s) && dependents[s].Contains(t))
+                return true;
+            else
+                return false;
+        }
+        private bool HasSpecificDependee(string s, string t)
+        {
+            if (HasDependees(t) && dependees[t].Contains(s))
+                return true;
+            else
+                return false;
+        }
 
         /// <summary>
-        /// Enumerates dependents(s).
+        /// Returns an enumerator with  the dependents of 's'.
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
@@ -138,7 +104,7 @@ namespace SpreadsheetUtilities
         }
 
         /// <summary>
-        /// Enumerates dependees(s).
+        /// Returns an enumerator with  the dependees of 's'.
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
@@ -151,70 +117,53 @@ namespace SpreadsheetUtilities
                 return Enumerable.Empty<string>();
         }
 
+        private void AddDependent(string s, string t)
+        {
+            if (HasDependents(s))
+            {
+                dependents[s].Add(t);
+            }
+            else if (!HasDependents(s))
+            {
+                HashSet<string> dependentsHash = new HashSet<string>();
+                dependentsHash.Add(t);
+                dependents.Add(s, dependentsHash);
+            }
+        }
 
+        private void AddDependee(string s, string t)
+        {
+            if (HasDependees(t))
+            {
+                dependees[t].Add(s);
+            }
+            else if (!HasDependees(t))
+            {
+                HashSet<string> dependeesHash = new HashSet<string>();
+                dependeesHash.Add(s);
+                dependees.Add(t, dependeesHash);
+            }
+        }
         /// <summary>
         /// <para>Adds the ordered pair (s,t), if it doesn't exist</para>
-        /// 
-        /// <para>This should be thought of as:</para>   
-        /// 
-        ///   t depends on s
-        ///
         /// </summary>
         /// <param name="s"> s must be evaluated first. T depends on S</param>
         /// <param name="t"> t cannot be evaluated until s is</param>        /// 
         public void AddDependency(string s, string t)
         {
-            if (HasDependents(s) && HasDependees(s))
+            if (!(HasSpecificDependent(s,t) && HasSpecificDependee(s, t)))
             {
-                Debug.WriteLine("Trying to add duplicate dependency");
-            }
-            // We need two new hashsets, that we append to both 
-            else if (!HasDependents(s) && !HasDependees(t))
-            {
-                //create two new hashsets for both
-                HashSet<string> dependentsHash = new HashSet<string>();
-                HashSet<string> dependeesHash = new HashSet<string>();
-
-                // add t to dependents hashset, and s to dependees hashset
-                dependentsHash.Add(t);
-                dependeesHash.Add(s);
-
-                // add s and new hashset to dependents, 
-                dependents.Add(s, dependentsHash);
-
-                // add t and new dependees to dependees
-                dependees.Add(t, dependeesHash);
-            }
-            // We need one new hashset for the dependees
-            else if (HasDependents(s) && !HasDependees(t))
-            {
-                // create new hashset for dependees
-                HashSet<string> dependeesHash = new HashSet<string>();
-
-                // add s to new dependees hashset
-                dependeesHash.Add(s);
-
-                // add new dependee hashset to dependenes, at the key t
-                dependees.Add(t, dependeesHash);
-
-                // add t to the already existing hashset for dependents, at key s
-                dependents[s].Add(t);
-            }
-            else if (!HasDependents(s) && HasDependees(t))
-            {
-                // create new hashset for dependents
-                HashSet<string> dependentsHash = new HashSet<string>();
-
-                // add t to new dependents hashset
-                dependentsHash.Add(t);
-
-                // and new dependents hashset to dependees, at the key s
-                dependents.Add(s, dependentsHash);
-
-                // add t to the already existing hashsett for dependees, at key t
-                dependees[t].Add(s);
-            }
+                AddDependee(s, t);
+                AddDependent(s, t);
+                Size++;
+            }            
         }
+        private void RemoveActualDependency(string s, string t)
+        {
+            dependents[s].Remove(t);
+            dependees[t].Remove(s);
+        }
+
         /// <summary>
         /// Removes the ordered pair (s,t), if it exists
         /// </summary>
@@ -222,24 +171,31 @@ namespace SpreadsheetUtilities
         /// <param name="t"></param>
         public void RemoveDependency(string s, string t)
         {
-            if (HasDependents(s) && HasDependees(t))
+            // if the input exists in the form (s, t)
+            if (HasSpecificDependent(s,t) && HasSpecificDependee(s,t))
             {
-                dependents[s].Remove(t);
-                dependees[t].Remove(s);
+                //remove dependency of form (s,t)
+                RemoveActualDependency(s, t);
+
+                //remove hashset from dictionary if empty
                 if (dependents[s].Count == 0)
                     dependents.Remove(s);
                 if (dependees[t].Count == 0)
                     dependees.Remove(t);
+                Size -= 1;
             }
-            else if (HasDependees(s) && HasDependents(t))
+            else if (HasSpecificDependee(s,t) && HasSpecificDependent(s,t))
             {
-                dependees[s].Remove(t);
-                dependents[t].Remove(s);
+                //remove dependency of form (t,s)
+                RemoveActualDependency(t, s);
 
+
+                //remove hashset from dictionary if empty
                 if (dependees[s].Count == 0)
                     dependees.Remove(s);
                 if (dependents[t].Count == 0)
                     dependents.Remove(t);
+                Size -= 1;
             }
             else
             {
@@ -263,6 +219,13 @@ namespace SpreadsheetUtilities
                     AddDependency(s, t);
                 }
             }
+            else
+            {
+                foreach (string t in newDependents.ToList())
+                {
+                    AddDependency(s,t);
+                }
+            }
         }
         /// <summary>
         /// Removes all existing ordered pairs of the form (r,s).  Then, for each 
@@ -274,9 +237,16 @@ namespace SpreadsheetUtilities
             {
                 foreach (string t in dependees[s].ToList())
                 {
-                    RemoveDependency(s, t);
+                    RemoveDependency(t,s);
                 }
                 foreach (string t in newDependees.ToList())
+                {
+                    AddDependency(t, s);
+                }
+            }
+            else
+            {
+                foreach ( string t in newDependees.ToList())
                 {
                     AddDependency(t, s);
                 }
