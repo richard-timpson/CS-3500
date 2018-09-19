@@ -62,6 +62,75 @@ namespace SpreadsheetUtilities
         /// </summary>
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
+
+            IEnumerable<string> tokens = GetTokens(formula);
+            IsTokensEmpty(tokens);
+            AreTokensValid(tokens);
+            CorrectNumOfParenthesis(tokens);
+
+        }
+        private void IsTokensEmpty(IEnumerable<string> tokens)
+        {
+            if (tokens.Count() == 0 )
+            {
+                throw new FormulaFormatException("Need at least one token in expression");
+            }
+        }
+        private void AreTokensValid(IEnumerable<string> tokens)
+        {
+            foreach (string s in tokens)
+            {
+                switch (s)
+                {
+                    case "(":
+                        break;
+                    case ")":
+                        break;
+                    case "+":
+                        break;
+                    case "-":
+                        break;
+                    case "*":
+                        break;
+                    case "/":
+                        break;
+                    default:
+                        String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
+                        double j = 0;
+                        bool isDouble = double.TryParse(s, out j);
+
+                        if (!Regex.IsMatch(s, varPattern) && !isDouble)
+                        {
+                            throw new FormulaFormatException("Expression contains invalid token");
+                        }
+                        break;
+
+                }
+            }
+        }
+        private void CorrectNumOfParenthesis(IEnumerable<string> tokens)
+        {
+            int NumOfLeft = 0;
+            int NumOfRight = 0;
+            foreach (string s in tokens)
+            {
+                if (s == "(")
+                {
+                    NumOfLeft++;
+                }
+                if (s == ")")
+                {
+                    NumOfRight++;
+                }
+                if (NumOfRight > NumOfLeft)
+                {
+                    throw new FormulaFormatException("Incorrect usage of parenthesis");
+                }
+            }
+            if (!(NumOfLeft == NumOfRight))
+            {
+                throw new FormulaFormatException("Incorrect usage of parenthesis");
+            }
         }
 
         /// <summary>
