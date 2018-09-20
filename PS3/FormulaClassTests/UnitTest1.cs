@@ -195,9 +195,247 @@ namespace FormulaClassTests
             Formula t = new Formula(expression);
         }
 
+        /// <summary>
+        /// Testing a greater number of left parens that right parens. 
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void ParenthesisTest1()
+        {
+            string expression = "((2+4)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing a greater number of right parens that left parens. 
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void ParenthesisTest2()
+        {
+            string expression = "(2+4))";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Random parenthesis test
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void ParenthesisTest3()
+        {
+            string expression = "((((4 + 4) - 4) - 4)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if the first token in the expression is valid.
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FirstTokenTest1()
+        {
+            string expression = "+ 5 -1";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if the last token in the expression is valid.
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void LastTokenTest1()
+        {
+            string expression = "5 -1+";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if the last token in the expression is valid.
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void LastTokenTest2()
+        {
+            string expression = "5 -1(";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if opening paren or operator is not followed by number variable or opening paren
+        /// In this case it will be an opening parent with an operator
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory1Test1()
+        {
+            string expression = "(+8)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if opening paren or operator is not followed by number variable or opening paren
+        /// In this case it will an opening parent with a closed parenthesis
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory1Test2()
+        {
+            string expression = "() 8 - 8)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if opening paren or operator is not followed by number variable or opening paren
+        /// In this case it will be an operator with an operator
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory1Test3()
+        {
+            string expression = "(8 + +)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if opening paren or operator is not followed by number variable or opening paren
+        /// In this case it will be an opening paren with a closed parenthesis
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory1Test4()
+        {
+            string expression = "(8 + ))";
+            Formula t = new Formula(expression);
+        }
 
 
 
+        /// <summary>
+        /// Testing if number, variable, or closing paren is not followed by operator or closing parenthesis. 
+        /// In this case it will be a closed paren with a number
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory2Test1()
+        {
+            string expression = "(8 + )9 + 9";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if number, variable, or closing paren is not followed by operator or closing parenthesis. 
+        /// In this case it will be a closed paren with a variable
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory2Test2()
+        {
+            string expression = "(8 + )a1 + 0";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if number, variable, or closing paren is not followed by operator or closing parenthesis. 
+        /// In this case it will be a closed paren with an opening paren
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory2Test3()
+        {
+            string expression = "(8 + )(8 + 9)";
+            Formula t = new Formula(expression);
+        }
+
+
+        /// <summary>
+        /// Testing if number, variable, or closing paren is not followed by operator or closing parenthesis. 
+        /// In this case it will be a variable with an opening paren
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory2Test4()
+        {
+            string expression = "(8 + a1(8 - 9)";
+            Formula t = new Formula(expression);
+        }
+
+
+        /// <summary>
+        /// Testing if number, variable, or closing paren is not followed by operator or closing parenthesis. 
+        /// In this case it will be a variable with a number
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory2Test5()
+        {
+            string expression = "(8 + a1 8 - 9)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if number, variable, or closing paren is not followed by operator or closing parenthesis. 
+        /// In this case it will be a variable with a variable
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory2Test6()
+        {
+            string expression = "(8 + a1 a1 - 9)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if number, variable, or closing paren is not followed by operator or closing parenthesis. 
+        /// In this case it will be a number with a an opening parent
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory2Test7()
+        {
+            string expression = "(8 + 8(8-8)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if number, variable, or closing paren is not followed by operator or closing parenthesis. 
+        /// In this case it will be a number with a an number
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory2Test8()
+        {
+            string expression = "(8 + 8 8 - 8)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if number, variable, or closing paren is not followed by operator or closing parenthesis. 
+        /// In this case it will be a number with a variable
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void FollowCategory2Test9()
+        {
+            string expression = "(8 + 8 a1 - 8)";
+            Formula t = new Formula(expression);
+        }
 
 
         [TestMethod]

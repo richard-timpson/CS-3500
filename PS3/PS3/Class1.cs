@@ -67,6 +67,9 @@ namespace SpreadsheetUtilities
             IsTokensEmpty(tokens);
             AreTokensValid(tokens);
             CorrectNumOfParenthesis(tokens);
+            FirstTokenIsValid(tokens);
+            LastTokenIsValid(tokens);
+            FollowTokensAreValid(tokens);
 
         }
         private void IsTokensEmpty(IEnumerable<string> tokens)
@@ -132,7 +135,105 @@ namespace SpreadsheetUtilities
                 throw new FormulaFormatException("Incorrect usage of parenthesis");
             }
         }
-
+        private void FirstTokenIsValid(IEnumerable<string> tokens)
+        {
+            string s = tokens.First();
+            int i = 0;
+            if (!int.TryParse(s, out i) && !(s == "(") && !IsVariable(s))
+            {
+                throw new FormulaFormatException("The first token in the expression is not valid");
+            }
+        }
+        private void LastTokenIsValid(IEnumerable<string> tokens)
+        {
+            string s = tokens.Last();
+            int i = 0;
+            if (!int.TryParse(s, out i) && !(s == ")") && !IsVariable(s))
+            {
+                throw new FormulaFormatException("The last token in the expression is not valid");
+            }
+        }
+        private void FollowTokensAreValid(IEnumerable<string> tokens)
+        {
+            if (!(FollowParenOrOp(tokens) && FollowNumOrVarOrOp(tokens)))
+                throw new FormulaFormatException("The expression is invalid. Consider checking correct use of parenthesis and operators.");
+        }
+        private bool FollowParenOrOp(IEnumerable<string> tokens)
+        {
+            bool IsFollowValid = true;
+            string PreviousToken = "";
+            foreach (string s in tokens)
+            {
+                if (IsLeftParen(PreviousToken) || IsOp(PreviousToken))
+                {
+                    if (IsNum(s) || IsVariable(s) || IsLeftParen(s))
+                        IsFollowValid = true;
+                    else
+                        return false;
+                }
+                PreviousToken = s;
+            }
+            return IsFollowValid;
+        }
+        private bool FollowNumOrVarOrOp(IEnumerable<string> tokens)
+        {
+            bool IsFollowValid = false;
+            string PreviousToken = "";
+            foreach (string s in tokens)
+            {
+                if (IsNum(PreviousToken) || IsVariable(PreviousToken) || IsRightParen(PreviousToken))
+                {
+                    if (IsOp(s) || IsRightParen(s))
+                        IsFollowValid = true;
+                    else
+                        return false;
+                }
+                PreviousToken = s;
+            }
+            return IsFollowValid;
+        }
+        private bool IsNum(string token)
+        {
+            double i = 0;
+            if (double.TryParse(token, out i))
+                return true;
+            else
+                return false;
+        }
+        private bool IsOp(string token)
+        {
+            switch (token)
+            {
+                case "+":
+                    return true;
+                case "-":
+                    return true;
+                case "/":
+                    return true;
+                case "*":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        private bool IsLeftParen(string token)
+        {
+            if (token == "(")
+                return true;
+            else
+                return false;
+        }
+        private bool IsRightParen(string token)
+        {
+            if (token == ")")
+                return true;
+            else
+                return false;
+        }
+        private bool IsVariable(string token)
+        {
+            return false;
+        }
         /// <summary>
         /// Evaluates this Formula, using the lookup delegate to determine the values of
         /// variables.  When a variable symbol v needs to be determined, it should be looked up
