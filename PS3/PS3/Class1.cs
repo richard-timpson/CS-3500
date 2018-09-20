@@ -81,34 +81,12 @@ namespace SpreadsheetUtilities
         }
         private void AreTokensValid(IEnumerable<string> tokens)
         {
+
             foreach (string s in tokens)
             {
-                switch (s)
-                {
-                    case "(":
-                        break;
-                    case ")":
-                        break;
-                    case "+":
-                        break;
-                    case "-":
-                        break;
-                    case "*":
-                        break;
-                    case "/":
-                        break;
-                    default:
-                        String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
-                        double j = 0;
-                        bool isDouble = double.TryParse(s, out j);
+                if (!(IsNum(s) || IsOp(s) || IsParen(s) || IsVariable(s)))
+                    throw new FormulaFormatException("Expression contains invalid token");
 
-                        if (!Regex.IsMatch(s, varPattern) && !isDouble)
-                        {
-                            throw new FormulaFormatException("Expression contains invalid token");
-                        }
-                        break;
-
-                }
             }
         }
         private void CorrectNumOfParenthesis(IEnumerable<string> tokens)
@@ -228,9 +206,22 @@ namespace SpreadsheetUtilities
             else
                 return false;
         }
+        private bool IsParen(string token)
+        {
+            if (IsLeftParen(token) || IsRightParen(token))
+                return true;
+            else
+                return false;
+        }
         private bool IsVariable(string token)
         {
-            return false;
+            String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
+            if (!Regex.IsMatch(token, varPattern))
+            {
+                return false;
+            }
+            else
+                return true;
         }
         /// <summary>
         /// Evaluates this Formula, using the lookup delegate to determine the values of

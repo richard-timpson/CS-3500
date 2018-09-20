@@ -131,6 +131,56 @@ namespace FormulaClassTests
             Formula s = new Formula(expression);
         }
 
+        /// <summary>
+        /// Testing variables with letter followed by number and letter
+        /// </summary>
+        [TestMethod]
+        public void VariableTest8()
+        {
+            string expression = "2 + a1a";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing variables with letter followed by numbers and letters
+        /// </summary>
+        [TestMethod]
+        public void VariableTest9()
+        {
+            string expression = "2 + a1a1a1za";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing variables with letter followed by numbers and underscores
+        /// </summary>
+        [TestMethod]
+        public void VariableTest10()
+        {
+            string expression = "2 + a_1_1_1_1_1_1";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing variables with letter followed by  underscores and letters
+        /// </summary>
+        [TestMethod]
+        public void VariableTest11()
+        {
+            string expression = "2 + a_a_a_a_a_a_a";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing variables with letter followed by  underscores, letters, and numbers
+        /// </summary>
+        [TestMethod]
+        public void VariableTest12()
+        {
+            string expression = "2 + a_1_a_1_1_1_a";
+            Formula t = new Formula(expression);
+        }
+
 
         /// <summary>
         /// Testing variables and integers with addition
@@ -292,6 +342,17 @@ namespace FormulaClassTests
             Formula t = new Formula(expression);
         }
 
+
+        /// <summary>
+        /// Big stress test
+        /// </summary>
+        [TestMethod]
+        public void StressTest1()
+        {
+            string expression = "((((8+9 -4.34 +a123 - _45asdf / (12.567- v6))* (9-4.4 + _1) ) -2/3) * 4.5672345)";
+            Formula t = new Formula(expression);
+        }
+
     }
     [TestClass]
     public class InvalidExpressions
@@ -316,16 +377,7 @@ namespace FormulaClassTests
             string expression = "@ + 1";
             Formula t = new Formula(expression);
         }
-        /// <summary>
-        /// Testing a non-valid variable
-        /// </summary>
-        [TestMethod]
-        [ExpectedException(typeof(FormulaFormatException))]
-        public void VariableTest1()
-        {
-            string expression = "2 + a1a";
-            Formula t = new Formula(expression);
-        }
+        
 
         /// <summary>
         /// Testing a greater number of left parens that right parens. 
@@ -395,6 +447,96 @@ namespace FormulaClassTests
             string expression = "5 -1(";
             Formula t = new Formula(expression);
         }
+
+        /// <summary>
+        /// Testing if starting with number
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void VariableTest1()
+        {
+            string expression = "5 -1a";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if starting with letter is followed by parenthesis
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void VariableTest2()
+        {
+            string expression = "5 -a(1";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if starting with underscore is followed by parenthesis
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void VariableTest3()
+        {
+            string expression = "5 -_(1";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if starting with letter is followed by operator
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void VariableTest4()
+        {
+            string expression = "5 - a+";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if starting with letter is followed by random character
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void VariableTest5()
+        {
+            string expression = "5 - a*";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if starting with letter is followed by random character in midst of correct characters
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void VariableTest6()
+        {
+            string expression = "5 - a12345&";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if starting with underscore is followed operator
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void VariableTest7()
+        {
+            string expression = "5 - _-";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if starting with underscore is followed operator
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+
+        public void VariableTest8()
+        {
+            string expression = "5 - _-";
+            Formula t = new Formula(expression);
+        }
+
+
 
         /// <summary>
         /// Testing if opening paren or operator is not followed by number variable or opening paren
@@ -582,6 +724,17 @@ namespace FormulaClassTests
         public void InvalidExpressionTest2()
         {
             string expression = "(5 + 5";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Big stress test
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void StressTest1()
+        {
+            string expression = "((((8+9 -4.34 +a123 - _45asdf / (12.567- v6))* (9-4.4 + _1) ) -2/3) * 4.5672345))";
             Formula t = new Formula(expression);
         }
 
