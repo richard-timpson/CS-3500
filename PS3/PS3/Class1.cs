@@ -262,13 +262,6 @@ namespace SpreadsheetUtilities
                         double computedValue = PerformPlusMinusComputation(operatorStack, valueStack);
                         valueStack.Push(computedValue);
                     }
-
-                    //this is a checker for a valid formula, which we should need based on the formula constructor
-
-                    //if (operatorStack.IsOnTop(s))
-                    //{
-                    //    throw new ArgumentException("Parenthesis are not set up correctly");
-                    //}
                     operatorStack.Pop();
                     if (IsMultiplyOrDivideOnStack(operatorStack))
                     {
@@ -286,7 +279,6 @@ namespace SpreadsheetUtilities
                     {
                         double computedValue = PerformPlusMinusComputation(operatorStack, valueStack);
                         valueStack.Push(computedValue);
-
                     }
                     operatorStack.Push(s);
                 }
@@ -477,7 +469,9 @@ namespace SpreadsheetUtilities
                 case "/":
                     if (value2 == 0)
                     {
-                        throw new ArgumentException("Division by 0");
+                        throw new FormulaFormatException("Division by 0");
+                        //FormulaError error = new FormulaError("Division by 0")
+                        //return error;
                     }
                     return value1 / value2;
                 case "*":
@@ -497,10 +491,7 @@ namespace SpreadsheetUtilities
         /// <returns>The computed value</returns>
         public static double PerformPlusMinusComputation(Stack<string> operatorStack, Stack<double> valueStack)
         {
-            if (valueStack.Count < 2)
-            {
-                throw new ArgumentException("Trying to add or minus without enough values");
-            }
+
             // pop the top two values from the value stack
             double firstValue = valueStack.Pop();
             double secondValue = valueStack.Pop();
@@ -555,79 +546,14 @@ namespace SpreadsheetUtilities
         {
             if (IsMultiplyOrDivideOnStack(operatorStack))
             {
-                if (valueStack.Count == 0)
-                {
-                    throw new ArgumentException("Value stack is empty, trying to perform integer operation");
-                }
                 double computedValue = PerformMultiplyDivideComputation(operatorStack, valueStack, value, true);
                 valueStack.Push(computedValue);
             }
             else
                 valueStack.Push(value);
         }
-        /// <summary>
-        /// Checks if a token is a valid integer token. 
-        /// Will throw argument exception if it isn't. 
-        /// </summary>
-        /// <param name="token">The token to check</param>
-        /// <returns>0 if not valid, or the value of the integer if it is valid</returns>
-        public static bool TryTokenInt(string token, out int intToken)
-        {
 
-            bool isInt = int.TryParse(token, out intToken);
-            if (isInt && intToken < 0)
-                throw new ArgumentException("Integer token is negative");
-            return isInt;
-
-        }
-        /// <summary>
-        /// Checks if a token is a valid variable token. 
-        /// Will throw ArgumentExceptions if it isn't
-        /// </summary>
-        /// <param name="token"The token to check></param>
-        /// <returns>True if valid token. </returns>
-        public static bool IsValidTokenVariable(string token)
-        {
-            if (token.Length >= 2)
-            {
-                if (!Char.IsLetter(token[0]))
-                {
-                    throw new ArgumentException("The first character in the token variable is not a letter.");
-                }
-                else if (!Char.IsDigit(token[token.Length - 1]))
-                {
-                    throw new ArgumentException("The last character in the token variable is not an integer");
-                }
-                bool atNumbers = false;
-                char previous = 'a';
-                foreach (char c in token)
-                {
-                    if (!Char.IsLetter(c) && !Char.IsDigit(c))
-                    {
-                        throw new ArgumentException("Token variable contains character that is not a letter or a number");
-                    }
-                    else if (Char.IsLetter(c) && atNumbers && Char.IsDigit(previous))
-                    {
-                        throw new ArgumentException("Token variable does not end with a sequence of numbers");
-                    }
-                    else if (Char.IsDigit(c))
-                    {
-                        if (!atNumbers)
-                        {
-                            atNumbers = true;
-                            previous = c;
-                        }
-                        else
-                            previous = c;
-                    }
-                }
-            }
-            else
-            {
-                throw new ArgumentException("Token either needs to be one of 4 operands, a valid integer, or a valid variable.");
-            }
-            return true;
-        }
+        
     }
 
 
@@ -683,9 +609,9 @@ namespace SpreadsheetUtilities
         public static bool IsEmpty<t>(this Stack<t> stack)
         {
             if (stack.Count == 0)
-                return false;
-            else
                 return true;
+            else
+                return false;
                
         }
     }

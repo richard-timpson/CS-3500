@@ -353,13 +353,32 @@ namespace FormulaClassTests
             Formula t = new Formula(expression);
         }
 
+
+        /// <summary>
+        /// Simple add test
+        /// </summary>
         [TestMethod]
         public void EvaluateTest1()
         {
             string expression = "2+2";
             Formula t = new Formula(expression);
+            double correct_value = 4;
+            object value = t.Evaluate(s => 0);
+            Assert.AreEqual(correct_value, value);
+        }
 
-            double value = t.Evaluate()
+
+        /// <summary>
+        /// Divide by 0 test
+        /// </summary>
+        [TestMethod]
+        public void EvaluateTest2()
+        {
+            string expression = "2/(2-2)";
+            Formula t = new Formula(expression);
+            double correct_value = 4;
+            object value = t.Evaluate(s => 0);
+            Assert.AreEqual(correct_value, value);
         }
 
     }
