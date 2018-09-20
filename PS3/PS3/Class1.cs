@@ -25,6 +25,7 @@ namespace SpreadsheetUtilities
     /// </summary>
     public class Formula
     {
+        private IEnumerable<string> tokens = Enumerable.Empty<string>();
         /// <summary>
         /// Creates a Formula from a string that consists of an infix expression written as
         /// described in the class comment.  If the expression is syntactically invalid,
@@ -63,7 +64,7 @@ namespace SpreadsheetUtilities
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
 
-            IEnumerable<string> tokens = GetTokens(formula);
+            tokens = GetTokens(formula);
             IsTokensEmpty(tokens);
             AreTokensValid(tokens);
             CorrectNumOfParenthesis(tokens);
@@ -246,7 +247,66 @@ namespace SpreadsheetUtilities
         /// </summary>
         public object Evaluate(Func<string, double> lookup)
         {
-            return null;
+            Stack<string> operatorStack = new Stack<string>();
+            Stack<double> valueStack = new Stack<double>();
+            foreach (string s in tokens)
+            {
+                if (IsLeftParen(s))
+                {
+                    operatorStack.Push(s);
+                }
+                else if (IsRightParen(s))
+                {
+                    if (IsPlusOrMinusOnStack(operatorStack))
+                    {
+                        double computedValue = PerformPlusMinusComputation(operatorStack, valueStack);
+                        valueStack.Push(computedValue);
+                    }
+
+                    //this is a checker for a valid formula, which we should need based on the formula constructor
+
+                    //if (operatorStack.IsOnTop(s))
+                    //{
+                    //    throw new ArgumentException("Parenthesis are not set up correctly");
+                    //}
+                    operatorStack.Pop();
+                    if (IsMultiplyOrDivideOnStack(operatorStack))
+                    {
+                        double computedValue = PerformMultiplyDivideComputation(operatorStack, valueStack, 0, false);
+                        valueStack.Push(computedValue);
+                    }
+                }
+                else if (IsMultiplyOrDivide(s))
+                {
+                    operatorStack.Push(s);
+                }
+                else if (IsPlusOrMinus(s))
+                {
+                    if (IsPlusOrMinusOnStack(operatorStack))
+                    {
+                        double computedValue = PerformPlusMinusComputation(operatorStack, valueStack);
+                        valueStack.Push(computedValue);
+
+                    }
+                    operatorStack.Push(s);
+                }
+                else if (IsNum(s))
+                {
+                    double value = double.Parse(s);
+                    HandleIntOrVariable(operatorStack, valueStack, value);
+                }
+                else if (IsVariable(s))
+                {
+                    double value = lookup(s);
+                    HandleIntOrVariable(operatorStack, valueStack, value);
+                }
+            }
+
+            if (operatorStack.IsEmpty())
+                return valueStack.Pop();
+            else
+                return PerformPlusMinusComputation(operatorStack, valueStack);
+
         }
 
         /// <summary>
@@ -365,7 +425,211 @@ namespace SpreadsheetUtilities
             }
 
         }
+        private bool IsPlusOrMinus(string s)
+        {
+            if (s == "+" || s == "-")
+                return true;
+            else
+                return false;
+        }
+        private bool IsMultiplyOrDivide(string s)
+        {
+            if (s == "*" || s == "/")
+                return true;
+            else
+                return false;
+        }
+        /// <summary>
+        /// Checks the top of the stack, using the IsOnTop stack extension, to see if the variable is either a '+' or '-'
+        /// </summary>
+        /// <param name="operandStack">The operator stack to check</param>
+        /// <returns>True or False, based on the IsOnTop extension check for both operators</returns>
+        public static bool IsPlusOrMinusOnStack(Stack<string> operandStack)
+        {
+            return (operandStack.IsOnTop("+") || operandStack.IsOnTop("-"));
+        }
+        /// <summary>
+        /// Checks the top of the stack, using the IsOnTop stack extension, to see if the variable is either a '*' or '/'. 
+        /// Similar to IsMultiplyOrDivide
+        /// </summary>
+        /// <param name="operandStack">The operator stack to check</param>
+        /// <returns>True or False, based on the IsOnTop extension check for both operators</returns>
+        public static bool IsMultiplyOrDivideOnStack(Stack<string> operandStack)
+        {
+            return (operandStack.IsOnTop("*") || operandStack.IsOnTop("/"));
+        }
+        /// <summary>
+        /// Makes simple computations based on the values passed in and the operator to use. 
+        /// Similar to IsPlusOrMinus
+        /// </summary>
+        /// <param name="value1">One of the values for computation</param>
+        /// <param name="value2">The other value for computation</param>
+        /// <param name="op">The operation to perform</param>
+        /// <returns>The value of the computation after it is finished. If an incorrect operator was passed in, 0 will be returned</returns>
+        public static double ComputeValue(double value1, double value2, string op)
+        {
+            switch (op)
+            {
+                case "+":
+                    return value1 + value2;
+                case "-":
+                    return value1 - value2;
+                case "/":
+                    if (value2 == 0)
+                    {
+                        throw new ArgumentException("Division by 0");
+                    }
+                    return value1 / value2;
+                case "*":
+                    return value1 * value2;
+                default:
+                    return 0;
+            }
+        }
+        /// <summary>
+        /// Uses the Compute Value function to perform a plus or minus computation. 
+        /// It does so by popping two values from the valueStack given,
+        /// and using the operation from the operator stack. 
+        /// Similar to PerformMultiplyDivideComputation
+        /// </summary>
+        /// <param name="operatorStack">The operator </param>
+        /// <param name="valueStack">The value stack</param>
+        /// <returns>The computed value</returns>
+        public static double PerformPlusMinusComputation(Stack<string> operatorStack, Stack<double> valueStack)
+        {
+            if (valueStack.Count < 2)
+            {
+                throw new ArgumentException("Trying to add or minus without enough values");
+            }
+            // pop the top two values from the value stack
+            double firstValue = valueStack.Pop();
+            double secondValue = valueStack.Pop();
+
+            //pop the operator from the operator stack
+            string op = operatorStack.Pop();
+
+            //compute value
+            double computedValue = ComputeValue(secondValue, firstValue, op);
+
+            return computedValue;
+        }
+        /// <summary>
+        /// Uses the Compute Value function to perform a plus or minus computation. 
+        /// It does so by popping two values from the valueStack given,
+        /// or by popping only one value from the valueStack, and using a value passed in.
+        /// Similar to PerformMultiplyDivideComputation
+        /// </summary>
+        /// <param name="operatorStack">Operator Stack</param>
+        /// <param name="valueStack">Value Stack</param>
+        /// <param name="value">Value to use for computation, only if you don't want to use two variables from value stack</param>
+        /// <param name="isTokenInt">If True, it will assume the value passed will be used for computation. If false, it will calculate with two values from value stack</param>
+        /// <returns></returns>
+        public static double PerformMultiplyDivideComputation(Stack<string> operatorStack, Stack<double> valueStack, double value, bool isTokenInt)
+        {
+            // if the token is an integer, perform the multiply/divide computation by taking in a variable, and popping from stack
+            if (isTokenInt)
+            {
+                double stackValue = valueStack.Pop();
+                string op = operatorStack.Pop();
+                double computedValue = ComputeValue(stackValue, value, op);
+                return computedValue;
+            }
+            // if the token is not an integer, and a ')', perform the multiply/divide computation by popping the two values from the valuestack, and performing computation
+            else
+            {
+                double firstValue = valueStack.Pop();
+                double secondValue = valueStack.Pop();
+                string op = operatorStack.Pop();
+                double computedValue = ComputeValue(secondValue, firstValue, op);
+                return computedValue;
+            }
+
+        }
+        /// <summary>
+        /// Performs the same computation for both integers and variables, when given the value. 
+        /// </summary>
+        /// <param name="operatorStack">Operator Stack</param>
+        /// <param name="valueStack">value Stack</param>
+        /// <param name="value">The value used for the computation. should come from integer token or variable token</param>
+        public static void HandleIntOrVariable(Stack<string> operatorStack, Stack<double> valueStack, double value)
+        {
+            if (IsMultiplyOrDivideOnStack(operatorStack))
+            {
+                if (valueStack.Count == 0)
+                {
+                    throw new ArgumentException("Value stack is empty, trying to perform integer operation");
+                }
+                double computedValue = PerformMultiplyDivideComputation(operatorStack, valueStack, value, true);
+                valueStack.Push(computedValue);
+            }
+            else
+                valueStack.Push(value);
+        }
+        /// <summary>
+        /// Checks if a token is a valid integer token. 
+        /// Will throw argument exception if it isn't. 
+        /// </summary>
+        /// <param name="token">The token to check</param>
+        /// <returns>0 if not valid, or the value of the integer if it is valid</returns>
+        public static bool TryTokenInt(string token, out int intToken)
+        {
+
+            bool isInt = int.TryParse(token, out intToken);
+            if (isInt && intToken < 0)
+                throw new ArgumentException("Integer token is negative");
+            return isInt;
+
+        }
+        /// <summary>
+        /// Checks if a token is a valid variable token. 
+        /// Will throw ArgumentExceptions if it isn't
+        /// </summary>
+        /// <param name="token"The token to check></param>
+        /// <returns>True if valid token. </returns>
+        public static bool IsValidTokenVariable(string token)
+        {
+            if (token.Length >= 2)
+            {
+                if (!Char.IsLetter(token[0]))
+                {
+                    throw new ArgumentException("The first character in the token variable is not a letter.");
+                }
+                else if (!Char.IsDigit(token[token.Length - 1]))
+                {
+                    throw new ArgumentException("The last character in the token variable is not an integer");
+                }
+                bool atNumbers = false;
+                char previous = 'a';
+                foreach (char c in token)
+                {
+                    if (!Char.IsLetter(c) && !Char.IsDigit(c))
+                    {
+                        throw new ArgumentException("Token variable contains character that is not a letter or a number");
+                    }
+                    else if (Char.IsLetter(c) && atNumbers && Char.IsDigit(previous))
+                    {
+                        throw new ArgumentException("Token variable does not end with a sequence of numbers");
+                    }
+                    else if (Char.IsDigit(c))
+                    {
+                        if (!atNumbers)
+                        {
+                            atNumbers = true;
+                            previous = c;
+                        }
+                        else
+                            previous = c;
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Token either needs to be one of 4 operands, a valid integer, or a valid variable.");
+            }
+            return true;
+        }
     }
+
 
     /// <summary>
     /// Used to report syntactic errors in the argument to the Formula constructor.
@@ -400,5 +664,29 @@ namespace SpreadsheetUtilities
         ///  The reason why this FormulaError was created.
         /// </summary>
         public string Reason { get; private set; }
+    }
+    static class Extensions
+    {
+        /// <summary>
+        /// Extension for the stack class to check if a certain value is at the top of the stack. 
+        /// </summary>
+        /// <typeparam name="t"></typeparam>
+        /// <param name="stack">The stack to check</param>
+        /// <param name="op">The value to check</param>
+        /// <returns>True or false, depending on the value of the stack peek and the value passed in. </returns>
+        public static bool IsOnTop<t>(this Stack<t> stack, t op)
+        {
+            if (stack.Count == 0)
+                return false;
+            return stack.Peek().Equals(op);
+        }
+        public static bool IsEmpty<t>(this Stack<t> stack)
+        {
+            if (stack.Count == 0)
+                return false;
+            else
+                return true;
+               
+        }
     }
 }

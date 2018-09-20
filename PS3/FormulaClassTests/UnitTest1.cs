@@ -353,6 +353,15 @@ namespace FormulaClassTests
             Formula t = new Formula(expression);
         }
 
+        [TestMethod]
+        public void EvaluateTest1()
+        {
+            string expression = "2+2";
+            Formula t = new Formula(expression);
+
+            double value = t.Evaluate()
+        }
+
     }
     [TestClass]
     public class InvalidExpressions
