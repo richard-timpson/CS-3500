@@ -138,8 +138,7 @@ namespace SpreadsheetUtilities
         private void FirstTokenIsValid(IEnumerable<string> tokens)
         {
             string s = tokens.First();
-            int i = 0;
-            if (!int.TryParse(s, out i) && !(s == "(") && !IsVariable(s))
+            if (!IsNum(s) && !(s == "(") && !IsVariable(s))
             {
                 throw new FormulaFormatException("The first token in the expression is not valid");
             }
@@ -147,8 +146,7 @@ namespace SpreadsheetUtilities
         private void LastTokenIsValid(IEnumerable<string> tokens)
         {
             string s = tokens.Last();
-            int i = 0;
-            if (!int.TryParse(s, out i) && !(s == ")") && !IsVariable(s))
+            if (!IsNum(s) && !(s == ")") && !IsVariable(s))
             {
                 throw new FormulaFormatException("The last token in the expression is not valid");
             }

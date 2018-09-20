@@ -160,6 +160,138 @@ namespace FormulaClassTests
             Formula t = new Formula(expression);
         }
 
+        /// <summary>
+        /// Testing if an opening paren or operator is followed by a number, variable, or opening parenthesis.
+        /// In this case testing with opening parenthesis and number
+        /// </summary>
+        [TestMethod]
+        public void FollowCategory1Test1()
+        {
+            string expression = "(8 + 8)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if an opening paren or operator is followed by a number, variable, or opening parenthesis.
+        /// In this case testing with opening parenthesis and variable
+        /// </summary>
+        [TestMethod]
+        public void FollowCategory1Test2()
+        {
+            string expression = "(a1 + 8)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if an opening paren or operator is followed by a number, variable, or opening parenthesis.
+        /// In this case testing with opening parenthesis and variable
+        /// </summary>
+        [TestMethod]
+        public void FollowCategory1Test3()
+        {
+            string expression = "((a1 + 8))";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if an opening paren or operator is followed by a number, variable, or opening parenthesis.
+        /// In this case testing with an operator and number
+        /// </summary>
+        [TestMethod]
+        public void FollowCategory1Test4()
+        {
+            string expression = "(a1 + 8)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if an opening paren or operator is followed by a number, variable, or opening parenthesis.
+        /// In this case testing with an operator and variable
+        /// </summary>
+        [TestMethod]
+        public void FollowCategory1Test5()
+        {
+            string expression = "(a1 + a1)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if an opening paren or operator is followed by a number, variable, or opening parenthesis.
+        /// In this case testing with an operator and opening parenthesis
+        /// </summary>
+        [TestMethod]
+        public void FollowCategory1Test6()
+        {
+            string expression = "(a1 + (1 + 1))";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if a number, variable, or closing paren is followed by operator or closing paren
+        /// in this case testing with a number and an operator
+        /// </summary>
+        [TestMethod]
+        public void FollowCategory2Test1()
+        {
+            string expression = "8 + 8";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if a number, variable, or closing paren is followed by operator or closing paren
+        /// In this case testing with a number and closing paren
+        /// </summary>
+        [TestMethod]
+        public void FollowCategory2Test2()
+        {
+            string expression = "(8) + (8)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if a number, variable, or closing paren is followed by operator or closing paren
+        /// In this case testing with a variable and an operator
+        /// </summary>
+        [TestMethod]
+        public void FollowCategory2Test3()
+        {
+            string expression = "a1 + a1";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if a number, variable, or closing paren is followed by operator or closing paren
+        /// In this case testing with a variable and a closing paren
+        /// </summary>
+        [TestMethod]
+        public void FollowCategory2Test4()
+        {
+            string expression = "(a1) + (a1)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if a number, variable, or closing paren is followed by operator or closing paren
+        /// In this case testing with a closing paren and an operator
+        /// </summary>
+        [TestMethod]
+        public void FollowCategory2Test5()
+        {
+            string expression = "(8+9) + (8+9)";
+            Formula t = new Formula(expression);
+        }
+
+        /// <summary>
+        /// Testing if a number, variable, or closing paren is followed by operator or closing paren
+        /// In this case testing with a closing paren and a closing paren
+        /// </summary>
+        [TestMethod]
+        public void FollowCategory2Test6()
+        {
+            string expression = "((8+9) + (8+9))";
+            Formula t = new Formula(expression);
+        }
+
     }
     [TestClass]
     public class InvalidExpressions
