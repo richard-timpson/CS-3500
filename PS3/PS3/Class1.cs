@@ -25,7 +25,8 @@ namespace SpreadsheetUtilities
     /// </summary>
     public class Formula
     {
-        private IEnumerable<string> tokens = Enumerable.Empty<string>();
+        private IEnumerable<string> FormulaTokens = Enumerable.Empty<string>();
+        private List<string> ValidTokens = new List<string>();
         /// <summary>
         /// Creates a Formula from a string that consists of an infix expression written as
         /// described in the class comment.  If the expression is syntactically invalid,
@@ -63,56 +64,78 @@ namespace SpreadsheetUtilities
         /// </summary>
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
-            formula = normalize(formula);
-            tokens = GetTokens(formula);
+            FormulaTokens = GetTokens(formula);
+            IsTokensEmpty(FormulaTokens);
+            FirstTokenIsValid(FormulaTokens);
+            LastTokenIsValid(FormulaTokens);
 
-            IsTokensEmpty(tokens);
-            AreTokensValid(tokens);
-            CorrectNumOfParenthesis(tokens);
-            FirstTokenIsValid(tokens);
-            LastTokenIsValid(tokens);
-            FollowTokensAreValid(tokens);
 
+            int NumOfLeft = 0;
+            int NumOfRight = 0;
+            string PreviousToken = "";
+            foreach (string s in FormulaTokens)
+            {
+                //Checking for valid token, including valid variable
+                //IsTokenValid
+                ValidateToken(s, normalize, isValid);
+
+                //Checking the previous tokens and comparing to current tokens. Throwing exceptions if needed
+                FollowTokensAreValid(s, PreviousToken);
+                
+                //checking the current token, counting the number of parenthesis, throwing exception if needed. 
+                if (IsLeftParen(s))
+                    NumOfLeft++;
+
+                if (IsRightParen(s))
+                    NumOfRight++;
+
+                //If at any point the number of right is greater than the number of left, throw exception
+                if (NumOfRight > NumOfLeft)
+                    throw new FormulaFormatException("Incorrect usage of parenthesis");
+
+                //setting for iterative checks. 
+                PreviousToken = s;
+            }
+
+            //At the end of loop, if the number of parens is not equal, throw exception. 
+            if (!(NumOfLeft == NumOfRight))
+                throw new FormulaFormatException("Incorrect usage of parenthesis");
+        }
+        private void FollowTokensAreValid(string current, string previous)
+        {
+            if (IsNum(previous) || IsVariable(previous) || IsRightParen(previous))
+            {
+                if (!(IsOp(current) || IsRightParen(current)))
+                    throw new FormulaFormatException("The expression is invalid. Consider checking correct use of parenthesis and operators.");
+            }
+            else if (IsLeftParen(previous) || IsOp(previous))
+            {
+                if (!(IsNum(current) || IsVariable(current) || IsLeftParen(current)))
+                    throw new FormulaFormatException("The expression is invalid. Consider checking correct use of parenthesis and operators.");
+            }
+        }
+        private bool ValidateToken(string s, Func<string,string> normalize, Func<string,bool> isValid)
+        {
+            //is valid token
+            if (!(IsNum(s) || IsOp(s) || IsParen(s) || IsVariable(s)))
+                throw new FormulaFormatException("Expression contains invalid token");
+
+            //is valid variable
+            if (IsVariable(s) && !isValid(normalize(s)))
+                throw new FormulaFormatException("The expression is invalid. Contains illegal variable");
+            else if (IsVariable(s) && isValid(normalize(s)))
+                ValidTokens.Add(s);
+            else if (IsNum(s))
+            {
+                s.To
+            }
+            return true;
         }
         private void IsTokensEmpty(IEnumerable<string> tokens)
         {
             if (tokens.Count() == 0 )
             {
                 throw new FormulaFormatException("Need at least one token in expression");
-            }
-        }
-        private void AreTokensValid(IEnumerable<string> tokens)
-        {
-
-            foreach (string s in tokens)
-            {
-                if (!(IsNum(s) || IsOp(s) || IsParen(s) || IsVariable(s)))
-                    throw new FormulaFormatException("Expression contains invalid token");
-
-            }
-        }
-        private void CorrectNumOfParenthesis(IEnumerable<string> tokens)
-        {
-            int NumOfLeft = 0;
-            int NumOfRight = 0;
-            foreach (string s in tokens)
-            {
-                if (s == "(")
-                {
-                    NumOfLeft++;
-                }
-                if (s == ")")
-                {
-                    NumOfRight++;
-                }
-                if (NumOfRight > NumOfLeft)
-                {
-                    throw new FormulaFormatException("Incorrect usage of parenthesis");
-                }
-            }
-            if (!(NumOfLeft == NumOfRight))
-            {
-                throw new FormulaFormatException("Incorrect usage of parenthesis");
             }
         }
         private void FirstTokenIsValid(IEnumerable<string> tokens)
@@ -131,45 +154,7 @@ namespace SpreadsheetUtilities
                 throw new FormulaFormatException("The last token in the expression is not valid");
             }
         }
-        private void FollowTokensAreValid(IEnumerable<string> tokens)
-        {
-            if (!(FollowParenOrOp(tokens) && FollowNumOrVarOrOp(tokens)))
-                throw new FormulaFormatException("The expression is invalid. Consider checking correct use of parenthesis and operators.");
-        }
-        private bool FollowParenOrOp(IEnumerable<string> tokens)
-        {
-            bool IsFollowValid = true;
-            string PreviousToken = "";
-            foreach (string s in tokens)
-            {
-                if (IsLeftParen(PreviousToken) || IsOp(PreviousToken))
-                {
-                    if (IsNum(s) || IsVariable(s) || IsLeftParen(s))
-                        IsFollowValid = true;
-                    else
-                        return false;
-                }
-                PreviousToken = s;
-            }
-            return IsFollowValid;
-        }
-        private bool FollowNumOrVarOrOp(IEnumerable<string> tokens)
-        {
-            bool IsFollowValid = true;
-            string PreviousToken = "";
-            foreach (string s in tokens)
-            {
-                if (IsNum(PreviousToken) || IsVariable(PreviousToken) || IsRightParen(PreviousToken))
-                {
-                    if (IsOp(s) || IsRightParen(s))
-                        IsFollowValid = true;
-                    else
-                        return false;
-                }
-                PreviousToken = s;
-            }
-            return IsFollowValid;
-        }
+
         private bool IsNum(string token)
         {
             double i = 0;
@@ -252,7 +237,7 @@ namespace SpreadsheetUtilities
             Stack<double> valueStack = new Stack<double>();
             try
             {
-                foreach (string s in tokens)
+                foreach (string s in ValidTokens)
                 {
                     if (IsLeftParen(s))
                     {
@@ -328,7 +313,7 @@ namespace SpreadsheetUtilities
         /// </summary>
         public IEnumerable<String> GetVariables()
         {
-            HashSet<string> DistinctTokens = new HashSet<string>(tokens);
+            HashSet<string> DistinctTokens = new HashSet<string>(ValidTokens);
 
             foreach (string s in DistinctTokens)
             {
@@ -349,7 +334,12 @@ namespace SpreadsheetUtilities
         /// </summary>
         public override string ToString()
         {
-            return null;
+            StringBuilder builder = new StringBuilder();
+            foreach (string s in ValidTokens)
+            {
+                builder.Append(s);
+            }
+            return builder.ToString();
         }
 
         /// <summary>
@@ -374,8 +364,16 @@ namespace SpreadsheetUtilities
         /// </summary>
         public override bool Equals(object obj)
         {
-            return false;
+            string ObjectString = ToString();
+            string OtherString = obj.ToString();
+
+            if (ObjectString.Equals(OtherString))
+                return true;
+            else
+                return false;
         }
+
+        
 
         /// <summary>
         /// Reports whether f1 == f2, using the notion of equality from the Equals method.
@@ -404,7 +402,8 @@ namespace SpreadsheetUtilities
         /// </summary>
         public override int GetHashCode()
         {
-            return 0;
+            string s = ToString();
+            return s.GetHashCode();
         }
 
         /// <summary>
