@@ -114,22 +114,25 @@ namespace SpreadsheetUtilities
                     throw new FormulaFormatException("The expression is invalid. Consider checking correct use of parenthesis and operators.");
             }
         }
-        private bool ValidateToken(string s, Func<string,string> normalize, Func<string,bool> isValid)
+        private void ValidateToken(string s, Func<string,string> normalize, Func<string,bool> isValid)
         {
             //is valid token
             if (!(IsNum(s) || IsOp(s) || IsParen(s) || IsVariable(s)))
                 throw new FormulaFormatException("Expression contains invalid token");
 
-            //is valid variable
-            if (IsVariable(s) && !isValid(normalize(s)))
-                throw new FormulaFormatException("The expression is invalid. Contains illegal variable");
-            else if (IsVariable(s) && isValid(normalize(s)))
-                ValidTokens.Add(s);
-            else if (IsNum(s))
+            //is variable
+            if (IsVariable(s))
             {
-                s.To
+                string normal = normalize(s);
+                if (isValid(normal))
+                    ValidTokens.Add(normal);
+                else
+                    throw new FormulaFormatException("The expression is invalid. Contains illegal variable");
             }
-            return true;
+            else
+            {
+                ValidTokens.Add(s);
+            }
         }
         private void IsTokensEmpty(IEnumerable<string> tokens)
         {
@@ -141,7 +144,7 @@ namespace SpreadsheetUtilities
         private void FirstTokenIsValid(IEnumerable<string> tokens)
         {
             string s = tokens.First();
-            if (!IsNum(s) && !(s == "(") && !IsVariable(s))
+            if (!IsNum(s) && !IsLeftParen(s) && !IsVariable(s))
             {
                 throw new FormulaFormatException("The first token in the expression is not valid");
             }
@@ -149,7 +152,7 @@ namespace SpreadsheetUtilities
         private void LastTokenIsValid(IEnumerable<string> tokens)
         {
             string s = tokens.Last();
-            if (!IsNum(s) && !(s == ")") && !IsVariable(s))
+            if (!IsNum(s) && !IsRightParen(s) && !IsVariable(s))
             {
                 throw new FormulaFormatException("The last token in the expression is not valid");
             }
@@ -337,7 +340,13 @@ namespace SpreadsheetUtilities
             StringBuilder builder = new StringBuilder();
             foreach (string s in ValidTokens)
             {
-                builder.Append(s);
+                if (IsNum(s))
+                {
+                    string DoubleString = double.Parse(s).ToString();
+                    builder.Append(DoubleString);
+                }
+                else
+                    builder.Append(s);
             }
             return builder.ToString();
         }
@@ -364,13 +373,17 @@ namespace SpreadsheetUtilities
         /// </summary>
         public override bool Equals(object obj)
         {
-            string ObjectString = ToString();
-            string OtherString = obj.ToString();
+            if (obj.GetType() == typeof(Formula))
+            {
+                string ObjectString = ToString();
+                string OtherString = obj.ToString();
 
-            if (ObjectString.Equals(OtherString))
-                return true;
-            else
-                return false;
+                if (ObjectString.Equals(OtherString))
+                    return true;
+                else
+                    return false;
+            }
+            return false;
         }
 
         
@@ -382,7 +395,10 @@ namespace SpreadsheetUtilities
         /// </summary>
         public static bool operator ==(Formula f1, Formula f2)
         {
-            return false;
+            if (!ReferenceEquals(f1, null) && f1.Equals(f2) || (ReferenceEquals(f1, null) && ReferenceEquals(f2, null)))
+                return true;
+            else
+                return false;
         }
 
         /// <summary>
@@ -392,7 +408,7 @@ namespace SpreadsheetUtilities
         /// </summary>
         public static bool operator !=(Formula f1, Formula f2)
         {
-            return false;
+            return !(f1 == f2);
         }
 
         /// <summary>

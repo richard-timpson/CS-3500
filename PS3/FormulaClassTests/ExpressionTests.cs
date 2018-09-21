@@ -435,7 +435,28 @@ namespace ExpressionTests
             string expression = "@ + 1";
             Formula t = new Formula(expression);
         }
-        
+
+        /// <summary>
+        /// Testing a non-valid token
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TokenTest2()
+        {
+            string expression = "1 + @ + 1";
+            Formula t = new Formula(expression);
+        }
+        /// <summary>
+        /// Testing a non-valid token
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void IsValidTest()
+        {
+            string expression = "a1 + 1";
+            Formula t = new Formula(expression, s=> s, s=> false);
+        }
+
 
         /// <summary>
         /// Testing a greater number of left parens that right parens. 
@@ -782,6 +803,13 @@ namespace ExpressionTests
         public void InvalidExpressionTest2()
         {
             string expression = "(5 + 5";
+            Formula t = new Formula(expression);
+        }
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void InvalidExpressionTest3()
+        {
+            string expression = "@ + 5";
             Formula t = new Formula(expression);
         }
 
