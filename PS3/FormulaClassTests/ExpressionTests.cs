@@ -1,4 +1,10 @@
-﻿using System;
+﻿/* Richard Timpson
+ * CS 3500 - Software practice
+ * Tests for the formula contrusctor in PS3
+ * September 21st, 2018
+ */
+
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 
@@ -790,7 +796,9 @@ namespace ExpressionTests
             Formula t = new Formula(expression);
         }
 
-
+        /// <summary>
+        /// Testing nothing after operator
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
         public void InvalidExpressionTest1()
@@ -798,6 +806,11 @@ namespace ExpressionTests
             string expression = "5 + ";
             Formula t = new Formula(expression);
         }
+
+
+        /// <summary>
+        /// Testing no closing paren
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
         public void InvalidExpressionTest2()
@@ -805,13 +818,7 @@ namespace ExpressionTests
             string expression = "(5 + 5";
             Formula t = new Formula(expression);
         }
-        [TestMethod]
-        [ExpectedException(typeof(FormulaFormatException))]
-        public void InvalidExpressionTest3()
-        {
-            string expression = "@ + 5";
-            Formula t = new Formula(expression);
-        }
+
 
         /// <summary>
         /// Big stress test

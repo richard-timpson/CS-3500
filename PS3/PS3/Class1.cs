@@ -1,4 +1,11 @@
-﻿using System;
+﻿/* Richard Timpson
+ * CS 3500 - Software practice
+ * The Formula class for eventual spreadsheet. Main code for PS3
+ * September 21st, 2018
+ */
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -75,8 +82,7 @@ namespace SpreadsheetUtilities
             string PreviousToken = "";
             foreach (string s in FormulaTokens)
             {
-                //Checking for valid token, including valid variable
-                //IsTokenValid
+                //Checking for valid token, including valid variable. will add token to ValidTokens List if true
                 ValidateToken(s, normalize, isValid);
 
                 //Checking the previous tokens and comparing to current tokens. Throwing exceptions if needed
@@ -101,118 +107,7 @@ namespace SpreadsheetUtilities
             if (!(NumOfLeft == NumOfRight))
                 throw new FormulaFormatException("Incorrect usage of parenthesis");
         }
-        private void FollowTokensAreValid(string current, string previous)
-        {
-            if (IsNum(previous) || IsVariable(previous) || IsRightParen(previous))
-            {
-                if (!(IsOp(current) || IsRightParen(current)))
-                    throw new FormulaFormatException("The expression is invalid. Consider checking correct use of parenthesis and operators.");
-            }
-            else if (IsLeftParen(previous) || IsOp(previous))
-            {
-                if (!(IsNum(current) || IsVariable(current) || IsLeftParen(current)))
-                    throw new FormulaFormatException("The expression is invalid. Consider checking correct use of parenthesis and operators.");
-            }
-        }
-        private void ValidateToken(string s, Func<string,string> normalize, Func<string,bool> isValid)
-        {
-            //is valid token
-            if (!(IsNum(s) || IsOp(s) || IsParen(s) || IsVariable(s)))
-                throw new FormulaFormatException("Expression contains invalid token");
-
-            //is variable
-            if (IsVariable(s))
-            {
-                string normal = normalize(s);
-                if (isValid(normal))
-                    ValidTokens.Add(normal);
-                else
-                    throw new FormulaFormatException("The expression is invalid. Contains illegal variable");
-            }
-            else
-            {
-                ValidTokens.Add(s);
-            }
-        }
-        private void IsTokensEmpty(IEnumerable<string> tokens)
-        {
-            if (tokens.Count() == 0 )
-            {
-                throw new FormulaFormatException("Need at least one token in expression");
-            }
-        }
-        private void FirstTokenIsValid(IEnumerable<string> tokens)
-        {
-            string s = tokens.First();
-            if (!IsNum(s) && !IsLeftParen(s) && !IsVariable(s))
-            {
-                throw new FormulaFormatException("The first token in the expression is not valid");
-            }
-        }
-        private void LastTokenIsValid(IEnumerable<string> tokens)
-        {
-            string s = tokens.Last();
-            if (!IsNum(s) && !IsRightParen(s) && !IsVariable(s))
-            {
-                throw new FormulaFormatException("The last token in the expression is not valid");
-            }
-        }
-
-        private bool IsNum(string token)
-        {
-            double i = 0;
-            if (double.TryParse(token, out i))
-                return true;
-            else
-                return false;
-        }
-        private bool IsOp(string token)
-        {
-            switch (token)
-            {
-                case "+":
-                    return true;
-                case "-":
-                    return true;
-                case "/":
-                    return true;
-                case "*":
-                    return true;
-                default:
-                    return false;
-            }
-        }
-        private bool IsLeftParen(string token)
-        {
-            if (token == "(")
-                return true;
-            else
-                return false;
-        }
-        private bool IsRightParen(string token)
-        {
-            if (token == ")")
-                return true;
-            else
-                return false;
-        }
-        private bool IsParen(string token)
-        {
-            if (IsLeftParen(token) || IsRightParen(token))
-                return true;
-            else
-                return false;
-        }
-        private bool IsVariable(string token)
-        {
-            String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
-            if (!Regex.IsMatch(token, varPattern))
-            {
-                return false;
-            }
-            else
-                return true;
-        }
+        
         /// <summary>
         /// Evaluates this Formula, using the lookup delegate to determine the values of
         /// variables.  When a variable symbol v needs to be determined, it should be looked up
@@ -238,6 +133,9 @@ namespace SpreadsheetUtilities
         {
             Stack<string> operatorStack = new Stack<string>();
             Stack<double> valueStack = new Stack<double>();
+            //Using a try catch to catch a divide by 0 error, or an argument exception error from the lookup
+            //If these exceptions are caught, it will return a formula error. 
+            //If not, it will return a double. 
             try
             {
                 foreach (string s in ValidTokens)
@@ -284,6 +182,8 @@ namespace SpreadsheetUtilities
                         HandleIntOrVariable(operatorStack, valueStack, value);
                     }
                 }
+                //End of for loop
+
                 if (operatorStack.IsEmpty())
                     return valueStack.Pop();
                 else
@@ -452,6 +352,207 @@ namespace SpreadsheetUtilities
             }
 
         }
+
+        /******************************************
+         * Helper Methods for Expression Constructor
+         * *****************************************/
+
+
+
+        /// <summary>
+        /// The main logic for checking if an expression is valid or not. 
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="previous"></param>
+        private void FollowTokensAreValid(string current, string previous)
+        {
+            if (IsNum(previous) || IsVariable(previous) || IsRightParen(previous))
+            {
+                if (!(IsOp(current) || IsRightParen(current)))
+                    throw new FormulaFormatException("The expression is invalid. Consider checking correct use of parenthesis and operators.");
+            }
+            else if (IsLeftParen(previous) || IsOp(previous))
+            {
+                if (!(IsNum(current) || IsVariable(current) || IsLeftParen(current)))
+                    throw new FormulaFormatException("The expression is invalid. Consider checking correct use of parenthesis and operators.");
+            }
+        }
+
+
+        /// <summary>
+        /// This checks if a token is valid. If it isn't, it will throw an exception
+        /// If it is, it will add it to the ValidTokens List
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="normalize"></param>
+        /// <param name="isValid"></param>
+        private void ValidateToken(string s, Func<string, string> normalize, Func<string, bool> isValid)
+        {
+            //is valid token
+            if (!(IsNum(s) || IsOp(s) || IsParen(s) || IsVariable(s)))
+                throw new FormulaFormatException("Expression contains invalid token");
+
+            //is variable
+            if (IsVariable(s))
+            {
+                string normal = normalize(s);
+                if (isValid(normal))
+                    ValidTokens.Add(normal);
+                else
+                    throw new FormulaFormatException("The expression is invalid. Contains illegal variable");
+            }
+            else
+            {
+                ValidTokens.Add(s);
+            }
+        }
+
+        /// <summary>
+        /// checking if an enumerable, in this case tokens, is empty
+        /// </summary>
+        /// <param name="tokens"></param>
+        private void IsTokensEmpty(IEnumerable<string> tokens)
+        {
+            if (tokens.Count() == 0)
+            {
+                throw new FormulaFormatException("Need at least one token in expression");
+            }
+        }
+
+        /// <summary>
+        /// checking for valid first token. that is, a number, left paren, or variable
+        /// </summary>
+        /// <param name="tokens"></param>
+        private void FirstTokenIsValid(IEnumerable<string> tokens)
+        {
+            string s = tokens.First();
+            if (!IsNum(s) && !IsLeftParen(s) && !IsVariable(s))
+            {
+                throw new FormulaFormatException("The first token in the expression is not valid");
+            }
+        }
+
+
+        /// <summary>
+        /// checking for valid last token, that is, a number, a right paren, or a variable. 
+        /// </summary>
+        /// <param name="tokens"></param>
+        private void LastTokenIsValid(IEnumerable<string> tokens)
+        {
+            string s = tokens.Last();
+            if (!IsNum(s) && !IsRightParen(s) && !IsVariable(s))
+            {
+                throw new FormulaFormatException("The last token in the expression is not valid");
+            }
+        }
+
+
+        /// <summary>
+        /// Checking if the token is a number.
+        /// It will correclty compute scientific notation
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private bool IsNum(string token)
+        {
+            double i = 0;
+            if (double.TryParse(token, out i))
+                return true;
+            else
+                return false;
+        }
+
+
+        /// <summary>
+        /// checking if an expression is a valid operator
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private bool IsOp(string token)
+        {
+            switch (token)
+            {
+                case "+":
+                    return true;
+                case "-":
+                    return true;
+                case "/":
+                    return true;
+                case "*":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Checking if token is left paren
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private bool IsLeftParen(string token)
+        {
+            if (token == "(")
+                return true;
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Checking if token is right paren
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private bool IsRightParen(string token)
+        {
+            if (token == ")")
+                return true;
+            else
+                return false;
+        }
+
+
+        /// <summary>
+        /// Checking if token is parentheses in general
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private bool IsParen(string token)
+        {
+            if (IsLeftParen(token) || IsRightParen(token))
+                return true;
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Checking if token is a variable, using the regex expression from GetTokens. 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private bool IsVariable(string token)
+        {
+            String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
+            if (!Regex.IsMatch(token, varPattern))
+            {
+                return false;
+            }
+            else
+                return true;
+        }
+
+        /****************************************
+         * Helper Methods for Evaluator
+         * *****************************/
+
+
+
+
+        /// <summary>
+        /// Checking if the operator passed in, not the stack, is plus or minus
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         private bool IsPlusOrMinus(string s)
         {
             if (s == "+" || s == "-")
@@ -459,6 +560,13 @@ namespace SpreadsheetUtilities
             else
                 return false;
         }
+
+
+        /// <summary>
+        /// checking if operator passed in, not the stack, is plus or minus
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         private bool IsMultiplyOrDivide(string s)
         {
             if (s == "*" || s == "/")
@@ -466,6 +574,8 @@ namespace SpreadsheetUtilities
             else
                 return false;
         }
+
+
         /// <summary>
         /// Checks the top of the stack, using the IsOnTop stack extension, to see if the variable is either a '+' or '-'
         /// </summary>
@@ -475,6 +585,8 @@ namespace SpreadsheetUtilities
         {
             return (operandStack.IsOnTop("+") || operandStack.IsOnTop("-"));
         }
+
+
         /// <summary>
         /// Checks the top of the stack, using the IsOnTop stack extension, to see if the variable is either a '*' or '/'. 
         /// Similar to IsMultiplyOrDivide
@@ -485,6 +597,9 @@ namespace SpreadsheetUtilities
         {
             return (operandStack.IsOnTop("*") || operandStack.IsOnTop("/"));
         }
+
+
+
         /// <summary>
         /// Makes simple computations based on the values passed in and the operator to use. 
         /// Similar to IsPlusOrMinus
@@ -513,6 +628,9 @@ namespace SpreadsheetUtilities
                     return 0;
             }
         }
+
+
+
         /// <summary>
         /// Uses the Compute Value function to perform a plus or minus computation. 
         /// It does so by popping two values from the valueStack given,
@@ -537,6 +655,9 @@ namespace SpreadsheetUtilities
 
             return computedValue;
         }
+
+
+
         /// <summary>
         /// Uses the Compute Value function to perform a plus or minus computation. 
         /// It does so by popping two values from the valueStack given,
@@ -569,6 +690,9 @@ namespace SpreadsheetUtilities
             }
 
         }
+
+
+
         /// <summary>
         /// Performs the same computation for both integers and variables, when given the value. 
         /// </summary>
@@ -588,6 +712,11 @@ namespace SpreadsheetUtilities
 
         
     }
+
+
+
+
+
 
 
     /// <summary>

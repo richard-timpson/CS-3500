@@ -1,8 +1,19 @@
-﻿using System;
+﻿/* Richard Timpson
+ * CS 3500 - Software practice
+ * Tests for the formula evaluator in PS3
+ * September 21st, 2018
+ */
+
+
+
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 namespace EvaluationTests
 {
+    /*************************************************************************
+     * Many of these tests are ported over from the unit tests provided in PS1
+     ************************************************************************/
     [TestClass]
     public class ValidValues
     {
@@ -139,18 +150,6 @@ namespace EvaluationTests
 
             Assert.AreEqual(value, t.Evaluate( s => 0));
         }
-        [TestMethod()]
-        public void TestComplexMultiVar()
-        {
-            Formula t = new Formula("y1*3-8/2+4*(8-9*2)/14*x7");
-            double value = 6;
-
-            //commented out because the expected value is an integer division, and not
-            // a double division. 
-
-            //Assert.AreEqual(value, t.Evaluate(s => (s == "x7") ? 1 : 4));
-        }
-
         [TestMethod()]
         public void TestComplexNestedParensRight()
         {

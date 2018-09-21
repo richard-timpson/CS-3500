@@ -1,4 +1,10 @@
-﻿using System;
+﻿/* Richard Timpson
+ * CS 3500 - Software practice
+ * Tests for the methods of the formula class for PS3
+ * September 21st, 2018
+ */
+
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 using System.Linq;
