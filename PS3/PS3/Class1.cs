@@ -63,8 +63,9 @@ namespace SpreadsheetUtilities
         /// </summary>
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
-
+            formula = normalize(formula);
             tokens = GetTokens(formula);
+
             IsTokensEmpty(tokens);
             AreTokensValid(tokens);
             CorrectNumOfParenthesis(tokens);
@@ -489,7 +490,6 @@ namespace SpreadsheetUtilities
                     if (value2 == 0)
                     {
                         throw new DivideByZeroException();
-
                     }
                     return value1 / value2;
                 case "*":
