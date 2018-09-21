@@ -189,34 +189,34 @@ namespace EvaluationTests
     {
 
         [TestMethod()]
-        [ExpectedException(typeof(ArgumentException))]
         public void TestUnknownVariable()
         {
             Formula t = new Formula("2+X1");
 
-            t.Evaluate( s => { throw new ArgumentException("Unknown variable"); });
+            object error = t.Evaluate(s => { throw new ArgumentException("Unknown variable"); });
+            Assert.IsInstanceOfType(error, typeof(FormulaError));
         }
 
 
         [TestMethod()]
-        [ExpectedException(typeof(ArgumentException))]
         public void TestDivideByZero()
         {
             Formula t = new Formula("5/0");
 
-            t.Evaluate( s => 0);
+            object error = t.Evaluate(s => 0);
+            Assert.IsInstanceOfType(error, typeof(FormulaError));
         }
 
         /// <summary>
         /// Testing with computed value in the division
         /// </summary>
         [TestMethod()]
-        [ExpectedException(typeof(ArgumentException))]
         public void TestDivideByZero1()
         {
             Formula t = new Formula("5/(5-5)");
 
-            t.Evaluate(s => 0);
+            object error = t.Evaluate(s => 0);
+            Assert.IsInstanceOfType(error, typeof(FormulaError));
         }
     }
 }

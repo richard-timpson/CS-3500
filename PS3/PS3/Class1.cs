@@ -249,55 +249,68 @@ namespace SpreadsheetUtilities
         {
             Stack<string> operatorStack = new Stack<string>();
             Stack<double> valueStack = new Stack<double>();
-            foreach (string s in tokens)
+            try
             {
-                if (IsLeftParen(s))
+                foreach (string s in tokens)
                 {
-                    operatorStack.Push(s);
-                }
-                else if (IsRightParen(s))
-                {
-                    if (IsPlusOrMinusOnStack(operatorStack))
+                    if (IsLeftParen(s))
                     {
-                        double computedValue = PerformPlusMinusComputation(operatorStack, valueStack);
-                        valueStack.Push(computedValue);
+                        operatorStack.Push(s);
                     }
-                    operatorStack.Pop();
-                    if (IsMultiplyOrDivideOnStack(operatorStack))
+                    else if (IsRightParen(s))
                     {
-                        double computedValue = PerformMultiplyDivideComputation(operatorStack, valueStack, 0, false);
-                        valueStack.Push(computedValue);
+                        if (IsPlusOrMinusOnStack(operatorStack))
+                        {
+                            double computedValue = PerformPlusMinusComputation(operatorStack, valueStack);
+                            valueStack.Push(computedValue);
+                        }
+                        operatorStack.Pop();
+                        if (IsMultiplyOrDivideOnStack(operatorStack))
+                        {
+                            double computedValue = PerformMultiplyDivideComputation(operatorStack, valueStack, 0, false);
+                            valueStack.Push(computedValue);
+                        }
                     }
-                }
-                else if (IsMultiplyOrDivide(s))
-                {
-                    operatorStack.Push(s);
-                }
-                else if (IsPlusOrMinus(s))
-                {
-                    if (IsPlusOrMinusOnStack(operatorStack))
+                    else if (IsMultiplyOrDivide(s))
                     {
-                        double computedValue = PerformPlusMinusComputation(operatorStack, valueStack);
-                        valueStack.Push(computedValue);
+                        operatorStack.Push(s);
                     }
-                    operatorStack.Push(s);
+                    else if (IsPlusOrMinus(s))
+                    {
+                        if (IsPlusOrMinusOnStack(operatorStack))
+                        {
+                            double computedValue = PerformPlusMinusComputation(operatorStack, valueStack);
+                            valueStack.Push(computedValue);
+                        }
+                        operatorStack.Push(s);
+                    }
+                    else if (IsNum(s))
+                    {
+                        double value = double.Parse(s);
+                        HandleIntOrVariable(operatorStack, valueStack, value);
+                    }
+                    else if (IsVariable(s))
+                    {
+                        double value = lookup(s);
+                        HandleIntOrVariable(operatorStack, valueStack, value);
+                    }
                 }
-                else if (IsNum(s))
-                {
-                    double value = double.Parse(s);
-                    HandleIntOrVariable(operatorStack, valueStack, value);
-                }
-                else if (IsVariable(s))
-                {
-                    double value = lookup(s);
-                    HandleIntOrVariable(operatorStack, valueStack, value);
-                }
+                if (operatorStack.IsEmpty())
+                    return valueStack.Pop();
+                else
+                    return PerformPlusMinusComputation(operatorStack, valueStack);
+            }
+            catch (ArgumentException)
+            {
+                FormulaError error = new FormulaError("Invalid variable");
+                return error;
+            }
+            catch (DivideByZeroException)
+            {
+                FormulaError error = new FormulaError("Division by 0");
+                return error;
             }
 
-            if (operatorStack.IsEmpty())
-                return valueStack.Pop();
-            else
-                return PerformPlusMinusComputation(operatorStack, valueStack);
 
         }
 
@@ -475,9 +488,8 @@ namespace SpreadsheetUtilities
                 case "/":
                     if (value2 == 0)
                     {
-                        throw new FormulaFormatException("Division by 0");
-                        //FormulaError error = new FormulaError("Division by 0");
-                        //return error;
+                        throw new DivideByZeroException();
+
                     }
                     return value1 / value2;
                 case "*":
