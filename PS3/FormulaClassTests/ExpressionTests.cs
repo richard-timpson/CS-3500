@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 
-namespace FormulaClassTests
+namespace ExpressionTests
 {
     [TestClass]
     public class ValidExpressions
@@ -355,31 +355,61 @@ namespace FormulaClassTests
 
 
         /// <summary>
-        /// Simple add test
+        /// Simple operator test. Plus, minus, multiply, divide
         /// </summary>
         [TestMethod]
         public void EvaluateTest1()
         {
+            //addition
             string expression = "2+2";
             Formula t = new Formula(expression);
+
             double correct_value = 4;
             object value = t.Evaluate(s => 0);
+
+            Assert.AreEqual(correct_value, value);
+
+            //subtraction
+            expression = "2 - 2";
+            t = new Formula(expression);
+
+            correct_value = 0;
+            value = t.Evaluate(s => 0);
+
+            Assert.AreEqual(correct_value, value);
+
+            //multiplication
+            expression = "2 * 2";
+            t = new Formula(expression);
+
+            correct_value = 4;
+            value = t.Evaluate(s => 0);
+
+            Assert.AreEqual(correct_value, value);
+
+            //division
+            expression = "2 / 2";
+            t = new Formula(expression);
+
+            correct_value = 1;
+            value = t.Evaluate(s => 0);
+
             Assert.AreEqual(correct_value, value);
         }
-
 
         /// <summary>
-        /// Divide by 0 test
+        /// Parenthesis test
         /// </summary>
         [TestMethod]
-        public void EvaluateTest2()
+        public void EvaluateTest5()
         {
-            string expression = "2/(2-2)";
+            string expression = "2/(2-1)";
             Formula t = new Formula(expression);
-            double correct_value = 4;
+            double correct_value = 2;
             object value = t.Evaluate(s => 0);
             Assert.AreEqual(correct_value, value);
         }
+
 
     }
     [TestClass]

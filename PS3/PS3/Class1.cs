@@ -154,7 +154,7 @@ namespace SpreadsheetUtilities
         }
         private bool FollowNumOrVarOrOp(IEnumerable<string> tokens)
         {
-            bool IsFollowValid = false;
+            bool IsFollowValid = true;
             string PreviousToken = "";
             foreach (string s in tokens)
             {
@@ -314,7 +314,13 @@ namespace SpreadsheetUtilities
         /// </summary>
         public IEnumerable<String> GetVariables()
         {
-            return null;
+            HashSet<string> DistinctTokens = new HashSet<string>(tokens);
+
+            foreach (string s in DistinctTokens)
+            {
+                if (IsVariable(s))
+                    yield return s;
+            }
         }
 
         /// <summary>
@@ -470,7 +476,7 @@ namespace SpreadsheetUtilities
                     if (value2 == 0)
                     {
                         throw new FormulaFormatException("Division by 0");
-                        //FormulaError error = new FormulaError("Division by 0")
+                        //FormulaError error = new FormulaError("Division by 0");
                         //return error;
                     }
                     return value1 / value2;
