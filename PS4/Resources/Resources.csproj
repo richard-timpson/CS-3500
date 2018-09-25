@@ -35,10 +35,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Libraries\DependencyGraph.dll" />
+    <Content Include="Libraries\DependencyGraph.xml" />
+    <Content Include="Libraries\PS3.dll" />
+    <Content Include="Libraries\PS3.xml" />
     <Content Include="README.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Libraries\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

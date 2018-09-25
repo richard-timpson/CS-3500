@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DependencyGraph</name>
+    </assembly>
+    <members>
+        <member name="T:SpreadsheetUtilities.DependencyGraph">
+            <summary>
+            A dependency graph implementation with several add, remove, and get methods. 
+            </summary>
+        </member>
+        <member name="F:SpreadsheetUtilities.DependencyGraph.dependents">
+            <summary>
+            Creates an empty DependencyGraph, using two Dictionaries dependents and dependees
+            With a string as their key, and a Hashset as their value. 
+            </summary>
+        </member>
+        <member name="P:SpreadsheetUtilities.DependencyGraph.Size">
+            <summary>
+            The number of ordered pairs in the DependencyGraph.
+            </summary>
+        </member>
+        <member name="P:SpreadsheetUtilities.DependencyGraph.Item(System.String)">
+            <summary>
+            The size of dependees(s).
+            </summary>
+        </member>
+        <member name="M:SpreadsheetUtilities.DependencyGraph.HasDependents(System.String)">
+            <summary>
+            Reports whether dependents(s) is non-empty.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetUtilities.DependencyGraph.HasDependees(System.String)">
+            <summary>
+            Reports whether dependees(s) is non-empty.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetUtilities.DependencyGraph.HasSpecificDependent(System.String,System.String)">
+            <summary>
+            Helper method to see if a specific dependee already exsits. 
+            </summary>
+            <param name="s">The key for dependee</param>
+            <param name="t">The value of the dependent to check</param>
+            <returns>True or false</returns>
+        </member>
+        <member name="M:SpreadsheetUtilities.DependencyGraph.HasSpecificDependee(System.String,System.String)">
+            <summary>
+            Helper method to see if a specific dependee already exsits. 
+            </summary>
+            <param name="s">The key for dependee</param>
+            <param name="t">The value of the dependent to check</param>
+            <returns>True or false</returns>
+        </member>
+        <member name="M:SpreadsheetUtilities.DependencyGraph.GetDependents(System.String)">
+            <summary>
+            Returns an enumerator with  the dependents of 's'.
+            Otherwise returns empty enumerator. 
+            </summary>
+        </member>
+        <member name="M:SpreadsheetUtilities.DependencyGraph.GetDependees(System.String)">
+            <summary>
+            Returns an enumerator with the dependees of 's', if it exists. 
+            Otherwise returns empty enumerator. 
+            </summary>
+        </member>
+        <member name="M:SpreadsheetUtilities.DependencyGraph.AddDependent(System.String,System.String)">
+            <summary>
+            Helper method to add dependent. Used for AddDependency function
+            </summary>
+            <param name="s">Add 's' first</param>
+            <param name="t">Add 't' after 's'</param>
+        </member>
+        <member name="M:SpreadsheetUtilities.DependencyGraph.AddDependee(System.String,System.String)">
+            <summary>
+            Helper method to add dependee.Used for AddDependency function
+            </summary>
+            <param name="s">Add 's' first</param>
+            <param name="t">Add 't' after 's' </param>
+        </member>
+        <member name="M:SpreadsheetUtilities.DependencyGraph.AddDependency(System.String,System.String)">
+            <summary>
+            <para>Adds the ordered pair (s,t), if it doesn't exist</para>
+            </summary>
+            <param name="s"> s must be evaluated first. T depends on S</param>
+            <param name="t"> t cannot be evaluated until s is</param>        /// 
+        </member>
+        <member name="M:SpreadsheetUtilities.DependencyGraph.RemoveDependency(System.String,System.String)">
+            <summary>
+            Removes the ordered pair (s,t), if it exists
+            </summary>
+            <param name="s"></param>
+            <param name="t"></param>
+        </member>
+        <member name="M:SpreadsheetUtilities.DependencyGraph.ReplaceDependents(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Removes all existing ordered pairs of the form (s,r).  Then, for each
+            t in newDependents, adds the ordered pair (s,t).
+            </summary>
+        </member>
+        <member name="M:SpreadsheetUtilities.DependencyGraph.ReplaceDependees(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Removes all existing ordered pairs of the form (r,s).  Then, for each 
+            t in newDependees, adds the ordered pair (t,s).
+            </summary>
+        </member>
+    </members>
+</doc>
