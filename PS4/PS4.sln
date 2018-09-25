@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2035
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spreadsheet", "PS4\Spreadsheet.csproj", "{32FA2A47-E6C1-4678-A2E8-CFD1731B1964}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resources", "Resources\Resources.csproj", "{1716EDD4-1950-4024-A95A-2F8AF41BFA85}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32FA2A47-E6C1-4678-A2E8-CFD1731B1964}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32FA2A47-E6C1-4678-A2E8-CFD1731B1964}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32FA2A47-E6C1-4678-A2E8-CFD1731B1964}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32FA2A47-E6C1-4678-A2E8-CFD1731B1964}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1716EDD4-1950-4024-A95A-2F8AF41BFA85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1716EDD4-1950-4024-A95A-2F8AF41BFA85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1716EDD4-1950-4024-A95A-2F8AF41BFA85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1716EDD4-1950-4024-A95A-2F8AF41BFA85}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8AEC2964-0217-4692-ACA5-3CB58523AFEF}
+	EndGlobalSection
+EndGlobal

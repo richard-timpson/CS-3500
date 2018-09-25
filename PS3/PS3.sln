@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS3", "PS3\PS3.csproj", "{FDD7DCEF-805D-48B9-BD86-C7ED2F2163AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Formula", "PS3\Formula.csproj", "{FDD7DCEF-805D-48B9-BD86-C7ED2F2163AB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionTests", "FormulaClassTests\ExpressionTests.csproj", "{A7CEB066-8B9F-49AF-B853-6564E7AF3CD3}"
 EndProject
