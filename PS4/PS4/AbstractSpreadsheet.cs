@@ -174,15 +174,20 @@ namespace SS
         /// </summary>
         protected IEnumerable<String> GetCellsToRecalculate(ISet<String> names)
         {
+            //list to keep track of changed cells
             LinkedList<String> changed = new LinkedList<String>();
+            //hashset to keep track of all visited cells
             HashSet<String> visited = new HashSet<String>();
             foreach (String name in names)
             {
+                //if cell has not been visited
                 if (!visited.Contains(name))
                 {
+                    //then visit the cell
                     Visit(name, name, visited, changed);
                 }
             }
+            //return the hashset that should have all of the changed cells. 
             return changed;
         }
 
@@ -204,18 +209,25 @@ namespace SS
         /// </summary>
         private void Visit(String start, String name, ISet<String> visited, LinkedList<String> changed)
         {
+            //Add the current item to visited
             visited.Add(name);
+            //loop through each of the dependents of the current item
             foreach (String n in GetDirectDependents(name))
             {
+                //if any dependent of current cell equals the starting cell
                 if (n.Equals(start))
                 {
+                    //throw exception
                     throw new CircularException();
                 }
+                //else if the cell hasn't been visited
                 else if (!visited.Contains(n))
                 {
+                    //run the function again but starting passing in the current cell instead of the beginning cell. 
                     Visit(start, n, visited, changed);
                 }
             }
+            //add the changed cell to the changed list. 
             changed.AddFirst(name);
         }
 
