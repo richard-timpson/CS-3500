@@ -144,6 +144,8 @@ namespace OtherTests
 
             Assert.IsTrue(t == r);
 
+            Assert.IsTrue(t == null);
+
             Assert.IsFalse(t != r);
         }
         [TestMethod()]

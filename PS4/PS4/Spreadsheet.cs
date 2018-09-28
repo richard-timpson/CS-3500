@@ -11,6 +11,11 @@ namespace SS
 {
     public class Spreadsheet : AbstractSpreadsheet
     {
+        public Spreadsheet()
+        {
+
+        }
+
         private Dictionary<string, Cell> NonemptyCells = new Dictionary<string, Cell>();
         private DependencyGraph graph = new DependencyGraph();
         public override IEnumerable<String> GetNamesOfAllNonemptyCells()
@@ -66,12 +71,13 @@ namespace SS
                 string type = "formula";
                 return SetCellContentsActual(name, formula, type);
             }
-        }
+        
+    }
 
 
         protected override IEnumerable<String> GetDirectDependents(String name)
         {
-            if (name == null)
+            if (name.Equals(null))
                 throw new ArgumentNullException();
             else if (!IsValidName(name))
             {
@@ -90,10 +96,13 @@ namespace SS
                 //Dependencies should stay the same.
                 if (IsNonemptyCell(name))
                 {
-                    //remove all of the dependee's of cell
-                    graph.ReplaceDependees(name, Enumerable.Empty<string>());
+                    //if it's a formula, replace the dependents and dependees with the new variables
+                    if (type == "formula")
+                    {
 
-                    //set the cell contents based on the type given
+                    }
+                    //if it's not a formula, replace the dependents and dependess with empty sets
+                    //set the value of the cell. 
                     SetContentByType(name, ObjectContents, type);
                 }
                 else
@@ -112,20 +121,20 @@ namespace SS
         {
             if (type == "double")
             {
-                double contents = Convert.ToDouble(ObjectContents);
+                double contents = (double)ObjectContents;
                 SetContentsToDouble(name, contents);
             }
             else if (type == "string")
             {
-                string contents = Convert.ToString(ObjectContents);
+                string contents = (string)ObjectContents;
                 Cell cell = new Cell(contents);
                 NonemptyCells[name] = cell;
             }
             else if (type == "formula")
             {
-                string contents = Convert.ToString(ObjectContents);
-                Formula formula = new Formula(contents);
-                Cell cell = new Cell(contents);
+
+                //string contents = Convert.ToString(ObjectContents);
+                Cell cell = new Cell((Formula)ObjectContents);
                 NonemptyCells[name] = cell;
             }
         }
@@ -147,8 +156,8 @@ namespace SS
         }
         private bool IsValidName(string name)
         {
-            String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
-            if (Regex.IsMatch(name, varPattern) && name != null)
+            String varPattern = @"^[a-zA-Z_](?:[a-zA-Z_]|\d)*$";
+            if (name != null && Regex.IsMatch(name, varPattern))
                 return true;
             else
                 throw new InvalidNameException();
@@ -181,7 +190,7 @@ namespace SS
         }
         public Cell(double contents)
         {
-            CellContents = contents.ToString();
+            CellContents = contents;
         }
         public Cell(Formula contents)
         {
