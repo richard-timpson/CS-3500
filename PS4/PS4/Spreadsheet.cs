@@ -27,7 +27,7 @@ namespace SS
 
         public override object GetCellContents(string name)
         {
-            if (name == null || IsValidName(name))
+            if (IsValidName(name))
             {
                 Cell cell = NonemptyCells[name];
                 object Contents = cell.Contents;
@@ -40,62 +40,115 @@ namespace SS
 
         public override ISet<String> SetCellContents(String name, double number)
         {
-            // If valid name 
-            if (IsValidName(name))
-            {
-                //If cell already exsits (is not empty), we need to set the cell and update dependencies
-                if (IsNonemptyCell(name))
-                {
-                    IEnumerable<string> RecalculateCells = GetCellsToRecalculate(name);
-                    foreach (string s in RecalculateCells)
-                    {
-
-                    }
-                    //get all the dependee's of cell
-                    //remove all of the dependee's of cell
-                }
-                //If cell does not already exist
-                else
-                {
-                    // make a new cell 
-                    Cell NewCell = new Cell(number);
-                    //Add it to list of cells. 
-                    NonemptyCells.Add(name, NewCell);
-                }
-            }
-            //return ISet including all dependents, both direct and indirect, of named cell. 
-            HashSet<string> AllDependents = new HashSet<string>();
-            HashSet<string> CurrentDependents = GetDirectDependents(name);
-
-            //get all dependents of Cell
+            string type = "double";
+            return SetCellContentsActual(name, number, type);
         }
-
+        
 
         public override ISet<String> SetCellContents(String name, String text)
         {
-            throw new NotImplementedException();
+            if (text == null)
+                throw new ArgumentNullException();
+            else
+            {
+                string type = "string";
+                return SetCellContentsActual(name, text, type);
+            }
         }
 
 
         public override ISet<String> SetCellContents(String name, Formula formula)
         {
-            throw new NotImplementedException();
+            if (formula == null)
+                throw new ArgumentNullException();
+            else
+            {
+                string type = "formula";
+                return SetCellContentsActual(name, formula, type);
+            }
         }
 
 
         protected override IEnumerable<String> GetDirectDependents(String name)
         {
-            if (IsValidName(name))
-                return graph.GetDependents(name);
-            else if (name == null)
+            if (name == null)
                 throw new ArgumentNullException();
+            else if (!IsValidName(name))
+            {
+                throw new InvalidNameException();   
+            }
             else
-                throw new InvalidNameException();
+                return graph.GetDependents(name);
+
+        }
+        private ISet<string> SetCellContentsActual(String name, object ObjectContents, string type)
+        {
+            // If valid name 
+            if (IsValidName(name))
+            {
+                //If cell already exsits (is not empty), we need to set the cell and get rid of dependee's. 
+                //Dependencies should stay the same.
+                if (IsNonemptyCell(name))
+                {
+                    //remove all of the dependee's of cell
+                    graph.ReplaceDependees(name, Enumerable.Empty<string>());
+
+                    //set the cell contents based on the type given
+                    SetContentByType(name, ObjectContents, type);
+                }
+                else
+                {
+                    //set the cell contents based on the type given
+                    SetContentByType(name, ObjectContents, type);
+                }
+            }
+            //return ISet including all dependents, both direct and indirect, of named cell. 
+            ISet<string> AllDependents = new HashSet<string>(GetCellsToRecalculate(name));
+
+            return AllDependents;
+        }
+
+        private void SetContentByType(string name, object ObjectContents, string type)
+        {
+            if (type == "double")
+            {
+                double contents = Convert.ToDouble(ObjectContents);
+                SetContentsToDouble(name, contents);
+            }
+            else if (type == "string")
+            {
+                string contents = Convert.ToString(ObjectContents);
+                Cell cell = new Cell(contents);
+                NonemptyCells[name] = cell;
+            }
+            else if (type == "formula")
+            {
+                string contents = Convert.ToString(ObjectContents);
+                Formula formula = new Formula(contents);
+                Cell cell = new Cell(contents);
+                NonemptyCells[name] = cell;
+            }
+        }
+
+        private void SetContentsToDouble(string name, double number)
+        {
+            Cell cell = new Cell(number);
+            NonemptyCells[name] = cell;
+        }
+        private void SetContentsToString(string name, string text)
+        {
+            Cell cell = new Cell(text);
+            NonemptyCells[name] = cell;
+        }
+        private void SetContentsToFormula(string name, Formula formula)
+        {
+            Cell cell = new Cell(formula);
+            NonemptyCells[name] = cell;
         }
         private bool IsValidName(string name)
         {
             String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
-            if (!Regex.IsMatch(name, varPattern))
+            if (Regex.IsMatch(name, varPattern) && name != null)
                 return true;
             else
                 throw new InvalidNameException();
