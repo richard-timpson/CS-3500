@@ -34,9 +34,17 @@ namespace SS
         {
             if (IsValidName(name))
             {
-                Cell cell = NonemptyCells[name];
-                object Contents = cell.Contents;
-                return Contents;
+                HashSet<string> NamesOfCells = new HashSet<string>(GetNamesOfAllNonemptyCells());
+                if (NamesOfCells.Contains(name))
+                {
+                    Cell cell = NonemptyCells[name];
+                    object Contents = cell.Contents;
+                    return Contents;
+                }
+                else
+                {
+                    return "";
+                }
             }
             else
                 throw new InvalidNameException();
@@ -92,29 +100,48 @@ namespace SS
             // If valid name 
             if (IsValidName(name))
             {
-                //If cell already exsits (is not empty), we need to set the cell and get rid of dependee's. 
-                //Dependencies should stay the same.
-                if (IsNonemptyCell(name))
-                {
-                    //if it's a formula, replace the dependents and dependees with the new variables
-                    if (type == "formula")
-                    {
+                // Get current cells variables, if it is a formula
+                object CurrentCellContents = GetCellContents(name);
+                List<string> CurrentDependees = new List<string>();
 
-                    }
-                    //if it's not a formula, replace the dependents and dependess with empty sets
-                    //set the value of the cell. 
-                    SetContentByType(name, ObjectContents, type);
-                }
-                else
+                if (CurrentCellContents.GetType() == typeof(Formula))
                 {
-                    //set the cell contents based on the type given
+                    Formula CurrentCellFormula = (Formula)CurrentCellContents;
+                    CurrentDependees = new List<string>(CurrentCellFormula.GetVariables());
+                }
+
+                //Get new formula's variables. 
+                List<string> ReplaceDependees = new List<string>();
+                if (type == "formula")
+                {
+                    Formula formula = (Formula)ObjectContents;
+                    ReplaceDependees = new List<string>(formula.GetVariables());
+                }
+
+                //replace the dependees 
+                graph.ReplaceDependees(name, ReplaceDependees);
+
+                //Try getting the cells to recalculate
+                try
+                {
+                    //Checking for circular dependency
+                    ISet<string> AllDependents = new HashSet<string>(GetCellsToRecalculate(name));
+
+                    //If exception wasn't caught, set the content to new object, and return AllDependents
                     SetContentByType(name, ObjectContents, type);
+                    return AllDependents;
+                }
+                //If exception is caught
+                catch(CircularException E)
+                {
+                    //replace dependees with old variables
+                    graph.ReplaceDependees(name, CurrentDependees);
+
+                    //throw the exception again
+                    throw new CircularException();
                 }
             }
-            //return ISet including all dependents, both direct and indirect, of named cell. 
-            ISet<string> AllDependents = new HashSet<string>(GetCellsToRecalculate(name));
-
-            return AllDependents;
+            throw new InvalidNameException();
         }
 
         private void SetContentByType(string name, object ObjectContents, string type)
@@ -127,15 +154,12 @@ namespace SS
             else if (type == "string")
             {
                 string contents = (string)ObjectContents;
-                Cell cell = new Cell(contents);
-                NonemptyCells[name] = cell;
+                SetContentsToString(name, contents);
             }
             else if (type == "formula")
             {
-
-                //string contents = Convert.ToString(ObjectContents);
-                Cell cell = new Cell((Formula)ObjectContents);
-                NonemptyCells[name] = cell;
+                Formula contents = (Formula)ObjectContents;
+                SetContentsToFormula(name, contents);
             }
         }
 
@@ -161,16 +185,6 @@ namespace SS
                 return true;
             else
                 throw new InvalidNameException();
-        }
-        private bool IsNonemptyCell(string name)
-        {
-            IEnumerable<string> NonemptyCellNames = GetNamesOfAllNonemptyCells();
-            foreach (string s in NonemptyCellNames)
-            {
-                if (name == s)
-                    return true;
-            }
-            return false;
         }
 
     }
