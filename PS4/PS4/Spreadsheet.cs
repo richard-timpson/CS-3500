@@ -168,7 +168,8 @@ namespace SS
             else if (type == "string")
             {
                 string contents = (string)ObjectContents;
-                SetContentsToString(name, contents);
+                if (contents !="")
+                    SetContentsToString(name, contents);
             }
             else if (type == "formula")
             {
