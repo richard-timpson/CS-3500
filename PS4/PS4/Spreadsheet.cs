@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml;
 
 using SpreadsheetUtilities;
 
@@ -11,15 +12,79 @@ namespace SS
 {
     public class Spreadsheet : AbstractSpreadsheet
     {
-        public Spreadsheet()
-        {
-
-        }
         //making the main storage for the spreadsheet a dictionary with the name as the key, and a cell class as the value
         private Dictionary<string, Cell> NonemptyCells = new Dictionary<string, Cell>();
 
         //A dependency graph to keep track of cells
         private DependencyGraph graph = new DependencyGraph();
+
+        public override bool Changed 
+        {
+            get;
+            protected set;
+        }
+
+        public Func<string, bool> IsValid
+        {
+            get;
+            protected set;
+        }
+
+        public Func<string, bool> Normalize
+        {
+            get;
+            protected set;
+        }
+
+        public string Version
+        {
+            get;
+            set;
+        }
+
+        public Spreadsheet() : base(s=> true, s => s, "default")
+        {
+
+        }
+        public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
+        {
+
+        }
+        public Spreadsheet(string path, Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
+        {
+
+        }
+
+        public override string GetSavedVersion(string filename)
+        {
+            try
+            {
+                using (XmlReader reader = XmlReader.Create(filename))
+                {
+                    while (reader.ReadToFollowing("spreadsheet"))
+                    {
+                        string version = reader.GetAttribute("version");
+                        return version;
+                    }
+                    throw new SpreadsheetReadWriteException("Version not saved");
+                }
+            }
+            catch (XmlException e)
+            {
+                throw new SpreadsheetReadWriteException(e.Message);
+            }
+        }
+
+        public override void Save(string filename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object GetCellValue(string name)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public override IEnumerable<String> GetNamesOfAllNonemptyCells()
         {
@@ -58,15 +123,19 @@ namespace SS
                 throw new InvalidNameException();
         }
 
+        public override ISet<String> SetContentsOfCell(String name, String content)
+        {
+            throw new NotImplementedException();
+        }
 
-        public override ISet<String> SetCellContents(String name, double number)
+        protected override ISet<String> SetCellContents(String name, double number)
         {
             string type = "double";
             return SetCellContentsActual(name, number, type);
         }
         
 
-        public override ISet<String> SetCellContents(String name, String text)
+        protected override ISet<String> SetCellContents(String name, String text)
         {
             if (text == null)
                 throw new ArgumentNullException();
@@ -78,7 +147,7 @@ namespace SS
         }
 
 
-        public override ISet<String> SetCellContents(String name, Formula formula)
+        protected override ISet<String> SetCellContents(String name, Formula formula)
         {
             if (formula == null)
                 throw new ArgumentNullException();
@@ -222,6 +291,14 @@ namespace SS
                 return true;
             else
                 throw new InvalidNameException();
+        }
+        private bool IsValidCellVariable (string name)
+        {
+            String varPattern = @"^[a-zA-Z](?:\d)*$";
+            if (Regex.IsMatch(name, varPattern))
+                return true;
+            else
+                return false;
         }
 
     }
