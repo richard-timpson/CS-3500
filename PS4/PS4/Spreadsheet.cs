@@ -77,11 +77,34 @@ namespace SS
 
         public override void Save(string filename)
         {
+            
             throw new NotImplementedException();
         }
 
         public override object GetCellValue(string name)
         {
+            //check if valid name
+            if (IsValidName(name))
+            {
+                //If the name is an exsiting cell
+                HashSet<string> NamesOfCells = new HashSet<string>(GetNamesOfAllNonemptyCells());
+                if (NamesOfCells.Contains(name))
+                {
+                    //return it's contents
+                    Cell cell = NonemptyCells[name];
+                    object value = cell.Value;
+                    return value;
+                }
+                else
+                {
+                    //return the empty string
+                    return "";
+                }
+            }
+            else
+                throw new InvalidNameException();
+
+
             throw new NotImplementedException();
         }
 
