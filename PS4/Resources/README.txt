@@ -3,6 +3,8 @@
 CS 3500 Software Practice
 PS5
 
+
+************
 Beginning the assignment on Tuesday 10/2/18. I believe that the assignment should take about 12 hours to complete. 
 Time beginning on the project for Tuesday 10/2/18: 3:30 pm
 
@@ -32,4 +34,12 @@ SetContentsofCell:
 This is most likely going to be a refactored version of the SetContentsActual I wrote for PS4
 Need to figure out the IsValid function before I can correctly add values and tests
 
-End of session 10/2/18 6:00 PM. Time spent 2:30 hours. Total Time: 2:30 hours
+End of session 10/2/18 6:00 PM. Time spent 2:30 hours. Total Time: 2:30 hours]
+
+*************
+
+
+*************
+Starting session 10/3/18 @ 9:30 Am. 
+still need to work on the delegate functions declared in the Abstract spreadsheet class. 
+Going to take a look at the example posted on XML as well. 
