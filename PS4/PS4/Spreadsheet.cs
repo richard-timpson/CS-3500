@@ -30,7 +30,7 @@ namespace SS
             protected set;
         }
 
-        public Func<string, bool> Normalize
+        public Func<string, string> Normalize
         {
             get;
             protected set;
@@ -142,7 +142,45 @@ namespace SS
         }
 
         public override ISet<String> SetContentsOfCell(String name, String content)
-        {
+        { 
+
+            double NumberValue = 0;
+            ISet<string> DirectDependents = new HashSet<string>();
+            //If content is null, throw argument null exception
+            if (content == null)
+            {
+                throw new ArgumentNullException();
+            }
+            //if name is null or invalid, throw invalid name exception
+            else if (name == null || !IsValidCellVariable(name))
+            {
+                throw new InvalidNameException();
+            }
+            //if content parses as double, contents of cell becomes double
+            else if(double.TryParse(content, out NumberValue ))
+            {
+                Cell cell = new Cell(content);
+                NonemptyCells[name] = cell;
+            }
+            //if contents begins with =, try to make it a formula
+            else if (content[0] == '=')
+            {
+                //if formula string cannot be parsed to formula, it will throw
+                string FormulaString = content.Remove(0, 1);
+                Formula formula = new Formula(FormulaString, Normalize, IsValid);
+
+                //if changing contents of cell to formula would cause circular dependency, throw circularexception
+                Cell cell = new Cell(formula);
+                NonemptyCells[name] = cell;
+                DirectDependents = new HashSet<string>(GetCellsToRecalculate(name));
+
+                //Otherwise, contents of cell becomes f
+            }
+            //otherwise, contents of cell becomes content. 
+            Cell cell = new Cell(content);
+            NonemptyCells[name] = cell;
+            //if exception is not thrown, returns all the dependents of name
+
             throw new NotImplementedException();
         }
 
@@ -327,6 +365,7 @@ namespace SS
     class Cell
     {
         private object CellContents;
+        private object CellValue;
         public object Contents
         {
             get
@@ -337,14 +376,18 @@ namespace SS
         public Cell(string contents)
         {
             CellContents = contents;
+            CellValue = contents;
         }
         public Cell(double contents)
         {
             CellContents = contents;
+            CellValue = contents;
         }
         public Cell(Formula contents)
         {
             CellContents = contents;
+
+            CellValue = contents.Evaluate(s=> 0);
         }
     }
 
