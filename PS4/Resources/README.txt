@@ -24,3 +24,12 @@ Leaving all of the gets and sets as they were defined for now
 GetSavedVersion:
 Have the function to a point where I think it's working. Need to test it with the Save function. 
 Going to wait till I have other functions written to write and test this, so that I can do it with actual values. 
+
+GetCellValue:
+Need to work on SetCellValue before I can test
+
+SetContentsofCell:
+This is most likely going to be a refactored version of the SetContentsActual I wrote for PS4
+Need to figure out the IsValid function before I can correctly add values and tests
+
+End of session 10/2/18 6:00 PM. Time spent 2:30 hours. Total Time: 2:30 hours

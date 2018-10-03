@@ -95,11 +95,6 @@ namespace SS
                     object value = cell.Value;
                     return value;
                 }
-                else
-                {
-                    //return the empty string
-                    return "";
-                }
             }
             else
                 throw new InvalidNameException();
@@ -260,7 +255,8 @@ namespace SS
             else if (type == "string")
             {
                 string contents = (string)ObjectContents;
-                SetContentsToString(name, contents);
+                if (contents != "")
+                    SetContentsToString(name, contents);
             }
             else if (type == "formula")
             {
