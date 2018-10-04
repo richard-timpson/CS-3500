@@ -43,3 +43,12 @@ End of session 10/2/18 6:00 PM. Time spent 2:30 hours. Total Time: 2:30 hours]
 Starting session 10/3/18 @ 9:30 Am. 
 still need to work on the delegate functions declared in the Abstract spreadsheet class. 
 Going to take a look at the example posted on XML as well. 
+
+Was working on the contents fuction before I had to quit. 
+
+Ended session 10/3/18 @10:30 AM
+***************
+
+*****************
+Beginning session 10/3/18 @8:00 PM
+Need to finish the contents function 
