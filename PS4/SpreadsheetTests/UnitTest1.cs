@@ -10,7 +10,7 @@ namespace SpreadsheetTests
     public class ValidTests
     {
         [TestMethod]
-        public void SingleSetandGet()
+        public void SingleSetandGetForContents()
         {
             //Setting number
             Spreadsheet sheet = new Spreadsheet();
@@ -34,6 +34,40 @@ namespace SpreadsheetTests
 
 
             Assert.AreEqual(sheet.GetCellContents("c1"), TestFormula);
+        }
+
+        [TestMethod()]
+        public void SingleSetAndGetForValue()
+        {
+            //Setting number
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("a1", "5");
+            double NumberContents = (double)(sheet.GetCellContents("a1"));
+
+            double NumberValue = (double)(sheet.GetCellValue("a1"));
+            double ValidNumber = 5;
+            Assert.AreEqual(NumberContents, ValidNumber);
+            Assert.AreEqual(NumberValue, ValidNumber);
+
+            //Setting string
+            sheet.SetContentsOfCell("b1", "hello");
+            string StringContents = (string)sheet.GetCellContents("b1");
+            string StringValue = (string)sheet.GetCellValue("b1");
+
+            Assert.AreEqual(StringContents, "hello");
+            Assert.AreEqual(StringValue, "hello");
+
+
+            //Setting Formula
+
+            sheet.SetContentsOfCell("c1", "=a1 +5");
+
+            Formula FormulaContents = (Formula)sheet.GetCellContents("c1");
+
+            double FormulaValue = (double)sheet.GetCellValue("c1");
+
+            Assert.AreEqual(sheet.GetCellContents("c1"), FormulaContents);
+            Assert.AreEqual(FormulaValue, 10);
         }
 
         [TestMethod()]
@@ -117,7 +151,6 @@ namespace SpreadsheetTests
             Formula formula = new Formula("a1+5", s => s, s => true);
 
             sheet.SetContentsOfCell("a1", "5");
-            sheet.SetContentsOfCell("a", "hello");
             sheet.SetContentsOfCell("a1111111", "=a1+5");
             sheet.SetContentsOfCell("abcdefghijklmnopqrstuvwzyz0123456789", "hello");
             sheet.SetContentsOfCell("aaaaaaaaaa1", "=a1+5");
@@ -125,7 +158,6 @@ namespace SpreadsheetTests
 
 
             double d1 = (double)sheet.GetCellContents("a1");
-            string s1 = (string)sheet.GetCellContents("a");
             Formula f1 = (Formula)sheet.GetCellContents("a1111111");
             string s2 = (string)sheet.GetCellContents("abcdefghijklmnopqrstuvwzyz0123456789");
             Formula f2 = (Formula)sheet.GetCellContents("aaaaaaaaaa1");
@@ -133,7 +165,6 @@ namespace SpreadsheetTests
 
             Assert.AreEqual(d1, 5);
 
-            Assert.AreEqual(s1, "hello");
             Assert.AreEqual(s2, "hello");
 
             Assert.AreEqual(f1, formula);
@@ -149,6 +180,7 @@ namespace SpreadsheetTests
 
             Assert.AreEqual("", EmptyString);
         }
+
         [TestMethod()]
         public void GetNamesForOneCell ()
         {
@@ -220,6 +252,16 @@ namespace SpreadsheetTests
 
         [TestMethod()]
         [ExpectedException(typeof(InvalidNameException))]
+        public void SetWithSingleLetter()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("a", "5");
+        }
+
+
+
+        [TestMethod()]
+        [ExpectedException(typeof(InvalidNameException))]
         public void SetWithNumberAtFirst()
         {
             Spreadsheet sheet = new Spreadsheet();
@@ -252,12 +294,21 @@ namespace SpreadsheetTests
 
         [TestMethod()]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void SetNullText()
+        public void SetNullContents()
         {
             Spreadsheet sheet = new Spreadsheet();
             string test = null;
             sheet.SetContentsOfCell("a1", test);
         }
+
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetUtilities.FormulaFormatException))]
+        public void SetInvalidFormula()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("a1", "=((a1+4)");
+        }
+        
 
         //[TestMethod()]
         //[ExpectedException(typeof(ArgumentNullException))]

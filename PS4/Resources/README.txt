@@ -62,3 +62,10 @@ Having a problem with the regex for new valid variables. Need to get it working
 
 Ended Session 10/3/18 @ 10:00 pm Time Spent: 1:30 Hours. Total Time: 5 Hours
 ********************
+
+
+********************
+Started Session 10/4/18 @10:45 AM
+Got the regex working, with some good tests. 
+
+Have the setcontents of cell written and tested. 

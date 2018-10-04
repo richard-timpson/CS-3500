@@ -18,11 +18,13 @@ namespace SS
         //A dependency graph to keep track of cells
         private DependencyGraph graph = new DependencyGraph();
 
+        private delegate bool LookupFunc(string name);
         public override bool Changed 
         {
             get;
             protected set;
         }
+
 
         public Spreadsheet() : base(s=> true, s => s, "default")
         {
@@ -72,14 +74,14 @@ namespace SS
                 HashSet<string> NamesOfCells = new HashSet<string>(GetNamesOfAllNonemptyCells());
                 if (NamesOfCells.Contains(name))
                 {
-                    //return it's contents
+                    //return it's value
                     Cell cell = NonemptyCells[name];
                     object value = cell.Value;
                     return value;
                 }
                 else
                 {
-                    throw new InvalidNameException();
+                    return "";
                 }
             }
             else
@@ -173,27 +175,16 @@ namespace SS
 
         protected override ISet<String> SetCellContents(String name, String text)
         {
-            if (text == null)
-                throw new ArgumentNullException();
-            else
-            {
-                string type = "string";
-                return SetCellContentsActual(name, text, type);
-            }
+            string type = "string";
+            return SetCellContentsActual(name, text, type);
         }
 
 
         protected override ISet<String> SetCellContents(String name, Formula formula)
         {
-            if (formula == null)
-                throw new ArgumentNullException();
-            else
-            {
-                string type = "formula";
-                return SetCellContentsActual(name, formula, type);
-            }
-        
-    }
+            string type = "formula";
+            return SetCellContentsActual(name, formula, type);
+        }
 
 
         protected override IEnumerable<String> GetDirectDependents(String name)
@@ -308,8 +299,16 @@ namespace SS
         /// <param name="number"></param>
         private void SetContentsToFormula(string name, Formula formula)
         {
+            LookupFunc lookup = LookupDelegate;
+            double FormulaValue = formula.Evaluate(lookup);
             Cell cell = new Cell(formula);
             NonemptyCells[name] = cell;
+        }
+
+        private bool LookupDelegate(string name)
+        {
+            double VariableValue = (double)GetCellValue(name);
+            return VariableValue;
         }
 
         /// <summary>
@@ -319,7 +318,7 @@ namespace SS
         /// <returns></returns>
         private bool IsValidName (string name)
         {
-            String varPattern = @"^[a-zA-Z](?:\d)*$";
+            String varPattern = @"^[a-zA-Z]+[0-9]+$";
             //if name is not null, is a valid variable according to spreadsheet, and passes the isvalid delegate function
             if (name != null && Regex.IsMatch(name, varPattern) && IsValid(name))
                 return true;
@@ -359,12 +358,12 @@ namespace SS
             CellContents = contents;
             CellValue = contents;
         }
-        public Cell(Formula contents)
+        public Cell(Formula contents, double value)
         {
             CellContents = contents;
-
-            CellValue = contents.Evaluate(s=> 0);
+            CellValue = value;
         }
+        
     }
 
 
