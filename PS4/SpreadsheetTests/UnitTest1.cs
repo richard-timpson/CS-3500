@@ -30,7 +30,7 @@ namespace SpreadsheetTests
 
             sheet.SetContentsOfCell("c1", "=a1 +5");
 
-            Formula TestFormula = (Formula)sheet.GetCellContents("c1");
+            Formula TestFormula = new Formula("a1 +5");
 
 
             Assert.AreEqual(sheet.GetCellContents("c1"), TestFormula);
@@ -167,8 +167,8 @@ namespace SpreadsheetTests
 
             Assert.AreEqual(s2, "hello");
 
-            Assert.AreEqual(f1, formula);
-            Assert.AreEqual(f2, formula);
+            Assert.AreEqual(f1, new Formula("a1+5"));
+            Assert.AreEqual(f2, new Formula("a1+5"));
         }
 
         [TestMethod()]
@@ -237,11 +237,49 @@ namespace SpreadsheetTests
             Assert.IsFalse(names.MoveNext());
 
         }
+
+        /*******************
+         * Constructor Tests
+         *******************/
+
+
+
+        [TestMethod()]
+        public void SimpleNormalize()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s.ToUpper(), "Version 1");
+            sheet.SetContentsOfCell("a1", "5");
+            IEnumerator<string> CellNames = sheet.GetNamesOfAllNonemptyCells().GetEnumerator();
+
+            Assert.IsTrue(CellNames.MoveNext());
+            Assert.AreEqual("A1", CellNames.Current);
+
+        }
+
+        [TestMethod()]
+        public void SimpleIsValid()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s, "Version 1");
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1+5");
+
+            double Value = (double)sheet.GetCellValue("a2");
+            double CorrectValue = 10;
+
+            Assert.AreEqual(CorrectValue, Value);
+        }
+
+        [TestMethod()]
+        public void SimpleVersion()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s, "1.0");
+            Assert.AreEqual("1.0", sheet.Version);
+        }
     }
     [TestClass]
     public class InvalidTests
     {
-        
+
         [TestMethod()]
         [ExpectedException(typeof(InvalidNameException))]
         public void SetWithSingleNumber()
@@ -308,17 +346,39 @@ namespace SpreadsheetTests
             Spreadsheet sheet = new Spreadsheet();
             sheet.SetContentsOfCell("a1", "=((a1+4)");
         }
-        
 
-        //[TestMethod()]
-        //[ExpectedException(typeof(ArgumentNullException))]
-        //public void SetNullFormula()
-        //{
-        //    Spreadsheet sheet = new Spreadsheet();
-        //    Formula test = null;
-        //    sheet.SetContentsOfCell("a1", test);
-        //}
+        [TestMethod()]
+        public void SetFormulaErrorEmptyCell()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("a1", "=a2 +5");
+            object Error = sheet.GetCellValue("a1");
 
+            Assert.IsInstanceOfType(Error, typeof(FormulaError));
+        }
+        [TestMethod()]
+        public void SetFormulaErrorDivideBy()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("a2", "5");
+            sheet.SetContentsOfCell("a1", "=(a2/(5-5))");
+
+            object Error = sheet.GetCellValue("a1");
+
+            Assert.IsInstanceOfType(Error, typeof(FormulaError));
+        }
+
+        [TestMethod()]
+        public void SetFormulaErrorString()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("a1", "hello");
+            sheet.SetContentsOfCell("a2", "=a1 +5");
+
+            object Error = sheet.GetCellValue("a2");
+
+            Assert.IsInstanceOfType(Error, typeof(FormulaError));
+        }
         [TestMethod()]
         public void SetReturnsWithMultipleWrong()
         {
@@ -367,7 +427,7 @@ namespace SpreadsheetTests
             {
                 sheet.SetContentsOfCell("a3", "=a2 + 2");
             }
-            catch(CircularException e)
+            catch (CircularException e)
             {
                 HashSet<string> NamesOfCells = new HashSet<string>(sheet.GetNamesOfAllNonemptyCells());
                 int count = NamesOfCells.Count;
@@ -396,7 +456,7 @@ namespace SpreadsheetTests
             {
                 sheet.SetContentsOfCell("a3", "=a1");
             }
-            catch(CircularException E)
+            catch (CircularException E)
             {
                 HashSet<string> DentsAfterCircExcep = new HashSet<string>(sheet.SetContentsOfCell("a1", "5"));
                 Assert.IsTrue(DentsBeforeCircExcep.SetEquals(DentsAfterCircExcep));
@@ -405,7 +465,7 @@ namespace SpreadsheetTests
 
         [TestMethod()]
         [ExpectedException(typeof(InvalidNameException))]
-        public void GetWithSingleNumber()
+        public void GetContentsWithSingleNumber()
         {
             Spreadsheet sheet = new Spreadsheet();
             sheet.GetCellContents("1");
@@ -413,7 +473,15 @@ namespace SpreadsheetTests
 
         [TestMethod()]
         [ExpectedException(typeof(InvalidNameException))]
-        public void GetWithNumberAtFirst()
+        public void GetValueWithSingleNumber()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.GetCellValue("1");
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void GetContentsWithNumberAtFirst()
         {
             Spreadsheet sheet = new Spreadsheet();
             sheet.GetCellContents("1a");
@@ -421,7 +489,19 @@ namespace SpreadsheetTests
 
         [TestMethod()]
         [ExpectedException(typeof(InvalidNameException))]
-        public void GetWithRandomSymbol()
+        public void GetValueWithNumberAtFirst()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.GetCellValue("1a");
+        }
+
+
+
+
+        [TestMethod()]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void GetContentsWithRandomSymbol()
+        
         {
             Spreadsheet sheet = new Spreadsheet();
             sheet.GetCellContents("%456");
@@ -429,7 +509,15 @@ namespace SpreadsheetTests
 
         [TestMethod()]
         [ExpectedException(typeof(InvalidNameException))]
-        public void GetWithRandom()
+        public void GetValueWithRandomSymbol()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.GetCellValue("%456");
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void GetContentsWithRandom()
         {
             Spreadsheet sheet = new Spreadsheet();
             sheet.GetCellContents("a123%67");
@@ -437,12 +525,59 @@ namespace SpreadsheetTests
 
         [TestMethod()]
         [ExpectedException(typeof(InvalidNameException))]
-        public void GetNullName()
+        public void GetValueWithRandom()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.GetCellValue("a123%67");
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void GetContentsNullName()
         {
             Spreadsheet sheet = new Spreadsheet();
             sheet.GetCellContents(null);
         }
 
+        [TestMethod()]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void GetValueNullName()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.GetCellValue(null);
+        }
+
+
+        /*****************
+         * Constructor
+         * ***********/
+
+        [TestMethod()]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void IsValidFalse()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => false, s => s, "1.0");
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1 + 5");
+        }
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void IsValidFalseForFomula()
+        {
+            Spreadsheet sheet = new Spreadsheet(s =>
+            {
+                if (s == "a1" || s =="a2")
+                    return true;
+                else
+                    return false;
+            },
+            s => s, 
+            "1.0"
+            );
+
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a3 +5");
+        }
 
     }
 }

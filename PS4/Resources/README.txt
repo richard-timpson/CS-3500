@@ -73,3 +73,16 @@ Have the setcontents of cell written and tested.
 Almost have the value of the formula working. 
 
 Ended Session 10/4/18 @12:15 PM. Time spent 1:30. Total Time 6:30 hours. 
+**********************
+
+***********************
+Started Session 10/4/8/18 @3:30 pm. 
+Need to finish the values for formulas. 
+Still not sure what to do about getvalue for emtpy cell. 
+Need to work on the IsValid and Normalize delegates. 
+
+Figured out how to handle different types of cell values for the getcellvalue function
+Everything is tested well so far. 
+
+Need to start working on the Save and GetSaved methods. 
+

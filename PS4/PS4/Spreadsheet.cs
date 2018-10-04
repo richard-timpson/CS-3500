@@ -32,7 +32,7 @@ namespace SS
         }
         public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
         {
-
+            this.Version = version;
         }
         public Spreadsheet(string path, Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
         {
@@ -72,10 +72,11 @@ namespace SS
             {
                 //If the name is an exsiting cell
                 HashSet<string> NamesOfCells = new HashSet<string>(GetNamesOfAllNonemptyCells());
-                if (NamesOfCells.Contains(name))
+                string NormalizedName = Normalize(name);
+                if (NamesOfCells.Contains(NormalizedName))
                 {
                     //return it's value
-                    Cell cell = NonemptyCells[name];
+                    Cell cell = NonemptyCells[NormalizedName];
                     object value = cell.Value;
                     return value;
                 }
@@ -110,10 +111,11 @@ namespace SS
             {
                 //If the name is an exsiting cell
                 HashSet<string> NamesOfCells = new HashSet<string>(GetNamesOfAllNonemptyCells());
+                string NormalizedName = Normalize(name);
                 if (NamesOfCells.Contains(name))
                 {
                     //return it's contents
-                    Cell cell = NonemptyCells[name];
+                    Cell cell = NonemptyCells[NormalizedName];
                     object Contents = cell.Contents;
                     return Contents;
                 }
@@ -132,6 +134,7 @@ namespace SS
 
             double NumberValue = 0;
 
+            string NormalizedName = Normalize(name);
             //If content is null, throw argument null exception
             if (content == null)
             {
@@ -147,7 +150,7 @@ namespace SS
             //if content parses as double, contents of cell becomes double
             else if(double.TryParse(content, out NumberValue ))
             {
-                return SetCellContents(name, NumberValue);
+                return SetCellContents(NormalizedName, NumberValue);
             }
 
             //if contents begins with =, try to make it a formula
@@ -158,11 +161,11 @@ namespace SS
                 Formula formula = new Formula(FormulaString, Normalize, IsValid);
 
                 //Function will throw if there is a circular dependency, otherwise it will set contents of cell 
-                return SetCellContents(name, formula);
+                return SetCellContents(NormalizedName, formula);
             }
 
             //otherwise, contents of cell becomes content. if exception is not thrown, returns all the dependents of name
-            return SetCellContents(name, content);
+            return SetCellContents(NormalizedName, content);
 
         }
 
@@ -192,11 +195,9 @@ namespace SS
             if (name.Equals(null))
                 throw new ArgumentNullException();
             else if (!IsValidName(name))
-            {
                 throw new InvalidNameException();   
-            }
             else
-                return graph.GetDependents(name);
+                return graph.GetDependents(Normalize(name));
 
         }
         private ISet<string> SetCellContentsActual(String name, object ObjectContents, string type)
@@ -299,9 +300,30 @@ namespace SS
         /// <param name="number"></param>
         private void SetContentsToFormula(string name, Formula formula)
         {
-            object FormulaValue = formula.Evaluate(s => (double)GetCellValue(s));
-            Cell cell = new Cell(formula, FormulaValue);
-            NonemptyCells[name] = cell;
+            try
+            {
+                object FormulaValue = formula.Evaluate(s => CheckFormulaVariable(s));
+                Cell cell = new Cell(formula, FormulaValue);
+                NonemptyCells[name] = cell;
+
+            }
+            catch (ArgumentException)
+            {
+                Cell cell = new Cell(formula, new FormulaError());
+                NonemptyCells[name] = cell;
+            }
+
+        }
+
+        private double CheckFormulaVariable(string name)
+        {
+            object Value = GetCellValue(name);
+            if (Value.GetType() == typeof(string))
+                throw new ArgumentException();
+            else if (Value.GetType() == typeof(FormulaError))
+                throw new ArgumentException();
+            else
+                return (double)Value;
         }
 
         
@@ -353,7 +375,7 @@ namespace SS
             CellContents = contents;
             CellValue = contents;
         }
-        public Cell(Formula contents, double value)
+        public Cell(Formula contents, object value)
         {
             CellContents = contents;
             CellValue = value;
