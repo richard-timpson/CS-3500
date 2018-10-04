@@ -69,3 +69,7 @@ Started Session 10/4/18 @10:45 AM
 Got the regex working, with some good tests. 
 
 Have the setcontents of cell written and tested. 
+
+Almost have the value of the formula working. 
+
+Ended Session 10/4/18 @12:15 PM. Time spent 1:30. Total Time 6:30 hours. 
