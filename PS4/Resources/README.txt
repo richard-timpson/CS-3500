@@ -46,7 +46,7 @@ Going to take a look at the example posted on XML as well.
 
 Was working on the contents fuction before I had to quit. 
 
-Ended session 10/3/18 @10:30 AM
+Ended session 10/3/18 @10:30 AM. Time spent 1 Hours. Total Time: 3:30 hours
 ***************
 
 *****************
@@ -55,3 +55,10 @@ Need to finish the contents function
 Finished set cell contents and get cell value, but haven't tested. Working on google doc to list all test cases
 
 Paused Session 10/3/18 @ 8:30 PM
+Started Session 10/3/18 @ 9:00 PM
+
+Moved the old unit tests over so that they work with the new setcontents of cell function
+Having a problem with the regex for new valid variables. Need to get it working
+
+Ended Session 10/3/18 @ 10:00 pm Time Spent: 1:30 Hours. Total Time: 5 Hours
+********************

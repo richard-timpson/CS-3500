@@ -23,11 +23,6 @@ namespace SS
             get;
             protected set;
         }
-        public string Version
-        {
-            get;
-            set;
-        }
 
         public Spreadsheet() : base(s=> true, s => s, "default")
         {
@@ -142,7 +137,7 @@ namespace SS
             }
 
             //if name is null or invalid, throw invalid name exception
-            else if (!IsValid(name))
+            else if (!IsValidName(name))
             {
                 throw new InvalidNameException();
             }

@@ -14,26 +14,26 @@ namespace SpreadsheetTests
         {
             //Setting number
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("a1", 5);
+            sheet.SetContentsOfCell("a1", "5");
             double number = (double)(sheet.GetCellContents("a1"));
 
             double ValidNumber = 5;
             Assert.AreEqual(number, ValidNumber);
 
             //Setting string
-            sheet.SetCellContents("b1", "hello");
+            sheet.SetContentsOfCell("b1", "hello");
             string text = (string)sheet.GetCellContents("b1");
 
             Assert.AreEqual(text, "hello");
 
             //Setting Formula
 
-            Formula formula = new Formula("a1 +5", s => s, s => true);
-            sheet.SetCellContents("c1", formula);
+            sheet.SetContentsOfCell("c1", "=a1 +5");
 
             Formula TestFormula = (Formula)sheet.GetCellContents("c1");
 
-            Assert.AreEqual(formula, TestFormula);
+
+            Assert.AreEqual(sheet.GetCellContents("c1"), TestFormula);
         }
 
         [TestMethod()]
@@ -41,7 +41,7 @@ namespace SpreadsheetTests
         {
             Spreadsheet sheet = new Spreadsheet();
 
-            HashSet<string> Dependents = (HashSet<string>)sheet.SetCellContents("a1", 5);
+            HashSet<string> Dependents = (HashSet<string>)sheet.SetContentsOfCell("a1", "5");
             Assert.IsTrue(Dependents.Count == 1);
         }
 
@@ -51,17 +51,13 @@ namespace SpreadsheetTests
             Spreadsheet sheet = new Spreadsheet();
 
 
-            sheet.SetCellContents("a1", 5);
-            Formula formula = new Formula("a1+2");
-            Formula formula1 = new Formula("a2+2");
-            Formula formula2 = new Formula("a3+2");
-            Formula formula3 = new Formula("a4+2");
-            sheet.SetCellContents("a2", formula);
-            sheet.SetCellContents("a3", formula1);
-            sheet.SetCellContents("a4", formula2);
-            sheet.SetCellContents("a5", formula3);
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1+2");
+            sheet.SetContentsOfCell("a3", "=a2+2");
+            sheet.SetContentsOfCell("a4", "=a3+2");
+            sheet.SetContentsOfCell("a5", "=a4+2");
 
-            HashSet<string> Dependents = (HashSet<string>)sheet.SetCellContents("a1", 5);
+            HashSet<string> Dependents = (HashSet<string>)sheet.SetContentsOfCell("a1", "5");
             int count = 5;
             Assert.AreEqual(count, Dependents.Count);
             bool CorrectVariable = false;
@@ -78,14 +74,12 @@ namespace SpreadsheetTests
         public void SetForExistingCell()
         {
             Spreadsheet sheet = new Spreadsheet();
-            Formula formula = new Formula("a1+5", s=>s, s=>true);
-            Formula formula1 = new Formula("a3+5", s => s, s => true);
 
 
-            sheet.SetCellContents("a1", 5);
-            sheet.SetCellContents("a2", formula);
-            sheet.SetCellContents("a3", 5);
-            HashSet<string> Dependents = new HashSet<string>(sheet.SetCellContents("a2", formula1));
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1+5");
+            sheet.SetContentsOfCell("a3", "5");
+            HashSet<string> Dependents = new HashSet<string>(sheet.SetContentsOfCell("a2", "=a3+5"));
 
             Assert.IsTrue(Dependents.Count == 1);
             Assert.IsTrue(Dependents.Contains("a2"));
@@ -95,18 +89,15 @@ namespace SpreadsheetTests
         public void SetForExistingCell1()
         {
             Spreadsheet sheet = new Spreadsheet();
-            Formula formula = new Formula("a1+5", s => s, s => true);
-            Formula formula1 = new Formula("a2+5", s => s, s => true);
-            Formula formula2 = new Formula("a3+5", s => s, s => true);
 
 
 
-            sheet.SetCellContents("a1", 5);
-            sheet.SetCellContents("a2", formula);
-            sheet.SetCellContents("a3", formula1);
-            sheet.SetCellContents("a4", formula2);
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1+5");
+            sheet.SetContentsOfCell("a3", "=a2+5");
+            sheet.SetContentsOfCell("a4", "=a3+5");
 
-            HashSet<string> Dependents = new HashSet<string>(sheet.SetCellContents("a1", 5));
+            HashSet<string> Dependents = new HashSet<string>(sheet.SetContentsOfCell("a1", "5"));
 
             HashSet<string> CorrectDependents = new HashSet<string>();
             CorrectDependents.Add("a1");
@@ -125,41 +116,28 @@ namespace SpreadsheetTests
 
             Formula formula = new Formula("a1+5", s => s, s => true);
 
-            sheet.SetCellContents("a1", 5);
-            sheet.SetCellContents("a", "hello");
-            sheet.SetCellContents("_", formula);
-            sheet.SetCellContents("_1", 5);
-            sheet.SetCellContents("Y_15", "hello");
-            sheet.SetCellContents("____", formula);
-            sheet.SetCellContents("a11111111", 5);
-            sheet.SetCellContents("aaaaaaaaaa", "hello");
-            sheet.SetCellContents("a______", formula);
-            sheet.SetCellContents("a_2_43_42345__345", 5);
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a", "hello");
+            sheet.SetContentsOfCell("a1111111", "=a1+5");
+            sheet.SetContentsOfCell("abcdefghijklmnopqrstuvwzyz0123456789", "hello");
+            sheet.SetContentsOfCell("aaaaaaaaaa1", "=a1+5");
+     
 
 
             double d1 = (double)sheet.GetCellContents("a1");
             string s1 = (string)sheet.GetCellContents("a");
-            Formula f1 = (Formula)sheet.GetCellContents("_");
-            double d2 = (double)sheet.GetCellContents("_1");
-            string s2 = (string)sheet.GetCellContents("Y_15");
-            Formula f2 = (Formula)sheet.GetCellContents("____");
-            double d3 = (double)sheet.GetCellContents("a11111111");
-            string s3 = (string)sheet.GetCellContents("aaaaaaaaaa");
-            Formula f3 = (Formula)sheet.GetCellContents("a______");
-            double d4 = (double)sheet.GetCellContents("a_2_43_42345__345");
+            Formula f1 = (Formula)sheet.GetCellContents("a1111111");
+            string s2 = (string)sheet.GetCellContents("abcdefghijklmnopqrstuvwzyz0123456789");
+            Formula f2 = (Formula)sheet.GetCellContents("aaaaaaaaaa1");
+            
 
             Assert.AreEqual(d1, 5);
-            Assert.AreEqual(d2, 5);
-            Assert.AreEqual(d3, 5);
-            Assert.AreEqual(d4, 5);
 
             Assert.AreEqual(s1, "hello");
             Assert.AreEqual(s2, "hello");
-            Assert.AreEqual(s3, "hello");
 
-            Assert.AreEqual(f3, formula);
-            Assert.AreEqual(f3, formula);
-            Assert.AreEqual(f3, formula);
+            Assert.AreEqual(f1, formula);
+            Assert.AreEqual(f2, formula);
         }
 
         [TestMethod()]
@@ -176,7 +154,7 @@ namespace SpreadsheetTests
         {
             Spreadsheet sheet = new Spreadsheet();
 
-            sheet.SetCellContents("a1", 5);
+            sheet.SetContentsOfCell("a1", "5");
 
             IEnumerator<string> names = sheet.GetNamesOfAllNonemptyCells().GetEnumerator();
 
@@ -192,15 +170,14 @@ namespace SpreadsheetTests
         public void GetNamesForMultipleCells()
         {
             Spreadsheet sheet = new Spreadsheet();
-            Formula formula = new Formula("a1+5", s => s, s => true);
 
 
-            sheet.SetCellContents("a1", 5);
-            sheet.SetCellContents("a2", 5);
-            sheet.SetCellContents("a3", "hello");
-            sheet.SetCellContents("a4", formula);
-            sheet.SetCellContents("a5", 5);
-            sheet.SetCellContents("a6", "hello");
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "5");
+            sheet.SetContentsOfCell("a3", "hello");
+            sheet.SetContentsOfCell("a4", "=a1+5");
+            sheet.SetContentsOfCell("a5", "5");
+            sheet.SetContentsOfCell("a6", "hello");
 
 
             IEnumerator<string> names = sheet.GetNamesOfAllNonemptyCells().GetEnumerator();
@@ -238,7 +215,7 @@ namespace SpreadsheetTests
         public void SetWithSingleNumber()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("1", 5);
+            sheet.SetContentsOfCell("1", "5");
         }
 
         [TestMethod()]
@@ -246,7 +223,7 @@ namespace SpreadsheetTests
         public void SetWithNumberAtFirst()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("1a", 5);
+            sheet.SetContentsOfCell("1a", "5");
         }
 
         [TestMethod()]
@@ -254,7 +231,7 @@ namespace SpreadsheetTests
         public void SetWithRandomSymbol()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("%456", 5);
+            sheet.SetContentsOfCell("%456", "5");
         }
 
         [TestMethod()]
@@ -262,7 +239,7 @@ namespace SpreadsheetTests
         public void SetWithRandom()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("a123%67", 5);
+            sheet.SetContentsOfCell("a123%67", "5");
         }
 
         [TestMethod()]
@@ -270,7 +247,7 @@ namespace SpreadsheetTests
         public void SetNullName()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents(null, 5);
+            sheet.SetContentsOfCell(null, "5");
         }
 
         [TestMethod()]
@@ -279,17 +256,17 @@ namespace SpreadsheetTests
         {
             Spreadsheet sheet = new Spreadsheet();
             string test = null;
-            sheet.SetCellContents("a1", test);
+            sheet.SetContentsOfCell("a1", test);
         }
 
-        [TestMethod()]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void SetNullFormula()
-        {
-            Spreadsheet sheet = new Spreadsheet();
-            Formula test = null;
-            sheet.SetCellContents("a1", test);
-        }
+        //[TestMethod()]
+        //[ExpectedException(typeof(ArgumentNullException))]
+        //public void SetNullFormula()
+        //{
+        //    Spreadsheet sheet = new Spreadsheet();
+        //    Formula test = null;
+        //    sheet.SetContentsOfCell("a1", test);
+        //}
 
         [TestMethod()]
         public void SetReturnsWithMultipleWrong()
@@ -297,17 +274,13 @@ namespace SpreadsheetTests
             Spreadsheet sheet = new Spreadsheet();
 
 
-            sheet.SetCellContents("a1", 5);
-            Formula formula = new Formula("a1+2");
-            Formula formula1 = new Formula("a2+2");
-            Formula formula2 = new Formula("a3+2");
-            Formula formula3 = new Formula("a6+2");
-            sheet.SetCellContents("a2", formula);
-            sheet.SetCellContents("a3", formula1);
-            sheet.SetCellContents("a4", formula2);
-            sheet.SetCellContents("a5", formula3);
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1+2");
+            sheet.SetContentsOfCell("a3", "=a2+2");
+            sheet.SetContentsOfCell("a4", "=a3+2");
+            sheet.SetContentsOfCell("a5", "=a6+2");
 
-            HashSet<string> Dependents = (HashSet<string>)sheet.SetCellContents("a1", 5);
+            HashSet<string> Dependents = (HashSet<string>)sheet.SetContentsOfCell("a1", "5");
             int count = 4;
             Assert.AreEqual(count, Dependents.Count);
             bool CorrectVariable = true;
@@ -325,12 +298,10 @@ namespace SpreadsheetTests
         {
             Spreadsheet sheet = new Spreadsheet();
 
-            sheet.SetCellContents("a1", 5);
+            sheet.SetContentsOfCell("a1", "5");
 
-            Formula formula = new Formula("a3 +2");
-            Formula formula1 = new Formula("a2 + 2");
-            sheet.SetCellContents("a2", formula);
-            sheet.SetCellContents("a3", formula1);
+            sheet.SetContentsOfCell("a2", "=a3 +2");
+            sheet.SetContentsOfCell("a3", "=a2 + 2");
         }
 
         [TestMethod()]
@@ -338,14 +309,12 @@ namespace SpreadsheetTests
         {
             Spreadsheet sheet = new Spreadsheet();
 
-            sheet.SetCellContents("a1", 5);
+            sheet.SetContentsOfCell("a1", "5");
 
-            Formula formula = new Formula("a3 +2");
-            Formula formula1 = new Formula("a2 + 2");
-            sheet.SetCellContents("a2", formula);
+            sheet.SetContentsOfCell("a2", "=a3 +2");
             try
             {
-                sheet.SetCellContents("a3", formula1);
+                sheet.SetContentsOfCell("a3", "=a2 + 2");
             }
             catch(CircularException e)
             {
@@ -360,30 +329,25 @@ namespace SpreadsheetTests
         {
             Spreadsheet sheet = new Spreadsheet();
 
-            sheet.SetCellContents("a1", 5);
+            sheet.SetContentsOfCell("a1", "5");
 
-            Formula formula2 = new Formula("a1 +5", s => s, s => true);
-            sheet.SetCellContents("a2", formula2);
+            sheet.SetContentsOfCell("a2", "=a1 +5");
 
-            Formula formula3 = new Formula("a2 +5", s => s, s => true);
-            sheet.SetCellContents("a3", formula3);
+            sheet.SetContentsOfCell("a3", "=a2 +5");
 
-            Formula formula4 = new Formula("a3 +5", s => s, s => true);
-            sheet.SetCellContents("a4", formula4);
+            sheet.SetContentsOfCell("a4", "=a3 +5");
 
-            Formula formula5 = new Formula("a4 +5", s => s, s => true);
-            sheet.SetCellContents("a5", formula5);
+            sheet.SetContentsOfCell("a5", "=a4 +5");
 
-            HashSet<string> DentsBeforeCircExcep = new HashSet<string>(sheet.SetCellContents("a1", 5));
+            HashSet<string> DentsBeforeCircExcep = new HashSet<string>(sheet.SetContentsOfCell("a1", "5"));
 
-            Formula BadFormula = new Formula("a1", s => s, s => true);
             try
             {
-                sheet.SetCellContents("a3", BadFormula);
+                sheet.SetContentsOfCell("a3", "=a1");
             }
             catch(CircularException E)
             {
-                HashSet<string> DentsAfterCircExcep = new HashSet<string>(sheet.SetCellContents("a1", 5));
+                HashSet<string> DentsAfterCircExcep = new HashSet<string>(sheet.SetContentsOfCell("a1", "5"));
                 Assert.IsTrue(DentsBeforeCircExcep.SetEquals(DentsAfterCircExcep));
             }
         }
