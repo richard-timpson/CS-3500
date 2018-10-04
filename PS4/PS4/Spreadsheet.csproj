@@ -50,15 +50,5 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spreadsheet.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Cell\Cell.csproj">
-      <Project>{14562a88-fc94-460b-918f-a7bf0732b5a0}</Project>
-      <Name>Cell</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Resources\Resources.csproj">
-      <Project>{1716edd4-1950-4024-a95a-2f8af41bfa85}</Project>
-      <Name>Resources</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
