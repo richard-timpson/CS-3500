@@ -134,23 +134,25 @@ namespace SS
         { 
 
             double NumberValue = 0;
-            ISet<string> DirectDependents = new HashSet<string>();
+
             //If content is null, throw argument null exception
             if (content == null)
             {
                 throw new ArgumentNullException();
             }
+
             //if name is null or invalid, throw invalid name exception
-            else if (name == null || !IsValidCellVariable(name))
+            else if (!IsValid(name))
             {
                 throw new InvalidNameException();
             }
+
             //if content parses as double, contents of cell becomes double
             else if(double.TryParse(content, out NumberValue ))
             {
-                Cell DoubleCell = new Cell(content);
-                NonemptyCells[name] = DoubleCell;
+                return SetCellContents(name, NumberValue);
             }
+
             //if contents begins with =, try to make it a formula
             else if (content[0] == '=')
             {
@@ -158,19 +160,13 @@ namespace SS
                 string FormulaString = content.Remove(0, 1);
                 Formula formula = new Formula(FormulaString, Normalize, IsValid);
 
-                //if changing contents of cell to formula would cause circular dependency, throw circularexception
-                Cell FormulaCell = new Cell(formula);
-                NonemptyCells[name] = FormulaCell;
-                DirectDependents = new HashSet<string>(GetCellsToRecalculate(name));
-
-                //Otherwise, contents of cell becomes f
+                //Function will throw if there is a circular dependency, otherwise it will set contents of cell 
+                return SetCellContents(name, formula);
             }
-            //otherwise, contents of cell becomes content. 
-            Cell StringCell = new Cell(content);
-            NonemptyCells[name] = StringCell;
-            //if exception is not thrown, returns all the dependents of name
 
-            throw new NotImplementedException();
+            //otherwise, contents of cell becomes content. if exception is not thrown, returns all the dependents of name
+            return SetCellContents(name, content);
+
         }
 
         protected override ISet<String> SetCellContents(String name, double number)
@@ -219,51 +215,47 @@ namespace SS
         }
         private ISet<string> SetCellContentsActual(String name, object ObjectContents, string type)
         {
-            // If valid name 
-            if (IsValidName(name))
+            
+            // Get current cells variables, if it is a formula
+            object CurrentCellContents = GetCellContents(name);
+            List<string> CurrentDependees = new List<string>();
+
+            if (CurrentCellContents.GetType() == typeof(Formula))
             {
-                // Get current cells variables, if it is a formula
-                object CurrentCellContents = GetCellContents(name);
-                List<string> CurrentDependees = new List<string>();
-
-                if (CurrentCellContents.GetType() == typeof(Formula))
-                {
-                    Formula CurrentCellFormula = (Formula)CurrentCellContents;
-                    CurrentDependees = new List<string>(CurrentCellFormula.GetVariables());
-                }
-
-                //Get new formula's variables. 
-                List<string> ReplaceDependees = new List<string>();
-                if (type == "formula")
-                {
-                    Formula formula = (Formula)ObjectContents;
-                    ReplaceDependees = new List<string>(formula.GetVariables());
-                }
-
-                //replace the dependees 
-                graph.ReplaceDependees(name, ReplaceDependees);
-
-                //Try getting the cells to recalculate
-                try
-                {
-                    //Checking for circular dependency
-                    ISet<string> AllDependents = new HashSet<string>(GetCellsToRecalculate(name));
-
-                    //If exception wasn't caught, set the content to new object, and return AllDependents
-                    SetContentByType(name, ObjectContents, type);
-                    return AllDependents;
-                }
-                //If exception is caught
-                catch(CircularException E)
-                {
-                    //replace dependees with old variables
-                    graph.ReplaceDependees(name, CurrentDependees);
-
-                    //throw the exception again
-                    throw new CircularException();
-                }
+                Formula CurrentCellFormula = (Formula)CurrentCellContents;
+                CurrentDependees = new List<string>(CurrentCellFormula.GetVariables());
             }
-            throw new InvalidNameException();
+
+            //Get new formula's variables. 
+            List<string> ReplaceDependees = new List<string>();
+            if (type == "formula")
+            {
+                Formula formula = (Formula)ObjectContents;
+                ReplaceDependees = new List<string>(formula.GetVariables());
+            }
+
+            //replace the dependees 
+            graph.ReplaceDependees(name, ReplaceDependees);
+
+            //Try getting the cells to recalculate
+            try
+            {
+                //Checking for circular dependency
+                ISet<string> AllDependents = new HashSet<string>(GetCellsToRecalculate(name));
+
+                //If exception wasn't caught, set the content to new object, and return AllDependents
+                SetContentByType(name, ObjectContents, type);
+                return AllDependents;
+            }
+            //If exception is caught
+            catch(CircularException E)
+            {
+                //replace dependees with old variables
+                graph.ReplaceDependees(name, CurrentDependees);
+
+                //throw the exception again
+                throw new CircularException();
+            }
         }
 
         /// <summary>
@@ -337,7 +329,7 @@ namespace SS
             if (name != null && Regex.IsMatch(name, varPattern) && IsValid(name))
                 return true;
             else
-                throw new InvalidNameException();
+                return false;
         }
 
     }
