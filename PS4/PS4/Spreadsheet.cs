@@ -299,17 +299,12 @@ namespace SS
         /// <param name="number"></param>
         private void SetContentsToFormula(string name, Formula formula)
         {
-            LookupFunc lookup = LookupDelegate;
-            double FormulaValue = formula.Evaluate(lookup);
-            Cell cell = new Cell(formula);
+            object FormulaValue = formula.Evaluate(s => (double)GetCellValue(s));
+            Cell cell = new Cell(formula, FormulaValue);
             NonemptyCells[name] = cell;
         }
 
-        private bool LookupDelegate(string name)
-        {
-            double VariableValue = (double)GetCellValue(name);
-            return VariableValue;
-        }
+        
 
         /// <summary>
         /// Helper method for validating names
