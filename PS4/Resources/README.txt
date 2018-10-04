@@ -52,3 +52,6 @@ Ended session 10/3/18 @10:30 AM
 *****************
 Beginning session 10/3/18 @8:00 PM
 Need to finish the contents function 
+Finished set cell contents and get cell value, but haven't tested. Working on google doc to list all test cases
+
+Paused Session 10/3/18 @ 8:30 PM

@@ -23,19 +23,6 @@ namespace SS
             get;
             protected set;
         }
-
-        public Func<string, bool> IsValid
-        {
-            get;
-            protected set;
-        }
-
-        public Func<string, string> Normalize
-        {
-            get;
-            protected set;
-        }
-
         public string Version
         {
             get;
@@ -95,12 +82,14 @@ namespace SS
                     object value = cell.Value;
                     return value;
                 }
+                else
+                {
+                    throw new InvalidNameException();
+                }
             }
             else
                 throw new InvalidNameException();
 
-
-            throw new NotImplementedException();
         }
 
 
@@ -159,8 +148,8 @@ namespace SS
             //if content parses as double, contents of cell becomes double
             else if(double.TryParse(content, out NumberValue ))
             {
-                Cell cell = new Cell(content);
-                NonemptyCells[name] = cell;
+                Cell DoubleCell = new Cell(content);
+                NonemptyCells[name] = DoubleCell;
             }
             //if contents begins with =, try to make it a formula
             else if (content[0] == '=')
@@ -170,15 +159,15 @@ namespace SS
                 Formula formula = new Formula(FormulaString, Normalize, IsValid);
 
                 //if changing contents of cell to formula would cause circular dependency, throw circularexception
-                Cell cell = new Cell(formula);
-                NonemptyCells[name] = cell;
+                Cell FormulaCell = new Cell(formula);
+                NonemptyCells[name] = FormulaCell;
                 DirectDependents = new HashSet<string>(GetCellsToRecalculate(name));
 
                 //Otherwise, contents of cell becomes f
             }
             //otherwise, contents of cell becomes content. 
-            Cell cell = new Cell(content);
-            NonemptyCells[name] = cell;
+            Cell StringCell = new Cell(content);
+            NonemptyCells[name] = StringCell;
             //if exception is not thrown, returns all the dependents of name
 
             throw new NotImplementedException();
@@ -341,21 +330,14 @@ namespace SS
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private bool IsValidName(string name)
+        private bool IsValidName (string name)
         {
-            String varPattern = @"^[a-zA-Z_](?:[a-zA-Z_]|\d)*$";
-            if (name != null && Regex.IsMatch(name, varPattern))
+            String varPattern = @"^[a-zA-Z](?:\d)*$";
+            //if name is not null, is a valid variable according to spreadsheet, and passes the isvalid delegate function
+            if (name != null && Regex.IsMatch(name, varPattern) && IsValid(name))
                 return true;
             else
                 throw new InvalidNameException();
-        }
-        private bool IsValidCellVariable (string name)
-        {
-            String varPattern = @"^[a-zA-Z](?:\d)*$";
-            if (Regex.IsMatch(name, varPattern))
-                return true;
-            else
-                return false;
         }
 
     }
@@ -371,6 +353,13 @@ namespace SS
             get
             {
                 return CellContents;
+            }
+        }
+        public object Value
+        {
+            get
+            {
+                return CellValue;
             }
         }
         public Cell(string contents)
