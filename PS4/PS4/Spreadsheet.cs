@@ -382,6 +382,115 @@ namespace SS
         }
         
     }
+    
+    public class XMLSpreadsheet
+    {
+        private List<XMLCell> cells;
+
+        public XMLSpreadsheet()
+        {
+            cells = new List<XMLCell>();
+        }
+
+        public void AddCell(XMLCell cell)
+        {
+            cells.Add(cell);
+        }
+
+        public void WriteXML(string filename, string version)
+        {
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = ("  ");
+
+            using (XmlWriter writer = XmlWriter.Create(filename, settings))
+            {
+                // set <spreadsheet version ="version">
+                writer.WriteStartDocument();
+                writer.WriteStartElement("spreadsheet");
+                writer.WriteAttributeString("version", version);
+
+                //writing all of the cells 
+                foreach (XMLCell cell in cells)
+                {
+                    cell.WriteXML(writer);
+                }
+
+                //ending spreadsheet element 
+                writer.WriteEndElement();
+            }
+        }
+        public static Spreadsheet ReadXML(string filename)
+        {
+            string version;
+            List<XMLCell> cells = new List<XMLCell>();
+            bool openfile = true;
+            
+            using(XmlReader reader = XmlReader.Create(filename))
+            {
+                while (openfile)
+                {
+
+                    if (reader.Read())
+                    {
+                        if (reader.Name == "spreadsheet")
+                        {
+                            version = reader.GetAttribute("version");
+                        }
+                        else if (reader.Name == "cell")
+                        {
+                            string name;
+                            string contents;
+                            //if we can't read, throw exception
+                            if (!reader.Read())
+                                throw new SpreadsheetReadWriteException("Cell values don't exist");
+
+                            if(reader.Name == "name")
+                                name = reader.Value;
+                            //if element isn't name, throw exception
+                            else
+                                throw new SpreadsheetReadWriteException("Cell not written correctly");
+
+                            //if element doesn't exist, throw exception
+                            if (!reader.Read())
+                                throw new SpreadsheetReadWriteException("Cell values don't exist");
+
+                            if (reader.Name == "contents")
+                                contents = reader.Value;
+                            //if element isn't contents, throw exception
+                            else
+                                throw new SpreadsheetReadWriteException("Cell not written in correct order");
+
+                            XMLCell cell = new XMLCell(name, contents);
+                            cells.Add(cell);
+                        }
+                    }
+                    else
+                        openfile = false;
+                }
+
+            }
+        }
+    }
+    public class XMLCell
+    {
+        private string name;
+        private string contents;
+        public XMLCell(string _name, string _contents)
+        {
+            name = _name;
+            contents = _contents;
+        }
+        public void WriteXML(XmlWriter writer)
+        {
+            writer.WriteStartElement("cell");
+            writer.WriteElementString("name", name);
+            writer.WriteElementString("cntents", contents);
+            writer.WriteEndElement();
+
+        }
+
+    }
 
 
 }
