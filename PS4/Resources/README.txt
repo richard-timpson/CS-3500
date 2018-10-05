@@ -101,3 +101,8 @@ Visual studio is having issues on my laptop. going to finish tomorrow
 
 ended Session 10/4/18 @9:30 pm. Time Spent 1 hour. Total Time 11 hours
 ************************
+
+**************************
+Started Session 3:00 PM
+Finished writing read function for xml
+Working on testing xml read and write

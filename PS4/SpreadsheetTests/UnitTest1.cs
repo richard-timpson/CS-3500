@@ -286,8 +286,78 @@ namespace SpreadsheetTests
             sheet.SetContentsOfCell("a3", "=a2 +5");
 
             sheet.Save("test.xml");
+        }
+        [TestMethod()]
+        public void SimpleSaveAndRead()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s, "1.0");
 
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1 +5");
+            sheet.SetContentsOfCell("a3", "=a2 +5");
+
+            sheet.Save("test.xml");
+
+            Spreadsheet NewSheet = new Spreadsheet("test.xml", s => true, s => s, "1.0");
+
+            Assert.AreEqual((double)5, NewSheet.GetCellContents("a1"));
+            Assert.AreEqual(new Formula("a1+5"), NewSheet.GetCellContents("a2"));
+            Assert.AreEqual(new Formula("a2 +5"), NewSheet.GetCellContents("a3"));
+
+        }
+
+        [TestMethod()]
+        public void SimpleRead()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLSimple.xml", s => true, s => s, "1.0");
+            Assert.AreEqual((double)5, sheet.GetCellContents("a1"));
+            Assert.AreEqual(new Formula("a1+5"), sheet.GetCellContents("a2"));
+            Assert.AreEqual(new Formula("a2 +5"), sheet.GetCellContents("a3"));
+        }
+
+        [TestMethod()]
+        public void SimpleChangedTrue()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+
+            sheet.SetContentsOfCell("a1", "5");
+
+            Assert.IsTrue(sheet.Changed);
+        }
+
+        [TestMethod()]
+        public void SimpleChangedFalse()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+
+            Assert.IsFalse(sheet.Changed);
+        }
+
+        [TestMethod()]
+        public void ChangedTrueOnSave()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s, "1.0");
+
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1 +5");
+            sheet.SetContentsOfCell("a3", "=a2 +5");
+
+            sheet.Save("test.xml");
+
+            Assert.IsFalse(sheet.Changed);
+
+            sheet.SetContentsOfCell("a1", "5");
+
+            Assert.IsTrue(sheet.Changed);
             
+        }
+
+        [TestMethod()]
+        public void GetSavedVersion()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            string version = sheet.GetSavedVersion("../../XMLSimple.xml");
+
         }
     }
     [TestClass]
@@ -594,6 +664,115 @@ namespace SpreadsheetTests
         }
 
         [TestMethod()]
-       
+        [ExpectedException(typeof(CircularException))]
+        public void XmlCircularDependency()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLCircularDependency.xml", s=>true, s=> s, "1.0");
+
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlInvalidVersion()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidVersion.xml", s => true, s => s, "1.1");
+
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlInvalidFilePath()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalVersion.xml", s => true, s => s, "1.0");
+
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlNullFilePath()
+        {
+            Spreadsheet sheet = new Spreadsheet(null, s => true, s => s, "1.1");
+
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlNullVersion()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalVersion.xml", s => true, s => s, null);
+
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlInvalidElement()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidElement.xml", s => true, s => s, "1.0");
+
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlInvalidElementOrder()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidElementOrder.xml", s => true, s => s, "1.0");
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void XmlInvalidFormula()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidFormula.xml", s => true, s => s, "1.0");
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void XmlInvalidVariable()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidVariable.xml", s => true, s => s, "1.0");
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlSetNullVersion()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s, null);
+
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1 +5");
+            sheet.SetContentsOfCell("a3", "=a2 +5");
+
+            sheet.Save("test.xml");
+
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlSetInvalidFilePath()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s, null);
+
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1 +5");
+            sheet.SetContentsOfCell("a3", "=a2 +5");
+
+            sheet.Save("test.x");
+
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlSetNullFilePath()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s, null);
+
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1 +5");
+            sheet.SetContentsOfCell("a3", "=a2 +5");
+
+            sheet.Save(null);
+
+        }
+
     }
 }
