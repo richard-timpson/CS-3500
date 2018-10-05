@@ -61,8 +61,34 @@ namespace SS
 
         public override void Save(string filename)
         {
-            
-            throw new NotImplementedException();
+            XMLSpreadsheet SaveSS = new XMLSpreadsheet();
+            IEnumerable<string> CellNames = GetNamesOfAllNonemptyCells();
+
+            foreach(string name in CellNames)
+            {
+                object contents = GetCellContents(name);
+
+                if (contents.GetType() == typeof(string))
+                {
+                    string StringContents = (string)contents;
+                    XMLCell StringCell = new XMLCell(name, StringContents);
+                    SaveSS.AddCell(StringCell);
+                }
+                else if (contents.GetType() == typeof(double))
+                {
+                    string DoubleContents = contents.ToString();
+                    XMLCell DoubleCell = new XMLCell(name, DoubleContents);
+                    SaveSS.AddCell(DoubleCell);
+                }
+                else if (contents.GetType() == typeof(Formula))
+                {
+                    string FormulaContents = contents.ToString();
+                    FormulaContents = "=" + FormulaContents;
+                    XMLCell FormulaCell = new XMLCell(name, FormulaContents);
+                    SaveSS.AddCell(FormulaCell);
+                }
+            }
+            SaveSS.WriteXML(filename, Version);
         }
 
         public override object GetCellValue(string name)
@@ -386,10 +412,15 @@ namespace SS
     public class XMLSpreadsheet
     {
         private List<XMLCell> cells;
-
+        string version;
         public XMLSpreadsheet()
         {
             cells = new List<XMLCell>();
+        }
+        public XMLSpreadsheet( string _version, List<XMLCell> _cells)
+        {
+            version = _version;
+            cells = _cells;
         }
 
         public void AddCell(XMLCell cell)
@@ -420,9 +451,9 @@ namespace SS
                 writer.WriteEndElement();
             }
         }
-        public static Spreadsheet ReadXML(string filename)
+        public static XMLSpreadsheet ReadXML(string filename)
         {
-            string version;
+            string version = "";
             List<XMLCell> cells = new List<XMLCell>();
             bool openfile = true;
             
@@ -468,8 +499,10 @@ namespace SS
                     else
                         openfile = false;
                 }
+                XMLSpreadsheet ReadSS = new XMLSpreadsheet(version, cells);
 
             }
+            throw new SpreadsheetReadWriteException("Error reading from file");
         }
     }
     public class XMLCell

@@ -92,3 +92,12 @@ Working on the xml reader and writer.
 
 Endend Session 10/4/18 @ 7:00 pm. Time spent 3:30 hours. Total Time 10 hours
 **********************
+
+*******************
+Started Session 10/4/18 @8:30 pm
+
+finished writing the XML classes, but wasn't able to test anything because
+Visual studio is having issues on my laptop. going to finish tomorrow
+
+ended Session 10/4/18 @9:30 pm. Time Spent 1 hour. Total Time 11 hours
+************************

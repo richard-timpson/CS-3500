@@ -275,6 +275,20 @@ namespace SpreadsheetTests
             Spreadsheet sheet = new Spreadsheet(s => true, s => s, "1.0");
             Assert.AreEqual("1.0", sheet.Version);
         }
+
+        [TestMethod()]
+        public void SimpleSave()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s, "1.0");
+
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1 +5");
+            sheet.SetContentsOfCell("a3", "=a2 +5");
+
+            sheet.Save("test.xml");
+
+            
+        }
     }
     [TestClass]
     public class InvalidTests
@@ -579,5 +593,7 @@ namespace SpreadsheetTests
             sheet.SetContentsOfCell("a2", "=a3 +5");
         }
 
+        [TestMethod()]
+       
     }
 }
