@@ -286,26 +286,7 @@ namespace SS
                 // recalculate cells
                 //return recalculate cells. 
 
-                SetContentsToDouble(NormalizedName, NumberValue);
-                AllDependents = new HashSet<string>(GetCellsToRecalculate(NormalizedName));
-                foreach (string RecalcCellName in AllDependents)
-                {
-
-                    Cell RecalcCell = NonemptyCells[RecalcCellName];
-                    object RecalcObject = RecalcCell.Contents;
-                    if (RecalcObject.GetType() == typeof(double))
-                    {
-
-                    }
-                    if(RecalcObject.GetType() == typeof(Formula))
-                    {
-                        SetContentsToFormula(RecalcCellName, (Formula)RecalcObject);
-
-                    }
-                    
-                }
-                Changed = true;
-                return AllDependents;
+                return SetCellContents(NormalizedName, NumberValue);
             }
 
             //if content starts with =, check for forumla
@@ -337,22 +318,7 @@ namespace SS
 
                 try
                 {
-                    //Checking for circular dependency
-                    AllDependents = new HashSet<string>(GetCellsToRecalculate(NormalizedName));
-
-                    //if exception wasn't caught, set the content to the formula
-                    SetContentsToFormula(NormalizedName, formula);
-
-                    //recalculate the cells
-                    foreach (string RecalcCell in AllDependents)
-                    {
-                        Cell FormulaCell = NonemptyCells[RecalcCell];
-                        formula = (Formula)FormulaCell.Contents;
-                        SetContentsToFormula(RecalcCell, formula);
-                    }
-                    Changed = true;
-                    //return the set of cells to be relcalcuated
-                    return AllDependents;
+                    return SetCellContents(NormalizedName, formula);
                 }
                 //If exception is caught
                 catch (CircularException E)
@@ -367,24 +333,7 @@ namespace SS
             }
 
             //if it's not a formula, set the contents of the cell to the string, and relcalculate the cells
-            AllDependents = new HashSet<string>(GetCellsToRecalculate(NormalizedName));
-            SetContentsToString(NormalizedName, content);
-            foreach (string RecalcCellName in AllDependents)
-            {
-                Cell RecalcCell = NonemptyCells[RecalcCellName];
-                object RecalcObject = RecalcCell.Contents;
-                if (RecalcObject.GetType() == typeof(string))
-                {
-
-                }
-                else
-                {
-                    SetContentsToFormula(RecalcCellName, (Formula)RecalcObject);
-
-                }
-            }
-            Changed = true;
-            return AllDependents;
+            return SetCellContents(NormalizedName, content);
 
 
             /*****************/
@@ -446,40 +395,79 @@ namespace SS
             //return SetCellContents(NormalizedName, content);
 
         }
-        private ISet<string> ReCalculateCells(string name, object content)
+        //private ISet<string> ReCalculateCells(string NormalizedName, object content)
+        //{
+        //    HashSet<string> AllDependents;
+        //    if (content.GetType() == typeof(double))
+        //    {
+        //        AllDependents = new HashSet<string>(GetCellsToRecalculate(NormalizedName));
+        //        SetContentsToDouble(NormalizedName, (double)content);
+        //    }
+        //    else if (content.GetType() == typeof(string))
+        //    {
+        //        AllDependents = new HashSet<string>(GetCellsToRecalculate(NormalizedName));
+        //        SetContentsToString(NormalizedName, (string)content);
+        //    }
+        //    else
+        //    {
+        //        AllDependents = new HashSet<string>(GetCellsToRecalculate(NormalizedName));
+        //        SetContentsToFormula(NormalizedName, (Formula)content);
+        //    }
+        //    foreach (string RecalcCellName in AllDependents)
+        //    {
+
+        //        Cell RecalcCell = NonemptyCells[RecalcCellName];
+        //        object RecalcObject = RecalcCell.Contents;
+        //        if (RecalcObject.GetType() == typeof(Formula))
+        //        {
+        //            SetContentsToFormula(RecalcCellName, (Formula)RecalcObject);
+        //        }
+
+        //    }
+        //    Changed = true;
+        //    return AllDependents;
+
+        //}
+        private ISet<string> ReCalculateCells(HashSet<string> AllDependents)
         {
-            HashSet<string> ReCalculateCells = new HashSet<string>(GetCellsToRecalculate(name));
-            foreach (string RecalcCell in ReCalculateCells)
+
+            foreach (string RecalcCellName in AllDependents)
             {
-                Cell FormulaCell = NonemptyCells[RecalcCell];
-                Formula formula = (Formula)FormulaCell.Contents;
-                SetContentsToFormula(RecalcCell, formula);
+                Cell RecalcCell = NonemptyCells[RecalcCellName];
+                object RecalcObject = RecalcCell.Contents;
+                if (RecalcObject.GetType() == typeof(Formula))
+                {
+                    SetContentsToFormula(RecalcCellName, (Formula)RecalcObject);
+                }
+
             }
-            return ReCalculateCells;
+            Changed = true;
+            return AllDependents;
 
         }
 
         protected override ISet<String> SetCellContents(String name, double number)
         {
-            //set contents to double
+            HashSet<string> AllDependents = new HashSet<string>(GetCellsToRecalculate(name));
             SetContentsToDouble(name, number);
-            //recalculate cells
-            return ReCalculateCells(name, number);
-            // return recalculate cells. 
+            return ReCalculateCells(AllDependents);
+
         }
 
 
         protected override ISet<String> SetCellContents(String name, String text)
         {
-            string type = "string";
-            return SetCellContentsActual(name, text, type);
+            HashSet<string> AllDependents = new HashSet<string>(GetCellsToRecalculate(name));
+            SetContentsToString(name, text);
+            return ReCalculateCells(AllDependents);
         }
 
 
         protected override ISet<String> SetCellContents(String name, Formula formula)
         {
-            string type = "formula";
-            return SetCellContentsActual(name, formula, type);
+            HashSet<string> AllDependents = new HashSet<string>(GetCellsToRecalculate(name));
+            SetContentsToFormula(name, formula);
+            return ReCalculateCells(AllDependents);
         }
 
 
