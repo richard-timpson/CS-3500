@@ -432,6 +432,14 @@ namespace SpreadsheetTests
         }
 
         [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetUtilities.FormulaFormatException))]
+        public void SetInvalidFormula1()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("a1", "=");
+        }
+
+        [TestMethod()]
         public void SetFormulaErrorEmptyCell()
         {
             Spreadsheet sheet = new Spreadsheet();
@@ -750,13 +758,13 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(SpreadsheetReadWriteException))]
         public void XmlSetInvalidFilePath()
         {
-            Spreadsheet sheet = new Spreadsheet(s => true, s => s, null);
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s, "1.0");
 
             sheet.SetContentsOfCell("a1", "5");
             sheet.SetContentsOfCell("a2", "=a1 +5");
             sheet.SetContentsOfCell("a3", "=a2 +5");
 
-            sheet.Save("test.x");
+            sheet.Save("test1.x");
 
         }
 

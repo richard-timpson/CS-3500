@@ -105,21 +105,19 @@ namespace SS
 
                 }
             }
+            catch (CircularException E)
+            {
+                throw E;
+            }
+            catch(InvalidNameException E)
+            {
+                throw E;
+            }
             catch (Exception)
             {
                 throw new SpreadsheetReadWriteException("Error reading or writing spreadsheet");
             }
-
-
-
-            XMLSpreadsheet SS = new XMLSpreadsheet(version);
-            SS = SS.ReadXML(path);
-            Version = SS.version;
-
-            foreach (XMLCell cell in SS.cells)
-            {
-                SetContentsOfCell(cell.name, cell.contents);
-            }
+            
 
         }
 
@@ -145,92 +143,10 @@ namespace SS
             }
         }
 
-        public List<Cell> ReadXML(string filename)
-        {
-            string version = "";
-            List<Cell> cells = new List<XMLCell>();
-            bool openfile = true;
-
-            XmlReaderSettings settings = new XmlReaderSettings();
-            settings.IgnoreWhitespace = true;
-            try
-            {
-                using (XmlReader reader = XmlReader.Create(filename, settings))
-                {
-                    while (openfile)
-                    {
-
-                        if (reader.Read())
-                        {
-                            if (reader.IsStartElement())
-                            {
-                                if (reader.Name == "spreadsheet")
-                                {
-                                    version = reader.GetAttribute("version");
-                                }
-                                else if (reader.Name == "cell")
-                                {
-                                    string name = "";
-                                    string contents = "";
-                                    //if we can't read, throw exception
-                                    if (!reader.Read())
-                                        throw new SpreadsheetReadWriteException("Cell values don't exist");
-
-                                    if (reader.IsStartElement())
-                                    {
-                                        if (reader.Name == "name")
-                                        {
-                                            reader.Read();
-                                            name = reader.Value;
-                                            reader.Read();
-                                        }
-                                        //if element isn't name, throw exception
-                                        else
-                                            throw new SpreadsheetReadWriteException("Cell not written correctly");
-                                    }
-                                    //if element doesn't exist, throw exception
-                                    if (!reader.Read())
-                                        throw new SpreadsheetReadWriteException("Cell values don't exist");
-                                    if (reader.IsStartElement())
-                                    {
-
-                                        if (reader.Name == "contents")
-                                        {
-                                            reader.Read();
-                                            contents = reader.Value;
-                                            reader.Read();
-                                        }
-                                        //if element isn't contents, throw exception
-                                        else
-                                            throw new SpreadsheetReadWriteException("Cell not written in correct order");
-                                    }
-                                    XMLCell cell = new XMLCell(name, contents);
-                                    cells.Add(cell);
-
-                                }
-                                else
-                                    throw new SpreadsheetReadWriteException("Invalid element property");
-                            }
-                        }
-                        else
-                            openfile = false;
-                    }
-                    if (version != this.version)
-                        throw new SpreadsheetReadWriteException("Invalid Version Number");
-                    XMLSpreadsheet ReadSS = new XMLSpreadsheet(version, cells);
-                    return ReadSS;
-
-                }
-            }
-            catch (Exception)
-            {
-                throw new SpreadsheetReadWriteException("Error reading or writing spreadsheet");
-            }
-        }
-
         public override void Save(string filename)
         {
-
+            if (Version == null)
+                throw new SpreadsheetReadWriteException("Trying to save null version");
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.IndentChars = ("  ");
@@ -269,6 +185,7 @@ namespace SS
                     }
                     //ending spreadsheet element 
                     writer.WriteEndElement();
+                    writer.WriteEndDocument();
                 }
             }
             catch (Exception)
@@ -278,13 +195,7 @@ namespace SS
             Changed = false;
         }
 
-        private void WriteXML(XmlWriter writer, string name, string contents)
-        {
-                writer.WriteStartElement("cell");
-                writer.WriteElementString("name", name);
-                writer.WriteElementString("contents", contents);
-                writer.WriteEndElement();
-        }
+
 
         public override object GetCellValue(string name)
         {
@@ -565,7 +476,13 @@ namespace SS
                 return false;
         }
 
-
+        private void WriteXML(XmlWriter writer, string name, string contents)
+        {
+            writer.WriteStartElement("cell");
+            writer.WriteElementString("name", name);
+            writer.WriteElementString("contents", contents);
+            writer.WriteEndElement();
+        }
 
 
     }
