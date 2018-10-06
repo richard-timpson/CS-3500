@@ -238,12 +238,6 @@ namespace SpreadsheetTests
 
         }
 
-        /*******************
-         * Constructor Tests
-         *******************/
-
-
-
         [TestMethod()]
         public void SimpleNormalize()
         {
@@ -357,6 +351,69 @@ namespace SpreadsheetTests
         {
             Spreadsheet sheet = new Spreadsheet();
             string version = sheet.GetSavedVersion("../../XMLSimple.xml");
+
+        }
+
+        [TestMethod()]
+        public void StressTest1()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s.ToUpper(), "1.0");
+
+            sheet.SetContentsOfCell("a1", "5");
+            sheet.SetContentsOfCell("a2", "=a1+5");
+            sheet.SetContentsOfCell("a3", "=a2+5");
+            sheet.SetContentsOfCell("a4", "=a3+5");
+            sheet.SetContentsOfCell("a5", "=a4+5");
+            sheet.SetContentsOfCell("a6", "=a5+5");
+            sheet.SetContentsOfCell("a7", "=a6+5");
+            sheet.SetContentsOfCell("a8", "=a7+5");
+            sheet.SetContentsOfCell("a9", "=a8+5");
+
+            Assert.AreEqual((double)45, sheet.GetCellValue("a9"));
+            sheet.Save("StressTest1.xml");
+
+            Assert.IsFalse(sheet.Changed);
+
+            sheet.SetContentsOfCell("a5", "5");
+            sheet.SetContentsOfCell("a6", "=a5+5");
+            sheet.SetContentsOfCell("a7", "=a6+5");
+            sheet.SetContentsOfCell("a8", "=a7+5");
+            sheet.SetContentsOfCell("a9", "=a8+5");
+            Assert.IsTrue(sheet.Changed);
+            sheet.SetContentsOfCell("a10", "=a9+5");
+            sheet.SetContentsOfCell("a11", "=a10+5");
+            sheet.SetContentsOfCell("a12", "=a11+5");
+            sheet.SetContentsOfCell("a13", "=a12+5");
+            Assert.AreEqual((double)45, sheet.GetCellValue("a13"));
+            sheet.Save("StressTest1.xml");
+
+            Assert.AreEqual("1.0", sheet.GetSavedVersion("StressTest1.xml"));
+
+            Spreadsheet NewSheet = new Spreadsheet("StressTest1.xml", s => true, s => s.ToLower(), "1.0");
+
+            Assert.AreEqual((double)45, NewSheet.GetCellValue("a13"));
+            NewSheet.SetContentsOfCell("a1", "10");
+
+            Assert.IsTrue(NewSheet.Changed);
+
+            Assert.AreEqual((double)10, NewSheet.GetCellContents("a1"));
+            Assert.AreEqual(new Formula("a5+5"), NewSheet.GetCellContents("a6"));
+            Assert.AreEqual((double)20, NewSheet.GetCellValue("a4"));
+
+            NewSheet.SetContentsOfCell("a5", "=a4+5");
+            Assert.AreEqual((double)70, NewSheet.GetCellValue("a13"));
+
+
+            Assert.IsTrue(NewSheet.Changed);
+            NewSheet.Save("StressTest1-1.xml");
+            Assert.IsFalse(NewSheet.Changed);
+
+            HashSet<string> names = new HashSet<string>(NewSheet.GetNamesOfAllNonemptyCells());
+
+            Assert.AreEqual(13, names.Count);
+
+
+
 
         }
     }

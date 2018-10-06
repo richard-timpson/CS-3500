@@ -114,6 +114,10 @@ namespace SS
             {
                 throw E;
             }
+            catch(SpreadsheetReadWriteException E)
+            {
+                throw E;
+            }
             catch (Exception)
             {
                 throw new SpreadsheetReadWriteException("Error reading or writing spreadsheet");
@@ -294,7 +298,18 @@ namespace SS
                 Formula formula = new Formula(FormulaString, Normalize, IsValid);
 
                 //Function will throw if there is a circular dependency, otherwise it will set contents of cell 
-                return SetCellContents(NormalizedName, formula);
+                HashSet<string> RecalculateCells = new HashSet<string>(SetCellContents(NormalizedName, formula));
+                foreach( string RecalculateName in RecalculateCells)
+                {
+                    HashSet<string> NonEmptyCellNames = new HashSet<string>(GetNamesOfAllNonemptyCells());
+                    if (NonEmptyCellNames.Contains(RecalculateName))
+                    {
+                        if(GetCellContents(RecalculateName).GetType() == typeof(Formula))
+                        {
+                            NonemptyCells[RecalculateName].ReCalculate();
+                        }
+                    }
+                }
             }
 
             //otherwise, contents of cell becomes content. if exception is not thrown, returns all the dependents of name
@@ -523,6 +538,11 @@ namespace SS
             CellContents = contents;
             CellValue = value;
         }
+
+        public void ReCalculate()
+        {
+
+        }
         public void WriteXML(XmlWriter writer, string name)
         {
             writer.WriteStartElement("cell");
@@ -532,160 +552,7 @@ namespace SS
 
         }
 
-    }
-
-    public class XMLSpreadsheet
-    {
-
-        public string version{ get; private set; }
-
-        public List<XMLCell> cells { get; private set; }
-
-        public XMLSpreadsheet(string _version)
-        {
-            if (_version == null)
-                throw new SpreadsheetReadWriteException("Setting null version");
-            else 
-                version = _version;
-
-            cells = new List<XMLCell>();
-        }
-        public XMLSpreadsheet( string _version, List<XMLCell> _cells)
-        {
-            version = _version;
-            cells = _cells;
-        }
-
-        public void AddCell(XMLCell cell)
-        {
-            cells.Add(cell);
-        }
-
-        public void WriteXML(string filename)
-        {
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.IndentChars = ("  ");
-
-            using (XmlWriter writer = XmlWriter.Create(filename, settings))
-            {
-                // set <spreadsheet version ="version">
-                writer.WriteStartDocument();
-                writer.WriteStartElement("spreadsheet");
-                writer.WriteAttributeString("version", version);
-
-                //writing all of the cells 
-                foreach (XMLCell cell in cells)
-                {
-                    cell.WriteXML(writer);
-                }
-
-                //ending spreadsheet element 
-                writer.WriteEndElement();
-            }
-        }
-        public  XMLSpreadsheet ReadXML(string filename)
-        {
-            string version = "";
-            List<XMLCell> cells = new List<XMLCell>();
-            bool openfile = true;
-
-            XmlReaderSettings settings = new XmlReaderSettings();
-            settings.IgnoreWhitespace = true;
-            try
-            {
-                using (XmlReader reader = XmlReader.Create(filename, settings))
-                {
-                    while (openfile)
-                    {
-
-                        if (reader.Read())
-                        {
-                            if (reader.IsStartElement())
-                            {
-                                if (reader.Name == "spreadsheet")
-                                {
-                                    version = reader.GetAttribute("version");
-                                }
-                                else if (reader.Name == "cell")
-                                {
-                                    string name = "";
-                                    string contents = "";
-                                    //if we can't read, throw exception
-                                    if (!reader.Read())
-                                        throw new SpreadsheetReadWriteException("Cell values don't exist");
-
-                                    if (reader.IsStartElement())
-                                    {
-                                        if (reader.Name == "name")
-                                        {
-                                            reader.Read();
-                                            name = reader.Value;
-                                            reader.Read();
-                                        }
-                                        //if element isn't name, throw exception
-                                        else
-                                            throw new SpreadsheetReadWriteException("Cell not written correctly");
-                                    }
-                                    //if element doesn't exist, throw exception
-                                    if (!reader.Read())
-                                        throw new SpreadsheetReadWriteException("Cell values don't exist");
-                                    if (reader.IsStartElement())
-                                    {
-
-                                        if (reader.Name == "contents")
-                                        {
-                                            reader.Read();
-                                            contents = reader.Value;
-                                            reader.Read();
-                                        }
-                                        //if element isn't contents, throw exception
-                                        else
-                                            throw new SpreadsheetReadWriteException("Cell not written in correct order");
-                                    }
-                                    XMLCell cell = new XMLCell(name, contents);
-                                    cells.Add(cell);
-
-                                }
-                                else
-                                    throw new SpreadsheetReadWriteException("Invalid element property");
-                            }
-                        }
-                        else
-                            openfile = false;
-                    }
-                    if (version != this.version)
-                        throw new SpreadsheetReadWriteException("Invalid Version Number");
-                    XMLSpreadsheet ReadSS = new XMLSpreadsheet(version, cells);
-                    return ReadSS;
-
-                }
-            }
-            catch (Exception)
-            {
-                throw new SpreadsheetReadWriteException("Error reading or writing spreadsheet");
-            }
-        }
-    }
-    public class XMLCell
-    {
-        public string name { get; private set; }
-        public string contents { get; private set; }
-        public XMLCell(string _name, string _contents)
-        {
-            name = _name;
-            contents = _contents;
-        }
-        public void WriteXML(XmlWriter writer)
-        {
-            writer.WriteStartElement("cell");
-            writer.WriteElementString("name", name);
-            writer.WriteElementString("contents", contents);
-            writer.WriteEndElement();
-
-        }
 
     }
-
 
 }
