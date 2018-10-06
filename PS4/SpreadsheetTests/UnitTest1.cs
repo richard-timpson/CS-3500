@@ -398,7 +398,7 @@ namespace SpreadsheetTests
 
             Assert.AreEqual((double)10, NewSheet.GetCellContents("a1"));
             Assert.AreEqual(new Formula("a5+5"), NewSheet.GetCellContents("a6"));
-            Assert.AreEqual((double)20, NewSheet.GetCellValue("a4"));
+            Assert.AreEqual((double)25, NewSheet.GetCellValue("a4"));
 
             NewSheet.SetContentsOfCell("a5", "=a4+5");
             Assert.AreEqual((double)70, NewSheet.GetCellValue("a13"));
@@ -412,9 +412,36 @@ namespace SpreadsheetTests
 
             Assert.AreEqual(13, names.Count);
 
+        }
+        [TestMethod()]
+        public void RecalculateTest1()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s.ToUpper(), "1.0");
 
+            sheet.SetContentsOfCell("a1", "10");
+            sheet.SetContentsOfCell("b1", "10");
+            sheet.SetContentsOfCell("c1", "10");
+            sheet.SetContentsOfCell("d1", "10");
+            sheet.SetContentsOfCell("e1", "10");
+            sheet.SetContentsOfCell("f1", "10");
+            sheet.SetContentsOfCell("g1", "10");
+            sheet.SetContentsOfCell("h1", "10");
+            sheet.SetContentsOfCell("i1", "10");
+            sheet.SetContentsOfCell("j1", "10");
 
+            sheet.SetContentsOfCell("a2", "=a1+b1+c1+d1+e1+f1+g1+h1+i1+j1");
+            sheet.SetContentsOfCell("b2", "=A2+B1+C1+D1+E1+F1+G1+H1+I1+J1");
+            sheet.SetContentsOfCell("c2", "=B2+A2");
 
+            sheet.SetContentsOfCell("a3", "=A2+B2+C2");
+
+            double CellValue = (double)sheet.GetCellValue("a3");
+            Assert.AreEqual((double)580, CellValue);
+
+            sheet.SetContentsOfCell("a1", "1");
+
+            CellValue = (double)sheet.GetCellValue("a3");
+            Assert.AreEqual((double)544, CellValue);
         }
     }
     [TestClass]

@@ -119,3 +119,11 @@ need to rewrite the set contents of cell to get it to recalculate all cells
 Also need to make sure that all code is refactored, tested well, and is documented
 Hoping to finish today in the next 2 hours. 
 
+
+Pseudocode for setcontents of cell fuction
+
+check if null or invalid, throw exception
+if it is a double, change the contents (and value of the cell) to a double, and recalculate all other cells
+If it is a string, change the contents(and value of the cell) to a string, and recalculate all other cells
+If it a string starts with equal(make sure that you can parse as a formula). If changing formula would cause circular dependency, throw error. 
+Otherwise, chang the contents to a formula, and recalculate the value of all other cells. 
