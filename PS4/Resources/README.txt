@@ -127,3 +127,13 @@ if it is a double, change the contents (and value of the cell) to a double, and 
 If it is a string, change the contents(and value of the cell) to a string, and recalculate all other cells
 If it a string starts with equal(make sure that you can parse as a formula). If changing formula would cause circular dependency, throw error. 
 Otherwise, chang the contents to a formula, and recalculate the value of all other cells. 
+
+Paused Session 10/6/18 @11:30pm Total Time 1:45
+
+************************
+Started Session 10/6/18 @ 4:00 pm
+Needed to refactor code so that recalculate would work. Got it working
+Ran the tests from PS4, and the stress tests are failing. Need to check out why, and see if I can fix
+
+Ended Session 10/6/18 @6:00 pm. Time: 2:00 + 1:45 = 3:45. total Time 20 hours
+

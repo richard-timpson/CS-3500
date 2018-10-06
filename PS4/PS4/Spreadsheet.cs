@@ -283,9 +283,7 @@ namespace SS
             else if (double.TryParse(content, out NumberValue))
             {
                 //set content to double
-                // recalculate cells
                 //return recalculate cells. 
-
                 return SetCellContents(NormalizedName, NumberValue);
             }
 
@@ -318,6 +316,8 @@ namespace SS
 
                 try
                 {
+                    //if circular exception is thrown, will catch
+                    //otherwise will return recalculate values and return dependents
                     return SetCellContents(NormalizedName, formula);
                 }
                 //If exception is caught
@@ -331,110 +331,19 @@ namespace SS
                 }
 
             }
-
             //if it's not a formula, set the contents of the cell to the string, and relcalculate the cells
             return SetCellContents(NormalizedName, content);
-
-
-            /*****************/
-
-
-
-
-            
-
-            //if no exception, set contents of cell to formula, and cells recalculate
-            //if content doesn't start with =, set contents of cell to string, and cells recalculate
-
-
-
-            //double NumberValue = 0;
-
-            //string NormalizedName = Normalize(name);
-            ////If content is null, throw argument null exception
-            //if (content == null)
-            //{
-            //    throw new ArgumentNullException();
-            //}
-
-            ////if name is null or invalid, throw invalid name exception
-            //else if (!IsValidName(name))
-            //{
-            //    throw new InvalidNameException();
-            //}
-
-            ////if content parses as double, contents of cell becomes double
-            //else if(double.TryParse(content, out NumberValue ))
-            //{
-            //    return  SetCellContents(NormalizedName, NumberValue);
-            //}
-
-            ////if contents begins with =, try to make it a formula
-            //else if (content[0] == '=')
-            //{
-            //    //if formula string cannot be parsed to formula, it will throw
-            //    string FormulaString = content.Remove(0, 1);
-            //    Formula formula = new Formula(FormulaString, Normalize, IsValid);
-
-            //    //Function will throw if there is a circular dependency, otherwise it will set contents of cell 
-            //    HashSet<string> RecalculateCells = new HashSet<string>(SetCellContents(NormalizedName, formula));
-            //    foreach( string RecalculateName in RecalculateCells)
-            //    {
-            //        HashSet<string> NonEmptyCellNames = new HashSet<string>(GetNamesOfAllNonemptyCells());
-            //        if (NonEmptyCellNames.Contains(RecalculateName))
-            //        {
-            //            if(GetCellContents(RecalculateName).GetType() == typeof(Formula))
-            //            {
-            //                NonemptyCells[RecalculateName].ReCalculate();
-            //            }
-            //        }
-            //    }
-            //}
-
-            ////otherwise, contents of cell becomes content. if exception is not thrown, returns all the dependents of name
-            //return SetCellContents(NormalizedName, content);
-
         }
-        //private ISet<string> ReCalculateCells(string NormalizedName, object content)
-        //{
-        //    HashSet<string> AllDependents;
-        //    if (content.GetType() == typeof(double))
-        //    {
-        //        AllDependents = new HashSet<string>(GetCellsToRecalculate(NormalizedName));
-        //        SetContentsToDouble(NormalizedName, (double)content);
-        //    }
-        //    else if (content.GetType() == typeof(string))
-        //    {
-        //        AllDependents = new HashSet<string>(GetCellsToRecalculate(NormalizedName));
-        //        SetContentsToString(NormalizedName, (string)content);
-        //    }
-        //    else
-        //    {
-        //        AllDependents = new HashSet<string>(GetCellsToRecalculate(NormalizedName));
-        //        SetContentsToFormula(NormalizedName, (Formula)content);
-        //    }
-        //    foreach (string RecalcCellName in AllDependents)
-        //    {
-
-        //        Cell RecalcCell = NonemptyCells[RecalcCellName];
-        //        object RecalcObject = RecalcCell.Contents;
-        //        if (RecalcObject.GetType() == typeof(Formula))
-        //        {
-        //            SetContentsToFormula(RecalcCellName, (Formula)RecalcObject);
-        //        }
-
-        //    }
-        //    Changed = true;
-        //    return AllDependents;
-
-        //}
+      
         private ISet<string> ReCalculateCells(HashSet<string> AllDependents)
         {
-
+            //looping through all variables to recalculate
             foreach (string RecalcCellName in AllDependents)
             {
+                //getting the value of the variables
                 Cell RecalcCell = NonemptyCells[RecalcCellName];
                 object RecalcObject = RecalcCell.Contents;
+                //only change them if they are a formula. If they aren't, their value will already be set
                 if (RecalcObject.GetType() == typeof(Formula))
                 {
                     SetContentsToFormula(RecalcCellName, (Formula)RecalcObject);
@@ -476,81 +385,10 @@ namespace SS
             if (name.Equals(null))
                 throw new ArgumentNullException();
             else if (!IsValidName(name))
-                throw new InvalidNameException();   
+                throw new InvalidNameException();
             else
                 return graph.GetDependents(Normalize(name));
 
-        }
-        private ISet<string> SetCellContentsActual(String name, object ObjectContents, string type)
-        {
-            
-            // Get current cells variables, if it is a formula
-            object CurrentCellContents = GetCellContents(name);
-            List<string> CurrentDependees = new List<string>();
-
-            if (CurrentCellContents.GetType() == typeof(Formula))
-            {
-                Formula CurrentCellFormula = (Formula)CurrentCellContents;
-                CurrentDependees = new List<string>(CurrentCellFormula.GetVariables());
-            }
-
-            //Get new formula's variables. 
-            List<string> ReplaceDependees = new List<string>();
-            if (type == "formula")
-            {
-                Formula formula = (Formula)ObjectContents;
-                ReplaceDependees = new List<string>(formula.GetVariables());
-            }
-
-            //replace the dependees 
-            graph.ReplaceDependees(name, ReplaceDependees);
-
-            //Try getting the cells to recalculate
-            try
-            {
-                //Checking for circular dependency
-                ISet<string> AllDependents = new HashSet<string>(GetCellsToRecalculate(name));
-
-                //If exception wasn't caught, set the content to new object, and return AllDependents
-                SetContentByType(name, ObjectContents, type);
-                return AllDependents;
-            }
-            //If exception is caught
-            catch(CircularException E)
-            {
-                //replace dependees with old variables
-                graph.ReplaceDependees(name, CurrentDependees);
-
-                //throw the exception again
-                throw new CircularException();
-            }
-        }
-
-        /// <summary>
-        /// This function exists as helper for SetContents to set based on the type
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="ObjectContents"></param>
-        /// <param name="type"></param>
-        private void SetContentByType(string name, object ObjectContents, string type)
-        {
-            if (type == "double")
-            {
-                double contents = (double)ObjectContents;
-                SetContentsToDouble(name, contents);
-            }
-            else if (type == "string")
-            {
-                string contents = (string)ObjectContents;
-                if (contents != "")
-                    SetContentsToString(name, contents);
-            }
-            else if (type == "formula")
-            {
-                Formula contents = (Formula)ObjectContents;
-                SetContentsToFormula(name, contents);
-            }
-            Changed = true;
         }
 
         /// <summary>
