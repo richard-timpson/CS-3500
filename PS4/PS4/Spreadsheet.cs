@@ -70,14 +70,14 @@ namespace SS
                                             reader.Read();
                                             name = reader.Value;
                                             reader.Read();
+                                            reader.ReadEndElement();
                                         }
                                         //if element isn't name, throw exception
                                         else
                                             throw new SpreadsheetReadWriteException("Cell not written correctly");
                                     }
                                     //if element doesn't exist, throw exception
-                                    if (!reader.Read())
-                                        throw new SpreadsheetReadWriteException("Cell values don't exist");
+                                    
                                     if (reader.IsStartElement())
                                     {
 
@@ -86,6 +86,7 @@ namespace SS
                                             reader.Read();
                                             contents = reader.Value;
                                             reader.Read();
+                                            reader.ReadEndElement();
                                         }
                                         //if element isn't contents, throw exception
                                         else

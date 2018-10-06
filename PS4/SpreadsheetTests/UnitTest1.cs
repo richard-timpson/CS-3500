@@ -742,6 +742,13 @@ namespace SpreadsheetTests
 
         [TestMethod()]
         [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlNoClosingElementTag()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLNoClosingElementTag.xml", s => true, s => s, "1.0");
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
         public void XmlSetNullVersion()
         {
             Spreadsheet sheet = new Spreadsheet(s => true, s => s, null);
@@ -754,19 +761,6 @@ namespace SpreadsheetTests
 
         }
 
-        [TestMethod()]
-        [ExpectedException(typeof(SpreadsheetReadWriteException))]
-        public void XmlSetInvalidFilePath()
-        {
-            Spreadsheet sheet = new Spreadsheet(s => true, s => s, "1.0");
-
-            sheet.SetContentsOfCell("a1", "5");
-            sheet.SetContentsOfCell("a2", "=a1 +5");
-            sheet.SetContentsOfCell("a3", "=a2 +5");
-
-            sheet.Save("test1.x");
-
-        }
 
         [TestMethod()]
         [ExpectedException(typeof(SpreadsheetReadWriteException))]

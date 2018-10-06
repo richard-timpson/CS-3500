@@ -75,6 +75,7 @@
     <Content Include="XMLInvalidFormula.xml" />
     <Content Include="XMLInvalidVariable.xml" />
     <Content Include="XMLInvalidVersion.xml" />
+    <Content Include="XMLNoClosingElementTag.xml" />
     <Content Include="XMLSimple.xml" />
     <Content Include="XMLCircularDependency.xml" />
   </ItemGroup>
