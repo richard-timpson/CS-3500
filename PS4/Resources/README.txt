@@ -106,3 +106,16 @@ ended Session 10/4/18 @9:30 pm. Time Spent 1 hour. Total Time 11 hours
 Started Session 3:00 PM
 Finished writing read function for xml
 Working on testing xml read and write
+
+Finished the xml read and write. Realized that I needed to write the set contents of cell so that it recalculates all of the cells
+Decided to take a late day and finish tomorrow
+
+Ended Session 8:30 pm. Time Spent 5:30 hours. Total Time 16:30 hours
+*************************
+
+***********************
+Started session 10/6/18 @ 9:45 Am
+need to rewrite the set contents of cell to get it to recalculate all cells
+Also need to make sure that all code is refactored, tested well, and is documented
+Hoping to finish today in the next 2 hours. 
+
