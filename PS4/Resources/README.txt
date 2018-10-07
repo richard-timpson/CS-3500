@@ -135,5 +135,17 @@ Started Session 10/6/18 @ 4:00 pm
 Needed to refactor code so that recalculate would work. Got it working
 Ran the tests from PS4, and the stress tests are failing. Need to check out why, and see if I can fix
 
-Ended Session 10/6/18 @6:00 pm. Time: 2:00 + 1:45 = 3:45. total Time 20 hours
+Ended Session 10/6/18 @6:00 pm. Time: 2:00 + 1:45 = 3:45. total total Time 20 hours
+
+Started Session 10/7/18 @3:00 pm
+Needed to fix the stress tests from PS4 grading tests. 
+Got them fixed, except for stress test 4, 
+analyzed code coverage, added a few more tests
+commented and documented code
+Finished with assignment
+
+Ended Session 10/7/18 @5:00 pm. Time 2 hours. Total time 22 hours
+
+This assignment took much longer that I expected. may have been the most difficult one all year. 
+Hoping that I can cut my time down for future assingments. 
 

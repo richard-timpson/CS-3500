@@ -46,22 +46,22 @@ namespace SS
                 {
                     while (openfile)
                     {
-
+                        //read the next element
                         if (reader.Read())
                         {
                             if (reader.IsStartElement())
                             {
+                                //if spreadsheet get version
                                 if (reader.Name == "spreadsheet")
                                 {
                                     Version = reader.GetAttribute("version");
                                 }
+                                //if cell get name and contents
                                 else if (reader.Name == "cell")
                                 {
                                     string name = "";
                                     string contents = "";
-                                    //if we can't read, throw exception
-                                    if (!reader.Read())
-                                        throw new SpreadsheetReadWriteException("Cell values don't exist");
+                                    reader.Read();
 
                                     if (reader.IsStartElement())
                                     {
@@ -92,6 +92,7 @@ namespace SS
                                         else
                                             throw new SpreadsheetReadWriteException("Cell not written in correct order");
                                     }
+                                    //once we have the name and contents, set the contents of the cell
                                     SetContentsOfCell(name, contents);
                                 }
                                 else
@@ -101,11 +102,13 @@ namespace SS
                         else
                             openfile = false;
                     }
+                    //if it's not a valid version number, throw exception
                     if (Version != FileVersion)
                         throw new SpreadsheetReadWriteException("Invalid Version Number");
 
                 }
             }
+            //catching the different SS exceptions and throwing them. otherwise, if it is a read write exception, throw that. 
             catch (CircularException E)
             {
                 throw E;
@@ -134,10 +137,13 @@ namespace SS
             {
                 using (XmlReader reader = XmlReader.Create(filename, settings))
                 {
+                    //go to <spreadsheet>
                     if (reader.ReadToFollowing("spreadsheet"))
                     {
+                        //return version
                         return reader.GetAttribute("version");
                     }
+                    //if no <spreadsheet> throw exception
                     else
                         throw new SpreadsheetReadWriteException("XML Versioning not correct");
                 }
@@ -150,11 +156,14 @@ namespace SS
 
         public override void Save(string filename)
         {
+
             if (Version == null)
                 throw new SpreadsheetReadWriteException("Trying to save null version");
+            //setting up writer
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.IndentChars = ("  ");
+            //get the non empty cells 
             IEnumerable<string> CellNames = GetNamesOfAllNonemptyCells();
 
             try
@@ -166,10 +175,13 @@ namespace SS
                     writer.WriteStartElement("spreadsheet");
                     writer.WriteAttributeString("version", Version);
 
+                    //looping through all of the non empty cells
                     foreach (string name in CellNames)
                     {
+                        //getting contents
                         object contents = GetCellContents(name);
 
+                        //setting contents depending on the type
                         if (contents.GetType() == typeof(string))
                         {
                             string StringContents = (string)contents;
@@ -217,6 +229,7 @@ namespace SS
                     object value = cell.Value;
                     return value;
                 }
+                //if cell is empty, return empty string
                 else
                 {
                     return "";
@@ -427,21 +440,25 @@ namespace SS
                 NonemptyCells[name] = cell;
 
             }
-            catch (ArgumentException)
+            catch (FormulaFormatException)
             {
                 Cell cell = new Cell(formula, new FormulaError());
                 NonemptyCells[name] = cell;
             }
 
         }
-
+        /// <summary>
+        /// helper method for the lookup delegate. Checking to see what the value is and only returning if it is a double. 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         private double CheckFormulaVariable(string name)
         {
             object Value = GetCellValue(name);
             if (Value.GetType() == typeof(string))
-                throw new ArgumentException();
+                throw new FormulaFormatException("string in formula");
             else if (Value.GetType() == typeof(FormulaError))
-                throw new ArgumentException();
+                throw new FormulaFormatException("Formula error in formula");
             else
                 return (double)Value;
         }
@@ -462,6 +479,12 @@ namespace SS
             else
                 return false;
         }
+        /// <summary>
+        /// helper method for writing xml files. 
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="name"></param>
+        /// <param name="contents"></param>
 
         private void WriteXML(XmlWriter writer, string name, string contents)
         {
@@ -475,6 +498,7 @@ namespace SS
     }
     /// <summary>
     /// A basic version of a cell class, holding either string, number, or formula. 
+    /// It has three different constructors, for the the different cell types. Will handle each type accordingly. 
     /// </summary>
     class Cell
     {
@@ -510,18 +534,7 @@ namespace SS
             CellValue = value;
         }
 
-        public void ReCalculate()
-        {
 
-        }
-        public void WriteXML(XmlWriter writer, string name)
-        {
-            writer.WriteStartElement("cell");
-            writer.WriteElementString("name", name);
-            writer.WriteElementString("contents", (string)CellContents);
-            writer.WriteEndElement();
-
-        }
 
 
     }

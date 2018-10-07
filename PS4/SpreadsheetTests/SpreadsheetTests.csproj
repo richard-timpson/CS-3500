@@ -71,9 +71,15 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="XMLInvalidElement.xml" />
+    <Content Include="XMLInvalidElement1.xml" />
+    <Content Include="XMLInvalidElement2.xml" />
+    <Content Include="XMLInvalidElement3.xml" />
+    <Content Include="XMLInvalidElement4.xml" />
+    <Content Include="XMLInvalidElement5.xml" />
     <Content Include="XMLInvalidElementOrder.xml" />
     <Content Include="XMLInvalidFormula.xml" />
+    <Content Include="XMLInvalidSSElement.xml" />
+    <Content Include="XMLInvalidSSElement1.xml" />
     <Content Include="XMLInvalidVariable.xml" />
     <Content Include="XMLInvalidVersion.xml" />
     <Content Include="XMLNoClosingElementTag.xml" />

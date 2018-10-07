@@ -1,5 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<spreadsheet version="1.0">
+<spreadsheet version ="1.0">
+  <cell>
+    <name>a3</name>
+    <hello>=a2+5</hello>
+  </cell>
   <cell>
     <name>a1</name>
     <contents>5</contents>
@@ -8,12 +12,5 @@
     <name>a2</name>
     <contents>=a1+5</contents>
   </cell>
-  <cell>
-    <name>a3</name>
-    <contents>=a2+5</contents>
-  </cell>
-  <cell>
-    <name>a4</name>
-    <contents>hello</contents>
-  </cell>
+
 </spreadsheet>

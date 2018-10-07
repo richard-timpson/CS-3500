@@ -289,6 +289,7 @@ namespace SpreadsheetTests
             sheet.SetContentsOfCell("a1", "5");
             sheet.SetContentsOfCell("a2", "=a1 +5");
             sheet.SetContentsOfCell("a3", "=a2 +5");
+            sheet.SetContentsOfCell("a4", "hello");
 
             sheet.Save("test.xml");
 
@@ -724,9 +725,6 @@ namespace SpreadsheetTests
         }
 
 
-        /*****************
-         * Constructor
-         * ***********/
 
         [TestMethod()]
         [ExpectedException(typeof(InvalidNameException))]
@@ -771,6 +769,7 @@ namespace SpreadsheetTests
 
         }
 
+
         [TestMethod()]
         [ExpectedException(typeof(SpreadsheetReadWriteException))]
         public void XmlInvalidFilePath()
@@ -794,15 +793,76 @@ namespace SpreadsheetTests
             Spreadsheet sheet = new Spreadsheet("../../XMLInvalVersion.xml", s => true, s => s, null);
 
         }
-
+        /// <summary>
+        /// invalid element name in place of cell
+        /// </summary>
         [TestMethod()]
         [ExpectedException(typeof(SpreadsheetReadWriteException))]
-        public void XmlInvalidElement()
+        public void XmlInvalidElement1()
         {
-            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidElement.xml", s => true, s => s, "1.0");
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidElement1.xml", s => true, s => s, "1.0");
 
         }
+        /// <summary>
+        /// invalid element name in place of contents
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlInvalidElement2()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidElement2.xml", s => true, s => s, "1.0");
 
+        }
+        /// <summary>
+        /// reverse order of contents and cell
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlInvalidElement3()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidElement3.xml", s => true, s => s, "1.0");
+
+        }
+        /// <summary>
+        /// no name element
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlInvalidElement4()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidElement4.xml", s => true, s => s, "1.0");
+
+        }
+        /// <summary>
+        /// no element after cell
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlInvalidElement5()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidElement5.xml", s => true, s => s, "1.0");
+
+        }
+        /// <summary>
+        /// version attribute doesn't exist
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlInvalidSSElement1()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidSSElement.xml", s => true, s => s, "1.0");
+
+        }
+        /// <summary>
+        /// spreadsheet attribute doesn't exist
+        /// </summary>
+        [TestMethod()]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void XmlInvalidSSElement2()
+        {
+            Spreadsheet sheet = new Spreadsheet("../../XMLInvalidSSElement1.xml", s => true, s => s, "1.0");
+
+        }
         [TestMethod()]
         [ExpectedException(typeof(SpreadsheetReadWriteException))]
         public void XmlInvalidElementOrder()
