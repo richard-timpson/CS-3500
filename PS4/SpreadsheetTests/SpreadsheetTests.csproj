@@ -54,7 +54,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GradingTests.cs" />
+    <Compile Include="PS4GradingTests.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -69,6 +69,22 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="XMLInvalidElement1.xml" />
+    <Content Include="XMLInvalidElement2.xml" />
+    <Content Include="XMLInvalidElement3.xml" />
+    <Content Include="XMLInvalidElement4.xml" />
+    <Content Include="XMLInvalidElement5.xml" />
+    <Content Include="XMLInvalidElementOrder.xml" />
+    <Content Include="XMLInvalidFormula.xml" />
+    <Content Include="XMLInvalidSSElement.xml" />
+    <Content Include="XMLInvalidSSElement1.xml" />
+    <Content Include="XMLInvalidVariable.xml" />
+    <Content Include="XMLInvalidVersion.xml" />
+    <Content Include="XMLNoClosingElementTag.xml" />
+    <Content Include="XMLSimple.xml" />
+    <Content Include="XMLCircularDependency.xml" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
