@@ -37,7 +37,10 @@
       <HintPath>..\..\PS2\DependencyGraph\bin\Debug\DependencyGraph.dll</HintPath>
     </Reference>
     <Reference Include="Formula">
-      <HintPath>..\..\PS3\PS3\bin\Debug\Formula.dll</HintPath>
+      <HintPath>..\Resources\Library\Formula.dll</HintPath>
+    </Reference>
+    <Reference Include="Spreadsheet">
+      <HintPath>..\Resources\Library\Spreadsheet.dll</HintPath>
     </Reference>
     <Reference Include="SpreadsheetPanel">
       <HintPath>..\..\..\Examples\PS6Skeleton\SpreadsheetPanel\bin\Debug\SpreadsheetPanel.dll</HintPath>
