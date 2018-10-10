@@ -37,8 +37,8 @@
   <ItemGroup>
     <Content Include="Libraries\DependencyGraph.dll" />
     <Content Include="Libraries\DependencyGraph.xml" />
-    <Content Include="Libraries\PS3.dll" />
-    <Content Include="Libraries\PS3.xml" />
+    <Content Include="Libraries\Formula.dll" />
+    <Content Include="Libraries\Formula.xml" />
     <Content Include="README.txt" />
   </ItemGroup>
   <ItemGroup />

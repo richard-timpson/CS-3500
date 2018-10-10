@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>PS3</name>
+        <name>Formula</name>
     </assembly>
     <members>
         <member name="T:SpreadsheetUtilities.Formula">

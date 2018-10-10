@@ -256,13 +256,14 @@ namespace SS
 
         public override object GetCellContents(string name)
         {
+          
             //check if valid name
             if (IsValidName(name))
             {
                 //If the name is an exsiting cell
                 HashSet<string> NamesOfCells = new HashSet<string>(GetNamesOfAllNonemptyCells());
                 string NormalizedName = Normalize(name);
-                if (NamesOfCells.Contains(name))
+                if (NamesOfCells.Contains(NormalizedName))
                 {
                     //return it's contents
                     Cell cell = NonemptyCells[NormalizedName];
@@ -301,7 +302,7 @@ namespace SS
             }
 
             //if content starts with =, check for forumla
-            else if (content[0] == '=')
+            else if (content != "" && content[0] == '=')
             {
                 //if content doesn't parse as formula, with throw, otherwise it will stay a formula
                 string FormulaString = content.Remove(0, 1);
