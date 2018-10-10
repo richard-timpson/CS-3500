@@ -37,8 +37,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Library\DependencyGraph.dll" />
+    <Content Include="Library\DependencyGraph.xml" />
     <Content Include="Library\Formula.dll" />
     <Content Include="Library\Formula.xml" />
+    <Content Include="Library\Spreadsheet.dll" />
+    <Content Include="Library\Spreadsheet.xml" />
     <Content Include="Library\SpreadsheetPanel.dll" />
     <Content Include="Library\SpreadsheetPanel.xml" />
   </ItemGroup>
