@@ -216,8 +216,9 @@
             // viewHelpToolStripMenuItem
             // 
             this.viewHelpToolStripMenuItem.Name = "viewHelpToolStripMenuItem";
-            this.viewHelpToolStripMenuItem.Size = new System.Drawing.Size(197, 34);
+            this.viewHelpToolStripMenuItem.Size = new System.Drawing.Size(288, 34);
             this.viewHelpToolStripMenuItem.Text = "View Help";
+            this.viewHelpToolStripMenuItem.Click += new System.EventHandler(this.viewHelpToolStripMenuItem_Click);
             // 
             // cellNameLabel
             // 
@@ -257,7 +258,7 @@
             this.CellContents.Name = "CellContents";
             this.CellContents.Size = new System.Drawing.Size(437, 29);
             this.CellContents.TabIndex = 5;
-            this.CellContents.Click += new System.EventHandler(this.CellContents_TextChanged);
+            this.CellContents.Enter += new System.EventHandler(this.CellContents_TextChanged);
             this.CellContents.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CellContents_KeyDown);
             // 
             // cellValueLabel
@@ -293,7 +294,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.spreadsheetPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.spreadsheetPanel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.spreadsheetPanel1.Location = new System.Drawing.Point(0, 100);
+            this.spreadsheetPanel1.Location = new System.Drawing.Point(0, 108);
             this.spreadsheetPanel1.Margin = new System.Windows.Forms.Padding(6);
             this.spreadsheetPanel1.Name = "spreadsheetPanel1";
             this.spreadsheetPanel1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 10);
