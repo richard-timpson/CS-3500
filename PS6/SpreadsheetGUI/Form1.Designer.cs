@@ -151,7 +151,7 @@
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(288, 34);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(262, 34);
             this.undoToolStripMenuItem.Text = "&Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -159,14 +159,14 @@
             // 
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(288, 34);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(262, 34);
             this.redoToolStripMenuItem.Text = "&Redo";
             // 
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
             this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(288, 34);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(262, 34);
             this.copyToolStripMenuItem.Text = "&Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
@@ -174,7 +174,7 @@
             // 
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
             this.cutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(288, 34);
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(262, 34);
             this.cutToolStripMenuItem.Text = "Cut";
             this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
             // 
@@ -182,7 +182,7 @@
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(288, 34);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(262, 34);
             this.pasteToolStripMenuItem.Text = "&Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
@@ -190,7 +190,7 @@
             // 
             this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
             this.selectAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(288, 34);
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(262, 34);
             this.selectAllToolStripMenuItem.Text = "Select &All";
             // 
             // viewToolStripMenuItem
@@ -216,7 +216,7 @@
             // viewHelpToolStripMenuItem
             // 
             this.viewHelpToolStripMenuItem.Name = "viewHelpToolStripMenuItem";
-            this.viewHelpToolStripMenuItem.Size = new System.Drawing.Size(288, 34);
+            this.viewHelpToolStripMenuItem.Size = new System.Drawing.Size(197, 34);
             this.viewHelpToolStripMenuItem.Text = "View Help";
             // 
             // cellNameLabel
@@ -233,7 +233,7 @@
             // CellName
             // 
             this.CellName.Location = new System.Drawing.Point(138, 57);
-            this.CellName.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.CellName.Margin = new System.Windows.Forms.Padding(6);
             this.CellName.Name = "CellName";
             this.CellName.ReadOnly = true;
             this.CellName.Size = new System.Drawing.Size(143, 29);
@@ -253,7 +253,7 @@
             // CellContents
             // 
             this.CellContents.Location = new System.Drawing.Point(880, 57);
-            this.CellContents.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.CellContents.Margin = new System.Windows.Forms.Padding(6);
             this.CellContents.Name = "CellContents";
             this.CellContents.Size = new System.Drawing.Size(437, 29);
             this.CellContents.TabIndex = 5;
@@ -274,7 +274,7 @@
             // CellValue
             // 
             this.CellValue.Location = new System.Drawing.Point(407, 57);
-            this.CellValue.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.CellValue.Margin = new System.Windows.Forms.Padding(6);
             this.CellValue.Name = "CellValue";
             this.CellValue.ReadOnly = true;
             this.CellValue.Size = new System.Drawing.Size(310, 29);
@@ -288,18 +288,22 @@
             // 
             // spreadsheetPanel1
             // 
+            this.spreadsheetPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.spreadsheetPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.spreadsheetPanel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.spreadsheetPanel1.Location = new System.Drawing.Point(0, 100);
-            this.spreadsheetPanel1.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.spreadsheetPanel1.Margin = new System.Windows.Forms.Padding(6);
             this.spreadsheetPanel1.Name = "spreadsheetPanel1";
-            this.spreadsheetPanel1.Size = new System.Drawing.Size(2188, 1084);
+            this.spreadsheetPanel1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 10);
+            this.spreadsheetPanel1.Size = new System.Drawing.Size(2192, 1088);
             this.spreadsheetPanel1.TabIndex = 0;
             // 
             // SetContentButton
             // 
             this.SetContentButton.Location = new System.Drawing.Point(1331, 54);
-            this.SetContentButton.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.SetContentButton.Margin = new System.Windows.Forms.Padding(6);
             this.SetContentButton.Name = "SetContentButton";
             this.SetContentButton.Size = new System.Drawing.Size(83, 42);
             this.SetContentButton.TabIndex = 8;
@@ -319,6 +323,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(2215, 1207);
             this.Controls.Add(this.SetContentButton);
             this.Controls.Add(this.CellValue);
@@ -330,7 +335,7 @@
             this.Controls.Add(this.spreadsheetPanel1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "Form1";
             this.Text = "Form1";
             this.menuStrip1.ResumeLayout(false);

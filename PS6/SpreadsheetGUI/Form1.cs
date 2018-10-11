@@ -14,7 +14,7 @@ namespace SpreadsheetGUI
 {
     public partial class Form1 : Form
     {
-        AbstractSpreadsheet spread = new Spreadsheet();
+        AbstractSpreadsheet spread = new Spreadsheet(s=>true, s=> s.ToUpper(), "ps6");
 
         public Form1(string filepath)
         {
@@ -37,7 +37,7 @@ namespace SpreadsheetGUI
 
             spreadsheetPanel1.SetSelection(0, 0);
             CellName.Text = "A1";
-            spreadsheetPanel1.SelectionChanged += displaySelection;
+            spreadsheetPanel1.SelectionChanged += DisplayPanelOnSelection;
             
             CellContents.Focus();
 
@@ -46,29 +46,9 @@ namespace SpreadsheetGUI
         // Every time the selection changes, this method is called with the
         // Spreadsheet as its parameter.
 
-        private void displaySelection(SpreadsheetPanel ss)
+        private void DisplayPanelOnSet(SpreadsheetPanel ss, HashSet<string> CellsToChange)
         {
-            int row, col;
-            
-            ss.GetSelection(out col, out row);
-            
-            CellName.Text = "" + Convert.ToChar(col + 65) + (row + 1);
-            object contents = spread.GetCellContents(CellName.Text);
-            string StringContents;
-            if (contents.GetType() == typeof(Formula))
-            {
-               StringContents = "=" + (string)contents.ToString();
-            }
-            else
-            {
-                StringContents = contents.ToString();
-            }
-            CellContents.Text = StringContents;
-            CellValue.Text = GetCellValueAsString(CellName.Text);
-
-            ss.SetValue(col, row, GetCellValueAsString(CellName.Text));
-
-            foreach (string cell in spread.GetNamesOfAllNonemptyCells())
+            foreach (string cell in CellsToChange)
             {
                 int cellCol = cell[0];
                 cellCol -= 65;
@@ -78,9 +58,29 @@ namespace SpreadsheetGUI
 
                 ss.SetValue(cellCol, cellRow, GetCellValueAsString(cell));
 
-
             }
             
+
+        }
+        private void DisplayPanelOnSelection (SpreadsheetPanel ss)
+        {
+            int row, col;
+
+            ss.GetSelection(out col, out row);
+
+            CellName.Text = "" + Convert.ToChar(col + 65) + (row + 1);
+            object contents = spread.GetCellContents(CellName.Text);
+            string StringContents;
+            if (contents.GetType() == typeof(Formula))
+            {
+                StringContents = "=" + (string)contents.ToString();
+            }
+            else
+            {
+                StringContents = contents.ToString();
+            }
+            CellContents.Text = StringContents;
+            CellValue.Text = GetCellValueAsString(CellName.Text);
 
         }
 
@@ -112,8 +112,8 @@ namespace SpreadsheetGUI
         private void CellContents_TextChanged(object sender, EventArgs e)
         {
             string contents = CellContents.Text;
-            spread.SetContentsOfCell(CellName.Text, contents);
-            displaySelection(spreadsheetPanel1);
+            HashSet<string> CellsToChange = new HashSet<string>(spread.SetContentsOfCell(CellName.Text, contents));
+            DisplayPanelOnSet(spreadsheetPanel1, CellsToChange);
         }
 
         private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)
