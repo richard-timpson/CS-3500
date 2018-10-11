@@ -9,9 +9,10 @@ Jon has done most of the work to get the spreadsheet working as it is. So far we
 As of now this our ToDo list
 
 1. Get the save working - Jon
-2. Create help menu for TA's - Richard
+2. Create help menu for TA's - Richard: Got the menu to open, need to add text inside of it. 
 3. Error messages for exiting without saving - Jon
-4. Error message for invalid formula - Richard
+4. Error message for invalid formula - Richard: Finished.
+5. Bug where you can't delete contents of cell - Richard 
 
 For the added options, we are hoping to make it so that you can move cells with the arrow key, edit cells without having to click in contents box
 save values on enter, select multiple cells for copy and paste, and possibly a undo/redo button. 

@@ -16,9 +16,6 @@ namespace SpreadsheetGUI
     {
         AbstractSpreadsheet spread = new Spreadsheet(s=>true, s=> s.ToUpper(), "ps6");
 
-        bool saved = false;
-        string fileName = null;
-
         public Form1(string filepath)
         {
             if (filepath != null)
@@ -49,8 +46,21 @@ namespace SpreadsheetGUI
         // Every time the selection changes, this method is called with the
         // Spreadsheet as its parameter.
 
-        private void DisplayPanelOnSet(SpreadsheetPanel ss, HashSet<string> CellsToChange)
+        private void DisplayPanelOnSet(SpreadsheetPanel ss)
         {
+            string contents = CellContents.Text;
+            HashSet<string> CellsToChange = new HashSet<string>();
+            try
+            {
+                CellsToChange = new HashSet<string>(spread.SetContentsOfCell(CellName.Text, contents));
+            }
+            catch (FormulaFormatException E)
+            {
+                MessageBox.Show("Invalid Formula");
+                CellContents.Text = "";
+                CellValue.Text = "";
+            }
+
             foreach (string cell in CellsToChange)
             {
                 int cellCol = cell[0];
@@ -62,9 +72,8 @@ namespace SpreadsheetGUI
                 ss.SetValue(cellCol, cellRow, GetCellValueAsString(cell));
 
             }
-            
-
         }
+
         private void DisplayPanelOnSelection (SpreadsheetPanel ss)
         {
             int row, col;
@@ -114,11 +123,14 @@ namespace SpreadsheetGUI
 
         private void CellContents_TextChanged(object sender, EventArgs e)
         {
-            string contents = CellContents.Text;
-            HashSet<string> CellsToChange = new HashSet<string>(spread.SetContentsOfCell(CellName.Text, contents));
-            DisplayPanelOnSet(spreadsheetPanel1, CellsToChange);
+            DisplayPanelOnSet(spreadsheetPanel1);
         }
 
+        private void CellContents_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+                DisplayPanelOnSet(spreadsheetPanel1);
+        }
         private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             Close();
@@ -143,15 +155,6 @@ namespace SpreadsheetGUI
             openFileDialog1.ShowDialog();
         }
 
-        private void CellContents_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.KeyCode == Keys.Enter)
-            {
-                string contents = CellContents.Text;
-                spread.SetContentsOfCell(CellName.Text, contents);
-                
-            }
-        }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -162,8 +165,6 @@ namespace SpreadsheetGUI
         {
             string filePath = saveFileDialog1.FileName;
             spread.Save(filePath);
-            saved = true;
-            fileName = filePath;
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
@@ -194,23 +195,10 @@ namespace SpreadsheetGUI
             }
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void viewHelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
-        }
+            DemoApplicationContext.getAppContext().RunForm(new HelpMenu());
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (spread.Changed)
-            {
-                DialogResult dialog = MessageBox.Show("Closing will result in loss of your data since the last save. Are you sure you wish to exit? ", "Exit", MessageBoxButtons.YesNo);
-
-                if (dialog == DialogResult.No)
-                {
-                    e.Cancel = true;
-                }
-            }
-           
         }
     }
 }
