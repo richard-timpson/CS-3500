@@ -26,8 +26,6 @@ namespace SpreadsheetGUI
 
             InitializeComponent();
 
-
-            
             // This an example of registering a method so that it is notified when
             // an event happens.  The SelectionChanged event is declared with a
             // delegate that specifies that all methods that register with it must
@@ -36,13 +34,11 @@ namespace SpreadsheetGUI
 
             // This could also be done graphically in the designer, as has been
             // demonstrated in class.
+
+            spreadsheetPanel1.SetSelection(0, 0);
+            CellName.Text = "A1";
             spreadsheetPanel1.SelectionChanged += displaySelection;
             
-            spreadsheetPanel1.SetSelection(0, 0);
-            
-            CellName.Text = "A1";
-            
-            this.ActiveControl = CellContents;
             CellContents.Focus();
 
         }
@@ -53,15 +49,28 @@ namespace SpreadsheetGUI
         private void displaySelection(SpreadsheetPanel ss)
         {
             int row, col;
-            String value;
-            ss.GetSelection(out col, out row);
             
+            ss.GetSelection(out col, out row);
             
             CellName.Text = "" + Convert.ToChar(col + 65) + (row + 1);
             CellContents.Text = spread.GetCellContents(CellName.Text).ToString();
             CellValue.Text = GetCellValueAsString(CellName.Text);
 
             ss.SetValue(col, row, GetCellValueAsString(CellName.Text));
+
+            foreach (string cell in spread.GetNamesOfAllNonemptyCells())
+            {
+                int cellCol = cell[0];
+                cellCol -= 65;
+                string cellRowStr = cell.Substring(1);
+                int.TryParse(cellRowStr, out int cellRow);
+                cellRow -= 1;
+
+                ss.SetValue(cellCol, cellRow, GetCellValueAsString(cell));
+
+
+            }
+            
 
         }
 
@@ -94,7 +103,6 @@ namespace SpreadsheetGUI
         {
             string contents = CellContents.Text;
             spread.SetContentsOfCell(CellName.Text, contents);
-
         }
 
         private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -146,12 +154,27 @@ namespace SpreadsheetGUI
         {
 
         }
-
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (CellContents.Focused)
             {
                 CellContents.Copy();
+            }
+        }
+
+        private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CellContents.Focused)
+            {
+                CellContents.Cut();
+            }
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CellContents.Focused)
+            {
+                CellContents.Paste();
             }
         }
     }
