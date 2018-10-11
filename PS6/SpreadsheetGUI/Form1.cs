@@ -13,12 +13,14 @@ namespace SpreadsheetGUI
 {
     public partial class Form1 : Form
     {
+        AbstractSpreadsheet spread = new Spreadsheet();
+
         public Form1()
         {
             InitializeComponent();
 
 
-            AbstractSpreadsheet spread = new Spreadsheet();
+            
             // This an example of registering a method so that it is notified when
             // an event happens.  The SelectionChanged event is declared with a
             // delegate that specifies that all methods that register with it must
@@ -42,12 +44,14 @@ namespace SpreadsheetGUI
             ss.GetValue(col, row, out value);
             
             CellName.Text = "" + Convert.ToChar(col + 65) + (row + 1);
-            CellValue.Text = value;
+            CellContents.Text = (string)spread.GetCellContents(CellName.Text);
+            CellValue.Text = (string)spread.GetCellValue(CellName.Text);
         }
 
         private void CellContents_TextChanged(object sender, EventArgs e)
         {
-            
+            string contents = CellContents.Text;
+            spread.SetContentsOfCell(CellName.Text, contents);
         }
 
         private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)

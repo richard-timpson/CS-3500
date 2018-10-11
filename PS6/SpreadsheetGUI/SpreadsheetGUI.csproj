@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DependencyGraph">
-      <HintPath>..\..\PS2\DependencyGraph\bin\Debug\DependencyGraph.dll</HintPath>
+      <HintPath>..\Resources\Library\DependencyGraph.dll</HintPath>
     </Reference>
     <Reference Include="Formula">
       <HintPath>..\Resources\Library\Formula.dll</HintPath>

@@ -382,7 +382,13 @@ namespace SS
         {
             HashSet<string> AllDependents = new HashSet<string>(GetCellsToRecalculate(name));
             SetContentsToString(name, text);
+            if (text == "")
+            {
+                NonemptyCells.Remove(name);
+                AllDependents.Remove(name);
+            }
             return ReCalculateCells(AllDependents);
+
         }
 
 
@@ -423,8 +429,8 @@ namespace SS
         /// <param name="number"></param>
         private void SetContentsToString(string name, string text)
         {
-            Cell cell = new Cell(text);
-            NonemptyCells[name] = cell;
+                Cell cell = new Cell(text);
+                NonemptyCells[name] = cell;
         }
 
         /// <summary>
