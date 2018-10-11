@@ -66,7 +66,7 @@ namespace SpreadsheetGUI
 
             // Start an application context and run one form inside it
             DemoApplicationContext appContext = DemoApplicationContext.getAppContext();
-            appContext.RunForm(new Form1());
+            appContext.RunForm(new Form1(null));
             Application.Run(appContext);
         }
     }

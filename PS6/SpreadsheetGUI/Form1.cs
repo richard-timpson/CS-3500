@@ -16,8 +16,14 @@ namespace SpreadsheetGUI
     {
         AbstractSpreadsheet spread = new Spreadsheet();
 
-        public Form1()
+        public Form1(string filepath)
         {
+            if (filepath != null)
+            {
+                spread = new Spreadsheet(filepath, s => true, s => s.ToUpper(), "ps6");
+
+            }
+
             InitializeComponent();
 
 
@@ -31,6 +37,7 @@ namespace SpreadsheetGUI
             // This could also be done graphically in the designer, as has been
             // demonstrated in class.
             spreadsheetPanel1.SelectionChanged += displaySelection;
+            
             spreadsheetPanel1.SetSelection(0, 0);
             
             CellName.Text = "A1";
@@ -100,12 +107,13 @@ namespace SpreadsheetGUI
         {
             // Tell the application context to run the form on the same
             // thread as the other forms.
-            DemoApplicationContext.getAppContext().RunForm(new Form1());
+            DemoApplicationContext.getAppContext().RunForm(new Form1(null));
         }
 
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
-
+            string filePath = openFileDialog1.FileName;
+            DemoApplicationContext.getAppContext().RunForm(new Form1(filePath));
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -120,6 +128,30 @@ namespace SpreadsheetGUI
                 string contents = CellContents.Text;
                 spread.SetContentsOfCell(CellName.Text, contents);
                 
+            }
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.ShowDialog();
+        }
+
+        private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+            string filePath = saveFileDialog1.FileName;
+            spread.Save(filePath);
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CellContents.Focused)
+            {
+                CellContents.Copy();
             }
         }
     }
