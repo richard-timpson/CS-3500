@@ -200,5 +200,18 @@ namespace SpreadsheetGUI
             DemoApplicationContext.getAppContext().RunForm(new HelpMenu());
 
         }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (spread.Changed)
+            {
+                DialogResult dialog = MessageBox.Show("Closing will result in loss of your data since the last save. Are you sure you wish to exit? ", "Exit", MessageBoxButtons.YesNo);
+                if (dialog == DialogResult.No)
+                {
+                    e.Cancel = true;
+                }
+            }
+
+        }
     }
 }
