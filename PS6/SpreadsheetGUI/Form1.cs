@@ -1,4 +1,5 @@
 ﻿using SS;
+using SpreadsheetUtilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,27 +32,62 @@ namespace SpreadsheetGUI
             // demonstrated in class.
             spreadsheetPanel1.SelectionChanged += displaySelection;
             spreadsheetPanel1.SetSelection(0, 0);
+            
+            CellName.Text = "A1";
+            
+            this.ActiveControl = CellContents;
+            CellContents.Focus();
+
         }
 
         // Every time the selection changes, this method is called with the
-        // Spreadsheet as its parameter.  We display the current time in the cell.
+        // Spreadsheet as its parameter.
 
         private void displaySelection(SpreadsheetPanel ss)
         {
             int row, col;
             String value;
             ss.GetSelection(out col, out row);
-            ss.GetValue(col, row, out value);
+            
             
             CellName.Text = "" + Convert.ToChar(col + 65) + (row + 1);
-            CellContents.Text = (string)spread.GetCellContents(CellName.Text);
-            CellValue.Text = (string)spread.GetCellValue(CellName.Text);
+            CellContents.Text = spread.GetCellContents(CellName.Text).ToString();
+            CellValue.Text = GetCellValueAsString(CellName.Text);
+
+            ss.SetValue(col, row, GetCellValueAsString(CellName.Text));
+
+        }
+
+
+        private void displayRecalculated(SpreadsheetPanel ss)
+        {
+
+        }
+
+        /// <summary>
+        /// Helper method to display cell value
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        private string GetCellValueAsString(string cell)
+        {
+            object value = spread.GetCellValue(cell);
+
+            if (value.GetType() == typeof(FormulaError))
+            {
+                return "Formula Error";
+            }
+            else
+            {
+                return value.ToString();
+            }
         }
 
         private void CellContents_TextChanged(object sender, EventArgs e)
         {
             string contents = CellContents.Text;
             spread.SetContentsOfCell(CellName.Text, contents);
+
         }
 
         private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -75,6 +111,16 @@ namespace SpreadsheetGUI
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             openFileDialog1.ShowDialog();
+        }
+
+        private void CellContents_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                string contents = CellContents.Text;
+                spread.SetContentsOfCell(CellName.Text, contents);
+                
+            }
         }
     }
 }
