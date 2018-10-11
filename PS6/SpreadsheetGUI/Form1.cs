@@ -53,7 +53,17 @@ namespace SpreadsheetGUI
             ss.GetSelection(out col, out row);
             
             CellName.Text = "" + Convert.ToChar(col + 65) + (row + 1);
-            CellContents.Text = spread.GetCellContents(CellName.Text).ToString();
+            object contents = spread.GetCellContents(CellName.Text);
+            string StringContents;
+            if (contents.GetType() == typeof(Formula))
+            {
+               StringContents = "=" + (string)contents.ToString();
+            }
+            else
+            {
+                StringContents = contents.ToString();
+            }
+            CellContents.Text = StringContents;
             CellValue.Text = GetCellValueAsString(CellName.Text);
 
             ss.SetValue(col, row, GetCellValueAsString(CellName.Text));
@@ -103,6 +113,7 @@ namespace SpreadsheetGUI
         {
             string contents = CellContents.Text;
             spread.SetContentsOfCell(CellName.Text, contents);
+            displaySelection(spreadsheetPanel1);
         }
 
         private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)
