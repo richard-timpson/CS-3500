@@ -16,6 +16,9 @@ namespace SpreadsheetGUI
     {
         AbstractSpreadsheet spread = new Spreadsheet(s=>true, s=> s.ToUpper(), "ps6");
 
+        bool saved = false;
+        string fileName = null;
+
         public Form1(string filepath)
         {
             if (filepath != null)
@@ -159,6 +162,8 @@ namespace SpreadsheetGUI
         {
             string filePath = saveFileDialog1.FileName;
             spread.Save(filePath);
+            saved = true;
+            fileName = filePath;
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
@@ -187,6 +192,25 @@ namespace SpreadsheetGUI
             {
                 CellContents.Paste();
             }
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (spread.Changed)
+            {
+                DialogResult dialog = MessageBox.Show("Closing will result in loss of your data since the last save. Are you sure you wish to exit? ", "Exit", MessageBoxButtons.YesNo);
+
+                if (dialog == DialogResult.No)
+                {
+                    e.Cancel = true;
+                }
+            }
+           
         }
     }
 }
