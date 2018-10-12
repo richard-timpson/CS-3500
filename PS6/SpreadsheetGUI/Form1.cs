@@ -78,13 +78,17 @@ namespace SpreadsheetGUI
             catch (FormulaFormatException E)
             {
                 MessageBox.Show("Invalid Formula");
-                CellContents.Text = "";
-                CellValue.Text = "";
             }
+            catch (InvalidNameException)
+            {
+                MessageBox.Show("Invalid Formula");
+            }
+
             if (contents == "")
             {
                 CellsToChange.Add(CellName.Text);
             }
+
             foreach (string cell in CellsToChange)
             {
                 int cellCol = cell[0];
