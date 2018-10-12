@@ -171,17 +171,48 @@ namespace SpreadsheetGUI
             DemoApplicationContext.getAppContext().RunForm(new Form1(null));
         }
 
+        private void openNewFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+            string filePath = openNewFileDialog1.FileName;
+            DemoApplicationContext.getAppContext().RunForm(new Form1(filePath));
+        }
+
+        private void openNewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            openNewFileDialog1.ShowDialog();
+        }
+
+
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             string filePath = openFileDialog1.FileName;
-            DemoApplicationContext.getAppContext().RunForm(new Form1(filePath));
+            spreadsheetPanel1.Clear();
+            spread = new Spreadsheet(filePath, s => true, s => s.ToUpper(), "ps6");
+            this.Text = filePath;
+            fileName = filePath;
+            saved = true;
+            DisplayPanelOnSelection(spreadsheetPanel1);
+            DisplayPanelOnOpen(spreadsheetPanel1);
+            spreadsheetPanel1.SelectionChanged += DisplayPanelOnSelection;
+            CellContents.Select();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            openFileDialog1.ShowDialog();
+            if (spread.Changed)
+            {
+                DialogResult dialog = MessageBox.Show("Opening will result in loss of your data since the last save. Are you sure you wish to open a file? ", "Open", MessageBoxButtons.YesNo);
+                if (dialog == DialogResult.Yes)
+                {
+                    openFileDialog1.ShowDialog();
+                }
+            }
+            else
+            {
+                openFileDialog1.ShowDialog();
+            }
+            
         }
-
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -289,5 +320,6 @@ namespace SpreadsheetGUI
                 return base.ProcessCmdKey(ref msg, keyData);
             }
         }
+
     }
 }
