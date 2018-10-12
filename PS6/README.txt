@@ -15,8 +15,16 @@ As of now this our ToDo list
 5. Bug where you can't delete contents of cell - Richard 
 
 For the added options, we are hoping to make it so that you can move cells with the arrow key, edit cells without having to click in contents box
-save values on enter, select multiple cells for copy and paste, and possibly a undo/redo button. 
+save values on enter - Done 10/11/18 11:00 PM
+
+select multiple cells for copy and paste, and possibly a undo/redo button. 
 
 We also need to come up with a list of user tests to make sure functionality is working. 
 
 We need to change PS4 so that opening file does not set Changed value to True. - Fixed 10/11/18 @ 11:07 PM
+
+Currently, cells out of range return a formulaError.. needs to throw an invalid formula exception. - Fixed 10/11/18 @ 11:33 PM
+
+Need to change the Open button to Open New.. and create and Open button that replaces the currently open window.
+
+Add error handeling for opening and saving file issues.

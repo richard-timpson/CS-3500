@@ -98,7 +98,6 @@ namespace SpreadsheetGUI
                 cellRow -= 1;
 
                 ss.SetValue(cellCol, cellRow, GetCellValueAsString(cell));
-
             }
         }
 
