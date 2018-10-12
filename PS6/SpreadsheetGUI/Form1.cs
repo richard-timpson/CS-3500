@@ -74,7 +74,7 @@ namespace SpreadsheetGUI
             try
             {
                 CellsToChange = new HashSet<string>(spread.SetContentsOfCell(CellName.Text, contents));
-                CellValue.Text = contents;
+                CellValue.Text = spread.GetCellValue(CellName.Text).ToString();
             }
             catch (FormulaFormatException E)
             {
