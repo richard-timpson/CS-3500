@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace SpreadsheetGUI
     public partial class Form1 : Form
     {
         AbstractSpreadsheet spread = new Spreadsheet(s=>true, s=> s.ToUpper(), "ps6");
-
+        private PrintDocument pd = new PrintDocument();
         string fileName = null;
         bool saved = false;
 
@@ -43,7 +44,7 @@ namespace SpreadsheetGUI
             CellName.Text = "A1";
             DisplayPanelOnOpen(spreadsheetPanel1);
             spreadsheetPanel1.SelectionChanged += DisplayPanelOnSelection;
-            
+            pd.PrintPage += new PrintPageEventHandler(pd_PrintPage);
             CellContents.Select();
 
         }
@@ -321,5 +322,37 @@ namespace SpreadsheetGUI
             }
         }
 
+        private void printToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            if (printDialog1.ShowDialog() == DialogResult.OK)
+            {
+                CaptureScreen();
+                pd.Print();
+            }
+        }
+
+        Bitmap memoryImage;
+
+        private void CaptureScreen()
+        {
+            Graphics myGraphics = this.CreateGraphics();
+            Size s = this.Size;
+            memoryImage = new Bitmap(s.Width, s.Height, myGraphics);
+            Graphics memoryGraphics = Graphics.FromImage(memoryImage);
+            memoryGraphics.CopyFromScreen(this.Location.X + 8, this.Location.Y, 0, -90, s);
+        }
+
+        private void pd_PrintPage(object sender, PrintPageEventArgs e)
+        {
+            e.Graphics.DrawImage(memoryImage, 0, 0);
+        }
+
+        private void printPreviewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CaptureScreen();
+            printPreviewDialog1.Document = pd;
+            printPreviewDialog1.ShowDialog();
+        }
     }
 }
