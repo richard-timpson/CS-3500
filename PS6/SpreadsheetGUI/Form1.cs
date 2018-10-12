@@ -21,13 +21,13 @@ namespace SpreadsheetGUI
 
         public Form1(string filepath)
         {
+            InitializeComponent();
+
             if (filepath != null)
             {
                 spread = new Spreadsheet(filepath, s => true, s => s.ToUpper(), "ps6");
-
+                this.Text = filepath;
             }
-
-            InitializeComponent();
 
             // This an example of registering a method so that it is notified when
             // an event happens.  The SelectionChanged event is declared with a
@@ -36,7 +36,7 @@ namespace SpreadsheetGUI
             // register the displaySelection method below.
 
             // This could also be done graphically in the designer, as has been
-            // demonstrated in class.  
+            // demonstrated in class.
             spreadsheetPanel1.SetSelection(0, 0);
             CellName.Text = "A1";
             DisplayPanelOnOpen(spreadsheetPanel1);
@@ -180,6 +180,7 @@ namespace SpreadsheetGUI
             spread.Save(filePath);
             saved = true;
             fileName = filePath;
+            this.Text = filePath;
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
