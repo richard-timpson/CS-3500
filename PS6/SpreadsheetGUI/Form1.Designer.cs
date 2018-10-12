@@ -295,7 +295,6 @@
             this.spreadsheetPanel1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
             this.spreadsheetPanel1.Size = new System.Drawing.Size(919, 499);
             this.spreadsheetPanel1.TabIndex = 0;
-            this.spreadsheetPanel1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.spreadsheetPanel1_KeyDown);
             // 
             // SetContentButton
             // 

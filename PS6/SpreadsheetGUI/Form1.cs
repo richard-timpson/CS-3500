@@ -254,29 +254,36 @@ namespace SpreadsheetGUI
             }
         }
 
-        private void spreadsheetPanel1_KeyDown(object sender, KeyEventArgs e)
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             spreadsheetPanel1.GetSelection(out int col, out int row);
-
-            if (e.KeyCode == Keys.Down)
+            if (keyData == Keys.Down)
             {
                 spreadsheetPanel1.SetSelection(col, row + 1);
-                e.Handled = true;
+                DisplayPanelOnSelection(spreadsheetPanel1);
+                return true;
             }
-            if (e.KeyCode == Keys.Up)
+            if (keyData == Keys.Up)
             {
                 spreadsheetPanel1.SetSelection(col, row - 1);
-                e.Handled = true;
+                DisplayPanelOnSelection(spreadsheetPanel1);
+                return true;
             }
-            if (e.KeyCode == Keys.Left)
+            if (keyData == Keys.Left)
             {
                 spreadsheetPanel1.SetSelection(col - 1, row);
-                e.Handled = true;
+                DisplayPanelOnSelection(spreadsheetPanel1);
+                return true;
             }
-            if (e.KeyCode == Keys.Right)
+            if (keyData == Keys.Right)
             {
                 spreadsheetPanel1.SetSelection(col + 1, row);
-                e.Handled = true;
+                DisplayPanelOnSelection(spreadsheetPanel1);
+                return true;
+            }
+            else
+            {
+                return base.ProcessCmdKey(ref msg, keyData);
             }
         }
     }
