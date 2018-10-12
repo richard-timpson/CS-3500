@@ -27,6 +27,8 @@ namespace SpreadsheetGUI
             {
                 spread = new Spreadsheet(filepath, s => true, s => s.ToUpper(), "ps6");
                 this.Text = filepath;
+                fileName = filepath;
+                saved = true;
             }
 
             // This an example of registering a method so that it is notified when
@@ -71,6 +73,7 @@ namespace SpreadsheetGUI
             try
             {
                 CellsToChange = new HashSet<string>(spread.SetContentsOfCell(CellName.Text, contents));
+                CellValue.Text = contents;
             }
             catch (FormulaFormatException E)
             {
