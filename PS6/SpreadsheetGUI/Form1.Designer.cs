@@ -255,7 +255,6 @@
             this.CellContents.Name = "CellContents";
             this.CellContents.Size = new System.Drawing.Size(240, 20);
             this.CellContents.TabIndex = 5;
-            this.CellContents.Enter += new System.EventHandler(this.CellContents_TextChanged);
             this.CellContents.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CellContents_KeyDown);
             // 
             // cellValueLabel

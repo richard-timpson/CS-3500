@@ -18,3 +18,5 @@ For the added options, we are hoping to make it so that you can move cells with 
 save values on enter, select multiple cells for copy and paste, and possibly a undo/redo button. 
 
 We also need to come up with a list of user tests to make sure functionality is working. 
+
+We need to change PS4 so that opening file does not set Changed value to True. - Fixed 10/11/18 @ 11:07 PM
