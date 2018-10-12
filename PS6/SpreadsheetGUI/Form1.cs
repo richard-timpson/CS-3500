@@ -145,7 +145,13 @@ namespace SpreadsheetGUI
         private void CellContents_KeyDown(object sender, KeyEventArgs e)
         {
             if(e.KeyCode == Keys.Enter)
+            {
                 DisplayPanelOnSet(spreadsheetPanel1);
+
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+                
         }
         private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
