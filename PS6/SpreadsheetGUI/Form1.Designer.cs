@@ -232,6 +232,7 @@
             // 
             // CellName
             // 
+            this.CellName.Cursor = System.Windows.Forms.Cursors.Default;
             this.CellName.Location = new System.Drawing.Point(75, 31);
             this.CellName.Name = "CellName";
             this.CellName.ReadOnly = true;
@@ -269,6 +270,7 @@
             // 
             // CellValue
             // 
+            this.CellValue.Cursor = System.Windows.Forms.Cursors.Default;
             this.CellValue.Location = new System.Drawing.Point(222, 31);
             this.CellValue.Name = "CellValue";
             this.CellValue.ReadOnly = true;
@@ -293,6 +295,7 @@
             this.spreadsheetPanel1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
             this.spreadsheetPanel1.Size = new System.Drawing.Size(919, 499);
             this.spreadsheetPanel1.TabIndex = 0;
+            this.spreadsheetPanel1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.spreadsheetPanel1_KeyDown);
             // 
             // SetContentButton
             // 
@@ -317,6 +320,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
+            this.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
             this.ClientSize = new System.Drawing.Size(919, 558);
             this.Controls.Add(this.SetContentButton);
             this.Controls.Add(this.CellValue);

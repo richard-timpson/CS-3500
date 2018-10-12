@@ -44,7 +44,7 @@ namespace SpreadsheetGUI
             DisplayPanelOnOpen(spreadsheetPanel1);
             spreadsheetPanel1.SelectionChanged += DisplayPanelOnSelection;
             
-            CellContents.Focus();
+            CellContents.Select();
 
         }
 
@@ -81,7 +81,10 @@ namespace SpreadsheetGUI
                 CellContents.Text = "";
                 CellValue.Text = "";
             }
-
+            if (contents == "")
+            {
+                CellsToChange.Add(CellName.Text);
+            }
             foreach (string cell in CellsToChange)
             {
                 int cellCol = cell[0];
@@ -114,7 +117,6 @@ namespace SpreadsheetGUI
             }
             CellContents.Text = StringContents;
             CellValue.Text = GetCellValueAsString(CellName.Text);
-
         }
 
 
@@ -151,8 +153,8 @@ namespace SpreadsheetGUI
                 e.Handled = true;
                 e.SuppressKeyPress = true;
             }
-                
         }
+
         private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             Close();
@@ -249,6 +251,32 @@ namespace SpreadsheetGUI
             else
             {
                 spread.Save(fileName);
+            }
+        }
+
+        private void spreadsheetPanel1_KeyDown(object sender, KeyEventArgs e)
+        {
+            spreadsheetPanel1.GetSelection(out int col, out int row);
+
+            if (e.KeyCode == Keys.Down)
+            {
+                spreadsheetPanel1.SetSelection(col, row + 1);
+                e.Handled = true;
+            }
+            if (e.KeyCode == Keys.Up)
+            {
+                spreadsheetPanel1.SetSelection(col, row - 1);
+                e.Handled = true;
+            }
+            if (e.KeyCode == Keys.Left)
+            {
+                spreadsheetPanel1.SetSelection(col - 1, row);
+                e.Handled = true;
+            }
+            if (e.KeyCode == Keys.Right)
+            {
+                spreadsheetPanel1.SetSelection(col + 1, row);
+                e.Handled = true;
             }
         }
     }
