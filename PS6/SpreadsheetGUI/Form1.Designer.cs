@@ -291,7 +291,7 @@
             this.spreadsheetPanel1.Location = new System.Drawing.Point(0, 59);
             this.spreadsheetPanel1.Name = "spreadsheetPanel1";
             this.spreadsheetPanel1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.spreadsheetPanel1.Size = new System.Drawing.Size(1197, 591);
+            this.spreadsheetPanel1.Size = new System.Drawing.Size(919, 499);
             this.spreadsheetPanel1.TabIndex = 0;
             // 
             // SetContentButton
