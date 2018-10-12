@@ -16,6 +16,9 @@ namespace SpreadsheetGUI
     {
         AbstractSpreadsheet spread = new Spreadsheet(s=>true, s=> s.ToUpper(), "ps6");
 
+        string fileName = null;
+        bool saved = false;
+
         public Form1(string filepath)
         {
             if (filepath != null)
@@ -33,10 +36,10 @@ namespace SpreadsheetGUI
             // register the displaySelection method below.
 
             // This could also be done graphically in the designer, as has been
-            // demonstrated in class.
-
+            // demonstrated in class.  
             spreadsheetPanel1.SetSelection(0, 0);
             CellName.Text = "A1";
+            DisplayPanelOnOpen(spreadsheetPanel1);
             spreadsheetPanel1.SelectionChanged += DisplayPanelOnSelection;
             
             CellContents.Focus();
@@ -45,6 +48,21 @@ namespace SpreadsheetGUI
 
         // Every time the selection changes, this method is called with the
         // Spreadsheet as its parameter.
+
+
+        private void DisplayPanelOnOpen(SpreadsheetPanel ss)
+        {
+            foreach (string cell in spread.GetNamesOfAllNonemptyCells())
+            {
+                int cellCol = cell[0];
+                cellCol -= 65;
+                string cellRowStr = cell.Substring(1);
+                int.TryParse(cellRowStr, out int cellRow);
+                cellRow -= 1;
+
+                ss.SetValue(cellCol, cellRow, GetCellValueAsString(cell));
+            }
+        }
 
         private void DisplayPanelOnSet(SpreadsheetPanel ss)
         {
@@ -96,11 +114,6 @@ namespace SpreadsheetGUI
 
         }
 
-
-        private void displayRecalculated(SpreadsheetPanel ss)
-        {
-
-        }
 
         /// <summary>
         /// Helper method to display cell value
@@ -165,12 +178,15 @@ namespace SpreadsheetGUI
         {
             string filePath = saveFileDialog1.FileName;
             spread.Save(filePath);
+            saved = true;
+            fileName = filePath;
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
         }
+
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (CellContents.Focused)
@@ -212,6 +228,18 @@ namespace SpreadsheetGUI
                 }
             }
 
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saved == false)
+            {
+                saveFileDialog1.ShowDialog();
+            }
+            else
+            {
+                spread.Save(fileName);
+            }
         }
     }
 }
