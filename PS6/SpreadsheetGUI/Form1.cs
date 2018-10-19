@@ -15,15 +15,22 @@ namespace SpreadsheetGUI
 {
     public partial class Form1 : Form
     {
+        //the underlying storage for the spreadsheet
         AbstractSpreadsheet spread = new Spreadsheet(s=>true, s=> s.ToUpper(), "ps6");
+
+        //An object that exists for printing the screen of the spreadsheet 
         private PrintDocument pd = new PrintDocument();
+
+        // The name of the file that is displayed at the top of the GUI
         string fileName = null;
+
+        //Keeping track of the state of the spreadsheet
         bool saved = false;
 
         public Form1(string filepath)
         {
             InitializeComponent();
-
+            //make sure the file path is not null before intializing the spreadsheet
             if (filepath != null)
             {
                 spread = new Spreadsheet(filepath, s => true, s => s.ToUpper(), "ps6");
@@ -32,19 +39,19 @@ namespace SpreadsheetGUI
                 saved = true;
             }
 
-            // This an example of registering a method so that it is notified when
-            // an event happens.  The SelectionChanged event is declared with a
-            // delegate that specifies that all methods that register with it must
-            // take a SpreadsheetPanel as its parameter and return nothing.  So we
-            // register the displaySelection method below.
-
-            // This could also be done graphically in the designer, as has been
-            // demonstrated in class.
+            //initializing the state of the spreadsheet by 
+            // setting the selection to the first cell
             spreadsheetPanel1.SetSelection(0, 0);
+            // Setting the textbox for the name to A1
             CellName.Text = "A1";
+            // Displaying the cells
             DisplayPanelOnOpen(spreadsheetPanel1);
+            //Adding the displayControlsOnSelection as a listener to the event handler for the panel
             spreadsheetPanel1.SelectionChanged += DisplayControlsOnSelection;
+            // adding the function pd_PrintPage to the event handler pd.PrintPage, so that pd_PrintPage will be called
+            // when the event is triggered. 
             pd.PrintPage += new PrintPageEventHandler(pd_PrintPage);
+            // Setting the cursor to the textbox for cell contents. 
             CellContents.Select();
 
         }
@@ -58,8 +65,10 @@ namespace SpreadsheetGUI
         /// <param name="ss"></param>
         private void DisplayPanelOnOpen(SpreadsheetPanel ss)
         {
+            // Looping through all of the non empty cells
             foreach (string cell in spread.GetNamesOfAllNonemptyCells())
             {
+                // setting the display of the cells to the empty cells. 
                 int cellCol = cell[0];
                 cellCol -= 65;
                 string cellRowStr = cell.Substring(1);
@@ -209,7 +218,7 @@ namespace SpreadsheetGUI
 
 
         /// <summary>
-        /// Opening
+        /// Opens a file dialog, that when selected, will open an existing file in a new window. 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -219,12 +228,24 @@ namespace SpreadsheetGUI
             DemoApplicationContext.getAppContext().RunForm(new Form1(filePath));
         }
 
+
+        /// <summary>
+        /// Calls the open new dialog. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void openNewToolStripMenuItem_Click(object sender, EventArgs e)
         {
             openNewFileDialog1.ShowDialog();
         }
 
-
+        /// <summary>
+        /// Creates a file dialog that allows an existing file to be opened in the same window 
+        /// It will clear the contents of the existing window, and populate the window with the contents
+        /// of the spreadsheet to be opened. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             string filePath = openFileDialog1.FileName;
@@ -239,6 +260,13 @@ namespace SpreadsheetGUI
             CellContents.Select();
         }
 
+
+        /// <summary>
+        /// Calls the openFileDialog function to open an existing spreadsheet in the current window
+        /// If the current file has not been saved, it will prompt the user to make sure they want to exit. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (spread.Changed)
@@ -255,12 +283,21 @@ namespace SpreadsheetGUI
             }
             
         }
-
+        /// <summary>
+        /// Calls the saveFileDialog for creating a dialog to save the file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             saveFileDialog1.ShowDialog();
         }
 
+        /// <summary>
+        /// Opens a file dialog that 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             string filePath = saveFileDialog1.FileName;
