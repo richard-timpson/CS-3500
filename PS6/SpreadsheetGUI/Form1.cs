@@ -43,7 +43,7 @@ namespace SpreadsheetGUI
             spreadsheetPanel1.SetSelection(0, 0);
             CellName.Text = "A1";
             DisplayPanelOnOpen(spreadsheetPanel1);
-            spreadsheetPanel1.SelectionChanged += DisplayPanelOnSelection;
+            spreadsheetPanel1.SelectionChanged += DisplayControlsOnSelection;
             pd.PrintPage += new PrintPageEventHandler(pd_PrintPage);
             CellContents.Select();
 
@@ -52,7 +52,10 @@ namespace SpreadsheetGUI
         // Every time the selection changes, this method is called with the
         // Spreadsheet as its parameter.
 
-
+        /// <summary>
+        /// This function will display the panels when the file is first opened. 
+        /// </summary>
+        /// <param name="ss"></param>
         private void DisplayPanelOnOpen(SpreadsheetPanel ss)
         {
             foreach (string cell in spread.GetNamesOfAllNonemptyCells())
@@ -67,6 +70,12 @@ namespace SpreadsheetGUI
             }
         }
 
+        /// <summary>
+        /// Changes the display of the cells after the value of a cell is set. Uses similar logic
+        /// If will simply find the cells that need to be changed and change them. 
+        /// If an exception is thrown when setting the contents of a cell, the function will show a message. 
+        /// </summary>
+        /// <param name="ss"></param>
         private void DisplayPanelOnSet(SpreadsheetPanel ss)
         {
             string contents = CellContents.Text;
@@ -102,7 +111,13 @@ namespace SpreadsheetGUI
             }
         }
 
-        private void DisplayPanelOnSelection (SpreadsheetPanel ss)
+
+        /// <summary>
+        /// This function will update the values that are displayed in the control forms at the top of the SS
+        /// It is called every time a new cell is selected. 
+        /// </summary>
+        /// <param name="ss"></param>
+        private void DisplayControlsOnSelection (SpreadsheetPanel ss)
         {
             int row, col;
 
@@ -143,11 +158,22 @@ namespace SpreadsheetGUI
             }
         }
 
-        private void CellContents_TextChanged(object sender, EventArgs e)
+        /// <summary>
+        /// This is the function that is called when the contents of a cell is changed by clicking the set button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CellContents_Click(object sender, EventArgs e)
         {
             DisplayPanelOnSet(spreadsheetPanel1);
         }
 
+        /// <summary>
+        /// This is the function that is called every time a key press happens inside of the cell contents
+        /// It will check if the key pressed is enter. If it is, it will update the values of the cell. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CellContents_KeyDown(object sender, KeyEventArgs e)
         {
             if(e.KeyCode == Keys.Enter)
@@ -159,12 +185,21 @@ namespace SpreadsheetGUI
             }
         }
 
+        /// <summary>
+        /// Closing the file when the close button is clicked on the tool strip
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             Close();
         }
 
-        // Deals with the New menu
+        /// <summary>
+        /// Opening a new spreadsheet in a new window when 'new' in toolbar is clicked. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void newToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             // Tell the application context to run the form on the same
@@ -172,6 +207,12 @@ namespace SpreadsheetGUI
             DemoApplicationContext.getAppContext().RunForm(new Form1(null));
         }
 
+
+        /// <summary>
+        /// Opening
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void openNewFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             string filePath = openNewFileDialog1.FileName;
@@ -192,9 +233,9 @@ namespace SpreadsheetGUI
             this.Text = filePath;
             fileName = filePath;
             saved = true;
-            DisplayPanelOnSelection(spreadsheetPanel1);
+            DisplayControlsOnSelection(spreadsheetPanel1);
             DisplayPanelOnOpen(spreadsheetPanel1);
-            spreadsheetPanel1.SelectionChanged += DisplayPanelOnSelection;
+            spreadsheetPanel1.SelectionChanged += DisplayControlsOnSelection;
             CellContents.Select();
         }
 
@@ -295,25 +336,25 @@ namespace SpreadsheetGUI
             if (keyData == Keys.Down)
             {
                 spreadsheetPanel1.SetSelection(col, row + 1);
-                DisplayPanelOnSelection(spreadsheetPanel1);
+                DisplayControlsOnSelection(spreadsheetPanel1);
                 return true;
             }
             if (keyData == Keys.Up)
             {
                 spreadsheetPanel1.SetSelection(col, row - 1);
-                DisplayPanelOnSelection(spreadsheetPanel1);
+                DisplayControlsOnSelection(spreadsheetPanel1);
                 return true;
             }
             if (keyData == Keys.Left)
             {
                 spreadsheetPanel1.SetSelection(col - 1, row);
-                DisplayPanelOnSelection(spreadsheetPanel1);
+                DisplayControlsOnSelection(spreadsheetPanel1);
                 return true;
             }
             if (keyData == Keys.Right)
             {
                 spreadsheetPanel1.SetSelection(col + 1, row);
-                DisplayPanelOnSelection(spreadsheetPanel1);
+                DisplayControlsOnSelection(spreadsheetPanel1);
                 return true;
             }
             else
@@ -354,5 +395,6 @@ namespace SpreadsheetGUI
             printPreviewDialog1.Document = pd;
             printPreviewDialog1.ShowDialog();
         }
+
     }
 }
