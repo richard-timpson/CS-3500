@@ -42,15 +42,20 @@ namespace SpreadsheetGUI
             //initializing the state of the spreadsheet by 
             // setting the selection to the first cell
             spreadsheetPanel1.SetSelection(0, 0);
+
             // Setting the textbox for the name to A1
             CellName.Text = "A1";
+
             // Displaying the cells
             DisplayPanelOnOpen(spreadsheetPanel1);
+
             //Adding the displayControlsOnSelection as a listener to the event handler for the panel
             spreadsheetPanel1.SelectionChanged += DisplayControlsOnSelection;
+
             // adding the function pd_PrintPage to the event handler pd.PrintPage, so that pd_PrintPage will be called
             // when the event is triggered. 
             pd.PrintPage += new PrintPageEventHandler(pd_PrintPage);
+
             // Setting the cursor to the textbox for cell contents. 
             CellContents.Select();
 
@@ -87,11 +92,17 @@ namespace SpreadsheetGUI
         /// <param name="ss"></param>
         private void DisplayPanelOnSet(SpreadsheetPanel ss)
         {
+         
             string contents = CellContents.Text;
             HashSet<string> CellsToChange = new HashSet<string>();
+            // try getting the cells to change. If there is an error when processing the cell changes, 
+            // it will catch the exceptions and show a message. 
             try
             {
+                // this is where the exeception should throw. Getting only the cells whose value should change when the content 
+                // of the current cell is set. 
                 CellsToChange = new HashSet<string>(spread.SetContentsOfCell(CellName.Text, contents));
+                // If the exception doesn't throw, set the CellValue input box to be the value of the currently selected cell. 
                 CellValue.Text = spread.GetCellValue(CellName.Text).ToString();
             }
             catch (FormulaFormatException E)
@@ -108,6 +119,7 @@ namespace SpreadsheetGUI
                 CellsToChange.Add(CellName.Text);
             }
 
+            // Loop through CellsToChange if  it exists, and updating the displayed values of the cells. 
             foreach (string cell in CellsToChange)
             {
                 int cellCol = cell[0];
@@ -129,20 +141,28 @@ namespace SpreadsheetGUI
         private void DisplayControlsOnSelection (SpreadsheetPanel ss)
         {
             int row, col;
-
+            // getting the current cell. 
             ss.GetSelection(out col, out row);
 
+            // setting the text value of the CellName input to be the current selection
             CellName.Text = "" + Convert.ToChar(col + 65) + (row + 1);
+
+            // getting the contents of the current cell 
             object contents = spread.GetCellContents(CellName.Text);
+
+            //StringContents exists as the actual display string. contents exists as just a placeholder. 
             string StringContents;
+            // if it is a formula, convert the contents to a string and prepend it with a '='
             if (contents.GetType() == typeof(Formula))
             {
                 StringContents = "=" + (string)contents.ToString();
             }
+            // else just convert it to a string
             else
             {
                 StringContents = contents.ToString();
             }
+            // set the inputs at the top to hold the correct values. 
             CellContents.Text = StringContents;
             CellValue.Text = GetCellValueAsString(CellName.Text);
         }
@@ -155,6 +175,7 @@ namespace SpreadsheetGUI
         /// <returns></returns>
         private string GetCellValueAsString(string cell)
         {
+
             object value = spread.GetCellValue(cell);
 
             if (value.GetType() == typeof(FormulaError))
@@ -248,15 +269,32 @@ namespace SpreadsheetGUI
         /// <param name="e"></param>
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
+            // getting the filename from the file dialog
             string filePath = openFileDialog1.FileName;
+
+            // emptying the spreadsheet
             spreadsheetPanel1.Clear();
+
+            //creating a new spreadsheet from the specified file path
             spread = new Spreadsheet(filePath, s => true, s => s.ToUpper(), "ps6");
+
+            
             this.Text = filePath;
+
+            // updating the name of the spreadsheet window
             fileName = filePath;
             saved = true;
+
+            // setting the displays of the input boxes at the top
             DisplayControlsOnSelection(spreadsheetPanel1);
+
+            // setting the display of the panels
             DisplayPanelOnOpen(spreadsheetPanel1);
+
+            // adding the DisplayControlsOnSelection to event handler for the spreadsheet panel
             spreadsheetPanel1.SelectionChanged += DisplayControlsOnSelection;
+
+            // setting the cursor to the CellContents input box
             CellContents.Select();
         }
 
@@ -269,16 +307,19 @@ namespace SpreadsheetGUI
         /// <param name="e"></param>
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // checking to make sure that the user is not getting rid of unsaved work. 
             if (spread.Changed)
             {
                 DialogResult dialog = MessageBox.Show("Opening will result in loss of your data since the last save. Are you sure you wish to open a file? ", "Open", MessageBoxButtons.YesNo);
                 if (dialog == DialogResult.Yes)
                 {
+                    // opening the file dialog
                     openFileDialog1.ShowDialog();
                 }
             }
             else
             {
+                // opening the file dialog. 
                 openFileDialog1.ShowDialog();
             }
             
@@ -294,15 +335,19 @@ namespace SpreadsheetGUI
         }
 
         /// <summary>
-        /// Opens a file dialog that 
+        /// Opens a file dialog that will save the specificed file from the save dialog
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
+            // getting the filepath from the saveFileDialog
             string filePath = saveFileDialog1.FileName;
+            // saving the contents to the spreadsheet object
             spread.Save(filePath);
             saved = true;
+
+            // setting the name of the spreadsheet window to the file path
             fileName = filePath;
             this.Text = filePath;
         }
@@ -312,6 +357,13 @@ namespace SpreadsheetGUI
 
         }
 
+        /// <summary>
+        /// Copying the CellContents textbox if it is selected. 
+        /// Called on the click of the copy in the menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (CellContents.Focused)
@@ -320,6 +372,13 @@ namespace SpreadsheetGUI
             }
         }
 
+        /// <summary>
+        /// Cutting the CellContents textbox if it is selected
+        /// Called on the click of the cut in the menu. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (CellContents.Focused)
@@ -327,6 +386,11 @@ namespace SpreadsheetGUI
                 CellContents.Cut();
             }
         }
+        /// <summary>
+        /// Pasting into the CellContents textbook if it is selected. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -336,14 +400,24 @@ namespace SpreadsheetGUI
             }
         }
 
+        /// <summary>
+        /// Opening the help menu as a separate form. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void viewHelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DemoApplicationContext.getAppContext().RunForm(new HelpMenu());
 
         }
-
+        /// <summary>
+        /// Function called on the close of the window. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // Checking if there is content that has not been saved. If it has, show a warn box. 
             if (spread.Changed)
             {
                 DialogResult dialog = MessageBox.Show("Closing will result in loss of your data since the last save. Are you sure you wish to exit? ", "Exit", MessageBoxButtons.YesNo);
@@ -354,19 +428,32 @@ namespace SpreadsheetGUI
             }
 
         }
-
+        /// <summary>
+        /// Saving the file on the click of the saved menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // If the spreadsheet has not been saved already, open the save dialog
             if (saved == false)
             {
+               
                 saveFileDialog1.ShowDialog();
             }
+            // If it has been saved already, just save the file, and don't show the dialog. 
             else
             {
                 spread.Save(fileName);
             }
         }
-
+        /// <summary>
+        /// Fuction that is used for selected the cells on an arrow press. 
+        /// It will move the selection based on what key was pressed. 
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             spreadsheetPanel1.GetSelection(out int col, out int row);
@@ -399,19 +486,29 @@ namespace SpreadsheetGUI
                 return base.ProcessCmdKey(ref msg, keyData);
             }
         }
-
+        /// <summary>
+        /// Fuction that is called when the print key is clicked. 
+        /// It will capture the screen and use the PrintDocument object to save the screenshot
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            // If the result of the dialog is ok
             if (printDialog1.ShowDialog() == DialogResult.OK)
             {
+                // Capture the screen and print it. 
                 CaptureScreen();
                 pd.Print();
             }
         }
 
+        // A bit map for storing the image. 
         Bitmap memoryImage;
 
+        /// <summary>
+        /// Fuction for capturing the screen of the spreadsheet window
+        /// </summary>
         private void CaptureScreen()
         {
             Graphics myGraphics = this.CreateGraphics();
@@ -421,15 +518,30 @@ namespace SpreadsheetGUI
             memoryGraphics.CopyFromScreen(this.Location.X + 8, this.Location.Y, 0, -90, s);
         }
 
+        /// <summary>
+        /// Fuctino for actually printing the page. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void pd_PrintPage(object sender, PrintPageEventArgs e)
         {
             e.Graphics.DrawImage(memoryImage, 0, 0);
         }
 
+        /// <summary>
+        /// Function for handling the print preview menu item
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void printPreviewToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Capturing the screen
             CaptureScreen();
+
+            // Dialog for holding the document from the print screen
             printPreviewDialog1.Document = pd;
+
+            // showing the dialog. 
             printPreviewDialog1.ShowDialog();
         }
 
