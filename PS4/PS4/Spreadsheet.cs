@@ -107,6 +107,8 @@ namespace SS
                         throw new SpreadsheetReadWriteException("Invalid Version Number");
 
                 }
+
+                Changed = false;
             }
             //catching the different SS exceptions and throwing them. otherwise, if it is a read write exception, throw that. 
             catch (CircularException E)

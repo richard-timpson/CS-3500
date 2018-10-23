@@ -43,7 +43,8 @@
       <HintPath>..\Resources\Library\Spreadsheet.dll</HintPath>
     </Reference>
     <Reference Include="SpreadsheetPanel">
-      <HintPath>..\..\..\Examples\PS6Skeleton\SpreadsheetPanel\bin\Debug\SpreadsheetPanel.dll</HintPath>
+      <HintPath>..\Resources\Library\SpreadsheetPanel.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
