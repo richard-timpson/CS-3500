@@ -385,7 +385,6 @@ namespace SS
             if (text == "")
             {
                 NonemptyCells.Remove(name);
-                AllDependents.Remove(name);
             }
             return ReCalculateCells(AllDependents);
 

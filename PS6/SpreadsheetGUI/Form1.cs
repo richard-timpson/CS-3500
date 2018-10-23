@@ -60,6 +60,10 @@ namespace SpreadsheetGUI
                 CellContents.Text = "";
                 CellValue.Text = "";
             }
+            if (contents == "")
+            {
+                CellsToChange.Add(CellName.Text);
+            }
 
             foreach (string cell in CellsToChange)
             {
@@ -97,10 +101,7 @@ namespace SpreadsheetGUI
         }
 
 
-        private void displayRecalculated(SpreadsheetPanel ss)
-        {
 
-        }
 
         /// <summary>
         /// Helper method to display cell value
