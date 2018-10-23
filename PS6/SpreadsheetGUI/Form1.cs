@@ -245,8 +245,15 @@ namespace SpreadsheetGUI
         /// <param name="e"></param>
         private void openNewFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
-            string filePath = openNewFileDialog1.FileName;
-            DemoApplicationContext.getAppContext().RunForm(new Form1(filePath));
+            try
+            {
+                string filePath = openNewFileDialog1.FileName;
+                DemoApplicationContext.getAppContext().RunForm(new Form1(filePath));
+            }
+            catch
+            {
+                MessageBox.Show("There was an error opening the file.  Please make sure that the filepath is correct, and that the file is a valid spreadsheet file.");
+            }
         }
 
 
@@ -269,33 +276,40 @@ namespace SpreadsheetGUI
         /// <param name="e"></param>
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
-            // getting the filename from the file dialog
-            string filePath = openFileDialog1.FileName;
+            try
+            {
 
-            // emptying the spreadsheet
-            spreadsheetPanel1.Clear();
+                // getting the filename from the file dialog
+                string filePath = openFileDialog1.FileName;
 
-            //creating a new spreadsheet from the specified file path
-            spread = new Spreadsheet(filePath, s => true, s => s.ToUpper(), "ps6");
+                // emptying the spreadsheet
+                spreadsheetPanel1.Clear();
 
-            
-            this.Text = filePath;
+                //creating a new spreadsheet from the specified file path
+                spread = new Spreadsheet(filePath, s => true, s => s.ToUpper(), "ps6");
 
-            // updating the name of the spreadsheet window
-            fileName = filePath;
-            saved = true;
+                this.Text = filePath;
 
-            // setting the displays of the input boxes at the top
-            DisplayControlsOnSelection(spreadsheetPanel1);
+                // updating the name of the spreadsheet window
+                fileName = filePath;
+                saved = true;
 
-            // setting the display of the panels
-            DisplayPanelOnOpen(spreadsheetPanel1);
+                // setting the displays of the input boxes at the top
+                DisplayControlsOnSelection(spreadsheetPanel1);
 
-            // adding the DisplayControlsOnSelection to event handler for the spreadsheet panel
-            spreadsheetPanel1.SelectionChanged += DisplayControlsOnSelection;
+                // setting the display of the panels
+                DisplayPanelOnOpen(spreadsheetPanel1);
 
-            // setting the cursor to the CellContents input box
-            CellContents.Select();
+                // adding the DisplayControlsOnSelection to event handler for the spreadsheet panel
+                spreadsheetPanel1.SelectionChanged += DisplayControlsOnSelection;
+
+                // setting the cursor to the CellContents input box
+                CellContents.Select();
+            }
+            catch
+            {
+                MessageBox.Show("There was an error opening the file.  Please make sure that the filepath is correct, and that the file is a valid spreadsheet file.");
+            }
         }
 
 
@@ -307,20 +321,27 @@ namespace SpreadsheetGUI
         /// <param name="e"></param>
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // checking to make sure that the user is not getting rid of unsaved work. 
-            if (spread.Changed)
+            try
             {
-                DialogResult dialog = MessageBox.Show("Opening will result in loss of your data since the last save. Are you sure you wish to open a file? ", "Open", MessageBoxButtons.YesNo);
-                if (dialog == DialogResult.Yes)
+                // checking to make sure that the user is not getting rid of unsaved work. 
+                if (spread.Changed)
                 {
-                    // opening the file dialog
+                    DialogResult dialog = MessageBox.Show("Opening will result in loss of your data since the last save. Are you sure you wish to open a file? ", "Open", MessageBoxButtons.YesNo);
+                    if (dialog == DialogResult.Yes)
+                    {
+                        // opening the file dialog
+                        openFileDialog1.ShowDialog();
+                    }
+                }
+                else
+                {
+                    // opening the file dialog. 
                     openFileDialog1.ShowDialog();
                 }
             }
-            else
+            catch
             {
-                // opening the file dialog. 
-                openFileDialog1.ShowDialog();
+                MessageBox.Show("There was an error opening the file. Please make sure that the filepath is correct, and that the file is a valid spreadsheet file.");
             }
             
         }
@@ -341,20 +362,22 @@ namespace SpreadsheetGUI
         /// <param name="e"></param>
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
-            // getting the filepath from the saveFileDialog
-            string filePath = saveFileDialog1.FileName;
-            // saving the contents to the spreadsheet object
-            spread.Save(filePath);
-            saved = true;
+            try
+            {
+                // getting the filepath from the saveFileDialog
+                string filePath = saveFileDialog1.FileName;
+                // saving the contents to the spreadsheet object
+                spread.Save(filePath);
+                saved = true;
 
-            // setting the name of the spreadsheet window to the file path
-            fileName = filePath;
-            this.Text = filePath;
-        }
-
-        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
+                // setting the name of the spreadsheet window to the file path
+                fileName = filePath;
+                this.Text = filePath;
+            }
+            catch
+            {
+                MessageBox.Show("There was an error while saving your file. Please check the filepath and try again.");
+            }
         }
 
         /// <summary>
@@ -444,7 +467,14 @@ namespace SpreadsheetGUI
             // If it has been saved already, just save the file, and don't show the dialog. 
             else
             {
-                spread.Save(fileName);
+                try
+                {
+                    spread.Save(fileName);
+                }
+                catch
+                {
+                    MessageBox.Show("There was an error while saving your file. Please check the filepath and try again.");
+                }
             }
         }
         /// <summary>
@@ -545,9 +575,5 @@ namespace SpreadsheetGUI
             printPreviewDialog1.ShowDialog();
         }
 
-        private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }
