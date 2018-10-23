@@ -545,5 +545,9 @@ namespace SpreadsheetGUI
             printPreviewDialog1.ShowDialog();
         }
 
+        private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

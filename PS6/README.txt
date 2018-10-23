@@ -28,3 +28,8 @@ Currently, cells out of range return a formulaError.. needs to throw an invalid 
 Need to change the Open button to Open New.. and create an Open button that replaces the currently open window. - Done Jon 10/12/18 8:00 AM
 
 Add error handeling for opening and saving file issues.
+
+Finished adding documentation file. 
+We were going to add functionality for a redo and undo function, but couldn't figure it out. 
+As of now, the extra functionality is a print screen and moving the selection based on the arrow keys. 
+Once the help menu has been written, assignment will be finished. 
