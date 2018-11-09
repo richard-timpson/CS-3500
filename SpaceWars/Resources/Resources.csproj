@@ -33,13 +33,65 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Graphics\" />
     <Folder Include="Library\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Graphics\ship-coast-blue.png" />
+    <Content Include="Graphics\ship-coast-brown.png" />
+    <Content Include="Graphics\ship-coast-green.png" />
+    <Content Include="Graphics\ship-coast-grey.png" />
+    <Content Include="Graphics\ship-coast-red.png" />
+    <Content Include="Graphics\ship-coast-violet.png" />
+    <Content Include="Graphics\ship-coast-white.png" />
+    <Content Include="Graphics\ship-coast-yellow.png" />
+    <Content Include="Graphics\ship-thrust-blue.png" />
+    <Content Include="Graphics\ship-thrust-brown.png" />
+    <Content Include="Graphics\ship-thrust-green.png" />
+    <Content Include="Graphics\ship-thrust-grey.png" />
+    <Content Include="Graphics\ship-thrust-red.png" />
+    <Content Include="Graphics\ship-thrust-violet.png" />
+    <Content Include="Graphics\ship-thrust-white.png" />
+    <None Include="Graphics\shot-red1.png" />
+    <None Include="Graphics\shot-grey1.png" />
+    <None Include="Graphics\shot-green1.png" />
+    <None Include="Graphics\shot-brown1.png" />
+    <None Include="Graphics\shot-blue1.png" />
+    <None Include="Graphics\ship-thrust-yellow1.png" />
+    <None Include="Graphics\ship-thrust-white1.png" />
+    <Content Include="Graphics\ship-thrust-yellow.png" />
+    <Content Include="Graphics\shot-blue.png" />
+    <Content Include="Graphics\shot-brown.png" />
+    <Content Include="Graphics\shot-green.png" />
+    <Content Include="Graphics\shot-grey.png" />
+    <Content Include="Graphics\shot-red.png" />
+    <Content Include="Graphics\shot-violet.png" />
+    <Content Include="Graphics\shot-white.png" />
+    <Content Include="Graphics\shot-yellow.png" />
+    <Content Include="Graphics\star.jpg" />
     <Content Include="README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource1.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Resource1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.CodeDom, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.CodeDom.4.5.0\lib\net461\System.CodeDom.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

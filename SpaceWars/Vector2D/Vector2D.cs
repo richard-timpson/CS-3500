@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using Newtonsoft.Json;
 
-namespace SpaceWars
+namespace Vector
 {
     /// <summary>
     /// A class to represent a 2D Vector in space
