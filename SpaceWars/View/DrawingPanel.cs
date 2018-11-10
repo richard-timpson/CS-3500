@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Drawing;
 using GameModel;
 using Vector;
-using ClassLibrary1;
-
+using Resources;
 namespace View
 {
     public class DrawingPanel : Panel
@@ -72,11 +73,11 @@ namespace View
             Ship p = o as Ship;
             p.color = "red";
             p.loc = new Vector2D((double)10, (double)10);
-
-
-            Image ship = Resource1.ship_coast_blue;
-            Point shipCorner = new Point((int)p.loc.GetX(), (int)p.loc.GetY());
-            e.Graphics.DrawImage(ship, shipCorner);
+            
+            e.Graphics.Clear(Color.Black);
+            Image ship1 = Resource1.ship_coast_blue;
+            Rectangle r = new Rectangle((int)p.loc.GetX(), (int)p.loc.GetY(), 20, 20);
+            e.Graphics.DrawImage(ship1, r);
 
             //e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             //using (System.Drawing.SolidBrush blueBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Blue))

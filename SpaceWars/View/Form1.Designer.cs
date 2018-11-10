@@ -75,6 +75,7 @@
             this.connectButton.TabIndex = 4;
             this.connectButton.Text = "connect";
             this.connectButton.UseVisualStyleBackColor = true;
+            this.connectButton.Click += new System.EventHandler(this.connectButton_Click);
             // 
             // Form1
             // 

@@ -83,9 +83,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\ClassLibrary1.csproj">
-      <Project>{ab88d2d1-1f52-4cee-b270-6635fd9a82b8}</Project>
-      <Name>ClassLibrary1</Name>
+    <ProjectReference Include="..\GameController\GameController.csproj">
+      <Project>{b521d47f-34fb-471b-aba8-32eaed3d4a1e}</Project>
+      <Name>GameController</Name>
     </ProjectReference>
     <ProjectReference Include="..\GameModel\GameModel.csproj">
       <Project>{38a64a70-6804-45f4-be84-d3bea810118c}</Project>
