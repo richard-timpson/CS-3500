@@ -32,13 +32,22 @@ namespace View
         {
             MethodInvoker m = new MethodInvoker(() =>
             {
-                this.Invalidate(true);
                 drawingPanel = new DrawingPanel();
                 drawingPanel.Location = new Point(0, 30);
                 drawingPanel.Size = new Size(WorldSize, WorldSize);
                 this.Controls.Add(drawingPanel);
+                Controller.WorldUpdated += UpdateWorld;
+                this.Invalidate(true);
+
             });
             this.Invoke(m);
+        }
+        private void UpdateWorld(IEnumerable<string> messages)
+        {
+            foreach (string s in messages)
+            {
+                Console.WriteLine(s);
+            }
         }
     }
 }
