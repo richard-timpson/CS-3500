@@ -18,7 +18,7 @@ namespace View
         public Form1()
         {
             InitializeComponent();
-
+            this.Size = new Size(900, 800);
         }
 
         private void connectButton_Click(object sender, EventArgs e)
@@ -32,9 +32,10 @@ namespace View
         {
             MethodInvoker m = new MethodInvoker(() =>
             {
-                drawingPanel = new DrawingPanel();
+                drawingPanel = new DrawingPanel(WorldSize);
                 drawingPanel.Location = new Point(0, 30);
                 drawingPanel.Size = new Size(WorldSize, WorldSize);
+                drawingPanel.BackColor = Color.Black;
                 this.Controls.Add(drawingPanel);
                 Controller.WorldUpdated += UpdateWorld;
                 this.Invalidate(true);
@@ -44,9 +45,21 @@ namespace View
         }
         private void UpdateWorld(IEnumerable<string> messages)
         {
+            drawingPanel.theWorld.UpdateWorld(messages);
+            MethodInvoker me = new MethodInvoker(() =>
+            {
+                drawingPanel.Refresh();
+                this.Invalidate(true);
+            });
+            this.Invoke(me);
+            
             foreach (string s in messages)
             {
                 Console.WriteLine(s);
+            }
+            foreach (object s in drawingPanel.theWorld.GetShips())
+            {
+                Console.WriteLine("Ship");
             }
         }
     }

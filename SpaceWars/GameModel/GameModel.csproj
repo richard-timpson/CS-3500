@@ -50,6 +50,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GameController\GameController.csproj">
+      <Project>{b521d47f-34fb-471b-aba8-32eaed3d4a1e}</Project>
+      <Name>GameController</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Vector2D\Vector2D.csproj">
       <Project>{ba6af58f-6723-48af-ad47-5d12a51a3881}</Project>
       <Name>Vector2D</Name>

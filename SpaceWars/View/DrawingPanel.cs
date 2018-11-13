@@ -10,13 +10,18 @@ using System.Drawing;
 using GameModel;
 using Vector;
 using Resources;
+
 namespace View
 {
     public class DrawingPanel : Panel
     {
-        public DrawingPanel()
+        public World theWorld;
+        int WorldSize;
+        public DrawingPanel(int WorldSize)
         {
             DoubleBuffered = true;
+            theWorld = new World();
+            this.WorldSize = WorldSize;
         }
 
         /// <summary>
@@ -42,14 +47,42 @@ namespace View
         /// <param name="worldY">The Y coordinate of the object in world space</param>
         /// <param name="angle">The orientation of the objec, measured in degrees clockwise from "up"</param>
         /// <param name="drawer">The drawer delegate. After the transformation is applied, the delegate is invoked to draw whatever it wants</param>
-        private void DrawObjectWithTransform(PaintEventArgs e, int worldSize,  ObjectDrawer drawer)
+        private void DrawObjectWithTransform(PaintEventArgs e, Ship s, int worldSize, double locX, double locY, float angle,  ObjectDrawer drawer)
         {
             // Perform the transformation
-            int x = WorldSpaceToImageSpace(worldSize, 0);
-            int y = WorldSpaceToImageSpace(worldSize, 0);
+            int x = WorldSpaceToImageSpace(worldSize, locX);
+            int y = WorldSpaceToImageSpace(worldSize, locY);
             e.Graphics.TranslateTransform(x, y);
-            object o = new Ship();
-            //e.Graphics.RotateTransform((float)angle);
+            object o = s;
+            e.Graphics.RotateTransform((float)angle);
+            // Draw the object 
+            drawer(o, e);
+            // Then undo the transformation
+            e.Graphics.ResetTransform();
+        }
+
+        private void DrawObjectWithTransform(PaintEventArgs e, Projectile p, int worldSize, double locX, double locY, float angle, ObjectDrawer drawer)
+        {
+            // Perform the transformation
+            int x = WorldSpaceToImageSpace(worldSize, locX);
+            int y = WorldSpaceToImageSpace(worldSize, locY);
+            e.Graphics.TranslateTransform(x, y);
+            object o = p;
+            e.Graphics.RotateTransform((float)angle);
+            // Draw the object 
+            drawer(o, e);
+            // Then undo the transformation
+            e.Graphics.ResetTransform();
+        }
+
+        private void DrawObjectWithTransform(PaintEventArgs e, Star s, int worldSize, double locX, double locY, float angle, ObjectDrawer drawer)
+        {
+            // Perform the transformation
+            int x = WorldSpaceToImageSpace(worldSize, locX);
+            int y = WorldSpaceToImageSpace(worldSize, locY);
+            e.Graphics.TranslateTransform(x, y);
+            object o = s;
+            e.Graphics.RotateTransform((float)angle);
             // Draw the object 
             drawer(o, e);
             // Then undo the transformation
@@ -70,33 +103,74 @@ namespace View
         /// <param name="e">The PaintEventArgs to access the graphics</param>
         private void ShipDrawer(object o, PaintEventArgs e)
         {
-            Ship p = o as Ship;
-            p.color = "red";
-            p.loc = new Vector2D((double)10, (double)10);
-            
-            e.Graphics.Clear(Color.Black);
-            Image ship1 = Resource1.ship_coast_blue;
-            Rectangle r = new Rectangle((int)p.loc.GetX(), (int)p.loc.GetY(), 20, 20);
+            int shipWidth = 35;
+            Ship s = o as Ship;
+            Image ship1;
+            if (s.GetThrust() == false)
+            {
+                if (s.GetID() == 0)
+                    ship1 = Resource1.ship_coast_red;
+                else if (s.GetID() == 1)
+                    ship1 = Resource1.ship_coast_blue;
+                else
+                    ship1 = Resource1.ship_coast_yellow;
+            }
+            else
+            {
+                if (s.GetID() == 0)
+                    ship1 = Resource1.ship_thrust_red;
+                else if (s.GetID() == 1)
+                    ship1 = Resource1.ship_thrust_blue;
+                else
+                    ship1 = Resource1.ship_thrust_yellow;
+            }
+
+            Rectangle r = new Rectangle(-(shipWidth/2), -(shipWidth/2), shipWidth, shipWidth);
             e.Graphics.DrawImage(ship1, r);
-
-            //e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            //using (System.Drawing.SolidBrush blueBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Blue))
-            //using (System.Drawing.SolidBrush greenBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Green))
-            //{
-            //    // Rectangles are drawn starting from the top-left corner.
-            //    // So if we want the rectangle centered on the player's location, we have to offset it
-            //    // by half its size to the left (-width/2) and up (-height/2)
-            //    Rectangle r = new Rectangle(-(width / 2), -(height / 2), width, height);
-
-            //    if (p.GetTeam() == 1) // team 1 is blue
-            //        e.Graphics.FillRectangle(blueBrush, r);
-            //    else                  // team 2 is green
-            //        e.Graphics.FillRectangle(greenBrush, r);
-            //}
         }
+
+        private void StarDrawer(object o, PaintEventArgs e)
+        {
+            int starWidth = 35;
+            Star s = o as Star;
+            Image star1 = Resource1.star;
+
+            Rectangle r = new Rectangle(-(starWidth / 2), -(starWidth / 2), starWidth, starWidth);
+            e.Graphics.DrawImage(star1, r);
+        }
+
+        private void ProjectileDrawer(object o, PaintEventArgs e)
+        {
+            int projWidth = 12;
+            Projectile p = o as Projectile;
+            Image proj1;
+            if (p.GetID() == 0)
+                proj1 = Resource1.shot_red;
+            else if (p.GetID() == 1)
+                proj1 = Resource1.shot_blue;
+            else
+                proj1 = Resource1.shot_yellow;
+
+            Rectangle r = new Rectangle(-(projWidth / 2), -(projWidth / 2), projWidth, projWidth);
+            e.Graphics.DrawImage(proj1, r);
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
-            DrawObjectWithTransform(e, this.Size.Width, ShipDrawer);
+            foreach (Ship s in theWorld.GetShips())
+            {
+                DrawObjectWithTransform(e, s, WorldSize, s.GetLocation().GetX(), s.GetLocation().GetY(), s.GetOrientation().ToAngle(), ShipDrawer);
+            }
+
+            foreach (Star s in theWorld.GetStars())
+            {
+                DrawObjectWithTransform(e, s, WorldSize, s.GetLocation().GetX(), s.GetLocation().GetY(), 0, StarDrawer);
+            }
+
+            foreach (Projectile p in theWorld.GetProjectiles())
+            {
+                DrawObjectWithTransform(e, p, WorldSize, p.GetLocation().GetX(), p.GetLocation().GetY(), 0, ProjectileDrawer);
+            }
             // Do anything that Panel (from which we inherit) needs to do
             base.OnPaint(e);
         }

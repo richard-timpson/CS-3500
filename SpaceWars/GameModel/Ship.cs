@@ -12,29 +12,66 @@ namespace GameModel
     [JsonObject(MemberSerialization.OptIn)]
     public class Ship
     {
+        public Ship()
+        {
+            int ID = this.ID;
+            Vector.Vector2D loc = this.loc;
+            Vector.Vector2D dir = this.dir;
+            bool thrust = this.thrust;
+            string name = this.name;
+            int hp = this.hp;
+            int score = this.score;
+            string color = this.color;
+        }
+
+        public Vector.Vector2D GetLocation()
+        {
+            return this.loc;
+        }
+
+        public Vector.Vector2D GetOrientation()
+        {
+            return this.dir;
+        }
+
+        public int GetID()
+        {
+            return this.ID;
+        }
+
+        public int GetHP()
+        {
+            return this.hp;
+        }
+
+        public bool GetThrust()
+        {
+            return this.thrust;
+        }
+
         [JsonProperty(PropertyName = "ship")]
-        public int ID { get; set; }
+        private int ID { get; set; }
 
         [JsonProperty]
-        public Vector.Vector2D loc { get; set; }
+        private Vector.Vector2D loc { get; set; }
 
         [JsonProperty]
-        public Vector.Vector2D dir { get; set; }
+        private Vector.Vector2D dir { get; set; }
 
         [JsonProperty]
-        public bool thrust { get; set; }
+        private bool thrust { get; set; }
 
         [JsonProperty]
-        public string name { get; set; }
+        private string name { get; set; }
 
         [JsonProperty]
-        public int hp { get; set; }
+        private int hp { get; set; }
 
         [JsonProperty]
-        public int score { get; set; }
+        private int score { get; set; }
 
         [JsonProperty]
-        public string color { get;  set; }
+        private string color { get;  set; }
     }
 
 }
