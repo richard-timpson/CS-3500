@@ -41,6 +41,8 @@ and return a deep copy of the objects to the view, through the WorldUpdated Even
 When this event is triggered, the view will then draw the copy of the objects. 
 
 Potential problems may be that the code takes too long to update the objects,copy them, and 
-draw them in the time that the next message is processed. We may also have potential race conditions. 
+draw them in the time that the next message is processed. We may also have potential race conditions.
+
+We also need to figure out how to send messages for fire and move. 
 
 
