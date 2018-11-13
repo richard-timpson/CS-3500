@@ -24,7 +24,7 @@ namespace NetworkController
 
             public callMe _call;
             // This is the buffer where we will receive data from the socket
-            public byte[] messageBuffer = new byte[1024];
+            public byte[] messageBuffer = new byte[4000];
 
             // This is a larger (growable) buffer, in case a single receive does not contain the full message.
             public StringBuilder sb = new StringBuilder();

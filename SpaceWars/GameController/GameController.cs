@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NetworkController;
+using GameModel;
 
 namespace Game
 {
@@ -14,6 +15,7 @@ namespace Game
         private string Host { get; set; }
         private int ID { get; set; }
         private int WorldSize;
+        private World theWorld;
 
         public delegate void InitializeWorldHandler(int WorldSize);
         public delegate void UpdateWorldHandler(IEnumerable<string> messages);
@@ -21,15 +23,23 @@ namespace Game
         public event InitializeWorldHandler WorldInitialized;
         public event UpdateWorldHandler WorldUpdated;
 
+        public GameController(World theWorld)
+        {
+            this.theWorld = theWorld;
+        }
+
         private void FirstContact(Networking.SocketState ss)
         {
+            Console.WriteLine("Calling FirstContact function");
             ss._call = ReceiveStartup; // change delegate
-            Networking.NetworkController.Send(this.UserName, ss); // send the name
+            string protocolUserName = this.UserName + "\n";
+            Networking.NetworkController.Send(protocolUserName, ss); // send the name
             Networking.NetworkController.GetData(ss); // start the loop to get data. 
 
         }
         private void ReceiveStartup(Networking.SocketState ss)
         {
+            Console.WriteLine("Calling ReceiveStartup Function");
             string totalData = ss.sb.ToString();
             string[] parts = Regex.Split(totalData, @"(?<=[\n])");
             foreach(string s in parts)
@@ -53,6 +63,7 @@ namespace Game
 
         private void ReceiveWorld(Networking.SocketState ss)
         {
+            Console.WriteLine("Calling Receive World Function");
             string totalData = ss.sb.ToString();
             string[] parts = Regex.Split(totalData, @"(?<=[\n])");
             foreach (string s in parts)
@@ -67,7 +78,9 @@ namespace Game
                     break;
                 }
             }
+            ss.sb.Clear();
             WorldUpdated(parts);
+            UpdateTheWorld(parts);
 
             
         }
@@ -77,6 +90,11 @@ namespace Game
             this.UserName = Name;
             this.Host = Host;
             Networking.NetworkController.ConnectToServer(this.Host, FirstContact);
+        }
+        
+        public void UpdateTheWorld(IEnumerable<string> messages)
+        {
+            this.theWorld.UpdateWorld(messages);
         }
     }
 }

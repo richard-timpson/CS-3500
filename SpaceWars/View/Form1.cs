@@ -45,22 +45,22 @@ namespace View
         }
         private void UpdateWorld(IEnumerable<string> messages)
         {
-            drawingPanel.theWorld.UpdateWorld(messages);
             MethodInvoker me = new MethodInvoker(() =>
             {
                 drawingPanel.Refresh();
                 this.Invalidate(true);
+
+                foreach (string s in messages)
+                {
+                    Console.WriteLine(s);
+                }
+                foreach (object s in drawingPanel.theWorld.GetShips())
+                {
+                    Console.WriteLine("Ship");
+                }
             });
             this.Invoke(me);
             
-            foreach (string s in messages)
-            {
-                Console.WriteLine(s);
-            }
-            foreach (object s in drawingPanel.theWorld.GetShips())
-            {
-                Console.WriteLine("Ship");
-            }
         }
     }
 }

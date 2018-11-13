@@ -44,6 +44,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GameModel\GameModel.csproj">
+      <Project>{38a64a70-6804-45f4-be84-d3bea810118c}</Project>
+      <Name>GameModel</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NetworkController\NetworkController.csproj">
       <Project>{caf69d0f-d442-49b5-a1dd-26cd9dcce59d}</Project>
       <Name>NetworkController</Name>

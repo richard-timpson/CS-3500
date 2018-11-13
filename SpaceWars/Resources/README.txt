@@ -26,3 +26,21 @@ Solution:  SpaceWars
 We decided to put all of the models as classes inside of the same project, to make things simpler. We may need to change this in the future. 
 We are hoping to get the project outlined and everythign pipelined together to begin with, and then begin coding the main logic. 
 
+
+*********************************
+11/12/18
+
+We have most of the networking code finished, and objects displaying. We are running into some issues 
+with the gamecontroller talking with the view to draw the objects. 
+
+As of now, the plan is to have the following organization
+
+Create the world when the game is initialized, inside of the game controller
+Every time a full message is received, the world will update it's objects, 
+and return a deep copy of the objects to the view, through the WorldUpdated Event. 
+When this event is triggered, the view will then draw the copy of the objects. 
+
+Potential problems may be that the code takes too long to update the objects,copy them, and 
+draw them in the time that the next message is processed. We may also have potential race conditions. 
+
+

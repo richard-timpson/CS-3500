@@ -17,10 +17,10 @@ namespace View
     {
         public World theWorld;
         int WorldSize;
-        public DrawingPanel(int WorldSize)
+        public DrawingPanel(int WorldSize, World _theWorld)
         {
             DoubleBuffered = true;
-            theWorld = new World();
+            this.theWorld = _theWorld;
             this.WorldSize = WorldSize;
         }
 
