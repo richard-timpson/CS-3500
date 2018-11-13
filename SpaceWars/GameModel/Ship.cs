@@ -34,11 +34,6 @@ namespace GameModel
             return this.dir;
         }
 
-        public int GetID()
-        {
-            return this.ID;
-        }
-
         public int GetHP()
         {
             return this.hp;
@@ -50,7 +45,7 @@ namespace GameModel
         }
 
         [JsonProperty(PropertyName = "ship")]
-        private int ID { get; set; }
+        public int ID { get; private set; }
 
         [JsonProperty]
         private Vector.Vector2D loc { get; set; }

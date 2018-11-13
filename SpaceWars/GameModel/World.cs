@@ -31,18 +31,18 @@ namespace GameModel
                 if (s.Length >= 4 && s[2] == 's' && s[3] == 'h')
                 {
                     temp = JsonConvert.DeserializeObject<Ship>(s);
-                    if (!ShipsActive.Any(item => item.GetID() == temp.GetID()) && temp.GetHP() != 0)
+                    if (!ShipsActive.Any(item => item.ID == temp.ID && temp.GetHP() != 0))
                     {
                         ShipsActive.Add(temp);
                     }
-                    else if (ShipsActive.Any(item => item.GetID() == temp.GetID()))
+                    else if (ShipsActive.Any(item => item.ID == temp.ID))
                     {
-                        ShipsActive.RemoveAll(item => item.GetID() == temp.GetID());
+                        ShipsActive.RemoveAll(item => item.ID == temp.ID);
                         ShipsActive.Add(temp);
                     }
                     else if (temp.GetHP() == 0)
                     {
-                        ShipsActive.RemoveAll(item => item.GetID() == temp.GetID());
+                        ShipsActive.RemoveAll(item => item.ID == temp.ID);
                     }
                 }
                 if (s.Length >= 4 && s[2] == 's' && s[3] == 't')

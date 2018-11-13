@@ -108,18 +108,18 @@ namespace View
             Image ship1;
             if (s.GetThrust() == false)
             {
-                if (s.GetID() == 0)
+                if (s.ID == 0)
                     ship1 = Resource1.ship_coast_red;
-                else if (s.GetID() == 1)
+                else if (s.ID == 1)
                     ship1 = Resource1.ship_coast_blue;
                 else
                     ship1 = Resource1.ship_coast_yellow;
             }
             else
             {
-                if (s.GetID() == 0)
+                if (s.ID == 0)
                     ship1 = Resource1.ship_thrust_red;
-                else if (s.GetID() == 1)
+                else if (s.ID == 1)
                     ship1 = Resource1.ship_thrust_blue;
                 else
                     ship1 = Resource1.ship_thrust_yellow;
