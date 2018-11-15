@@ -26,6 +26,7 @@ namespace View
             InitializeComponent();
             message = new StringBuilder();
             this.Size = new Size(900, 800);
+            KeyPreview = true;
         }
 
         private void connectButton_Click(object sender, EventArgs e)
@@ -34,6 +35,9 @@ namespace View
             Controller.ConnectInitial(nameInput.Text, serverInput.Text);
             Controller.WorldInitialized += IntilializeGame;
             Controller.SendMessage += SendKeyPress;
+            nameInput.Enabled = false;
+            serverInput.Enabled = false;
+            connectButton.Enabled = false;
         }
 
         private void IntilializeGame(int WorldSize)
@@ -45,9 +49,9 @@ namespace View
                 drawingPanel.Size = new Size(WorldSize, WorldSize);
                 drawingPanel.BackColor = Color.Black;
                 this.Controls.Add(drawingPanel);
+                drawingPanel.Focus();
                 Controller.WorldUpdated += UpdateWorld;
                 this.Invalidate(true);
-                
             });
             this.Invoke(m);
         }
@@ -55,6 +59,8 @@ namespace View
         {
             MethodInvoker me = new MethodInvoker(() =>
             {
+                this.KeyDown += Form1_KeyDown;
+                this.KeyUp += Form1_KeyUp;
                 drawingPanel.Refresh();
                 this.Invalidate(true);
             });
@@ -63,7 +69,6 @@ namespace View
         }
         private void SendKeyPress(Networking.SocketState ss)
         {
-
             this.message.Append("(");
             if (keyRight == true)
             {
@@ -86,36 +91,45 @@ namespace View
             Console.WriteLine(message);
             Controller.SendControls(message, ss);
             this.message.Clear();
-            keyLeft = false;
-            keyRight = false;
-            keyThrust = false;
-            keyFire = false;
         }
 
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            if (keyData == Keys.Up)
-            {
-                keyThrust = true;
-                return true;
-            }
-            if (keyData == Keys.Left)
-            {
-                keyLeft = true;
-                return true;
-            }
-            if (keyData == Keys.Right)
-            {
-                keyRight = true;
-                return true;
-            }
-            if (keyData == Keys.Space)
-            {
-                keyFire = true;
-                return true;
-            }
 
-            return base.ProcessCmdKey(ref msg, keyData);
+        void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Left:
+                    keyLeft = true;
+                    break;
+                case Keys.Right:
+                    keyRight = true;
+                    break;
+                case Keys.Up:
+                    keyThrust = true;
+                    break;
+                case Keys.Space:
+                    keyFire = true;
+                    break;
+            }
+        }
+
+        void Form1_KeyUp(object sneder, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Left:
+                    keyLeft = false;
+                    break;
+                case Keys.Right:
+                    keyRight = false;
+                    break;
+                case Keys.Up:
+                    keyThrust = false;
+                    break;
+                case Keys.Space:
+                    keyFire = false;
+                    break;
+            }
         }
 
 
