@@ -157,7 +157,7 @@ namespace NetworkController
             private static void ReceiveCallback(IAsyncResult ar)
             {
                 SocketState ss = (SocketState)ar.AsyncState;
-
+               
                 int bytesRead = ss.theSocket.EndReceive(ar);
 
                 // If the socket is still open
@@ -167,10 +167,13 @@ namespace NetworkController
                     // Append the received data to the growable buffer.
                     // It may be an incomplete message, so we need to start building it up piece by piece
                     ss.sb.Append(theMessage);
-                    Console.WriteLine("The message in the network controlle: " + theMessage);
                     ss._call(ss);
+                    
                 }
-
+                else
+                {
+                    ss.theSocket.Close();
+                }
                 // Continue the "event loop" that was started on line 100.
                 // Start listening for more parts of a message, or more new messages
                 // ss.theSocket.BeginReceive(ss.messageBuffer, 0, ss.messageBuffer.Length, SocketFlags.None, ReceiveCallback, ss);
@@ -198,7 +201,7 @@ namespace NetworkController
 
             public static void GetData(Networking.SocketState ss)
             {
-                ss.theSocket.BeginReceive(ss.messageBuffer, 0, ss.messageBuffer.Length, SocketFlags.None, ReceiveCallback, ss);
+                ss.theSocket.BeginReceive(ss.messageBuffer, 0, ss.messageBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), ss);
             }
         }
     }

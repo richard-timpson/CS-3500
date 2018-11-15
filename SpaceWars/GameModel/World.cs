@@ -10,13 +10,13 @@ namespace GameModel
     public class World
     {
         List<Ship> ShipsActive;
-        List<Projectile> ProjectilesActive;
+        HashSet<Projectile> ProjectilesActive;
         List<Star> StarsActive;
 
         public World()
         {
             ShipsActive = new List<Ship>();
-            ProjectilesActive = new List<Projectile>();
+            ProjectilesActive = new HashSet<Projectile>();
             StarsActive = new List<Star>();
         }
 
@@ -46,7 +46,7 @@ namespace GameModel
 
         public void RemoveProjectile(int ID)
         {
-            this.ProjectilesActive.RemoveAll((item) => item.ID == ID);
+            this.ProjectilesActive.RemoveWhere((item) => item.ID == ID);
 
         }
 

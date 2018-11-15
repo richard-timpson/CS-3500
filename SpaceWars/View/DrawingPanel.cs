@@ -112,8 +112,34 @@ namespace View
                     ship1 = Resource1.ship_coast_red;
                 else if (s.ID == 1)
                     ship1 = Resource1.ship_coast_blue;
-                else
+                else if (s.ID == 2)
                     ship1 = Resource1.ship_coast_yellow;
+                else if (s.ID == 3)
+                    ship1 = Resource1.ship_coast_violet;
+                else if (s.ID == 4)
+                    ship1 = Resource1.ship_coast_green;
+                else if (s.ID == 5)
+                    ship1 = Resource1.ship_coast_grey;
+                else if (s.ID == 6)
+                    ship1 = Resource1.ship_coast_brown;
+                else if (s.ID == 7)
+                    ship1 = Resource1.ship_coast_white;
+                else if (s.ID == 8)
+                    ship1 = Resource1.ship_coast_red;
+                else if (s.ID == 9)
+                    ship1 = Resource1.ship_coast_blue;
+                else if (s.ID == 10)
+                    ship1 = Resource1.ship_coast_yellow;
+                else if (s.ID == 11)
+                    ship1 = Resource1.ship_coast_violet;
+                else if (s.ID == 12)
+                    ship1 = Resource1.ship_coast_green;
+                else if (s.ID == 13)
+                    ship1 = Resource1.ship_coast_grey;
+                else if (s.ID == 14)
+                    ship1 = Resource1.ship_coast_brown;
+                else 
+                    ship1 = Resource1.ship_coast_white;
             }
             else
             {
@@ -121,8 +147,34 @@ namespace View
                     ship1 = Resource1.ship_thrust_red;
                 else if (s.ID == 1)
                     ship1 = Resource1.ship_thrust_blue;
-                else
+                else if (s.ID == 2)
                     ship1 = Resource1.ship_thrust_yellow;
+                else if (s.ID == 3)
+                    ship1 = Resource1.ship_thrust_violet;
+                else if (s.ID == 4)
+                    ship1 = Resource1.ship_thrust_green;
+                else if (s.ID == 5)
+                    ship1 = Resource1.ship_thrust_grey;
+                else if (s.ID == 6)
+                    ship1 = Resource1.ship_thrust_brown;
+                else if (s.ID == 7)
+                    ship1 = Resource1.ship_thrust_white;
+                else if (s.ID == 8)
+                    ship1 = Resource1.ship_thrust_red;
+                else if (s.ID == 9)
+                    ship1 = Resource1.ship_thrust_blue;
+                else if (s.ID == 10)
+                    ship1 = Resource1.ship_thrust_yellow;
+                else if (s.ID == 11)
+                    ship1 = Resource1.ship_thrust_violet;
+                else if (s.ID == 12)
+                    ship1 = Resource1.ship_thrust_green;
+                else if (s.ID == 13)
+                    ship1 = Resource1.ship_thrust_grey;
+                else if (s.ID == 14)
+                    ship1 = Resource1.ship_thrust_brown;
+                else
+                    ship1 = Resource1.ship_thrust_white;
             }
 
             Rectangle r = new Rectangle(-(shipWidth/2), -(shipWidth/2), shipWidth, shipWidth);
@@ -141,15 +193,42 @@ namespace View
 
         private void ProjectileDrawer(object o, PaintEventArgs e)
         {
-            int projWidth = 12;
+            int projWidth = 24;
             Projectile p = o as Projectile;
             Image proj1;
-            if (p.ID == 0)
+            if (p.owner == 0)
                 proj1 = Resource1.shot_red;
-            else if (p.ID == 1)
+            else if (p.owner == 1)
                 proj1 = Resource1.shot_blue;
-            else
+            else if (p.owner == 2)
                 proj1 = Resource1.shot_yellow;
+            else if (p.owner == 3)
+                proj1 = Resource1.shot_violet;
+            else if (p.owner == 4)
+                proj1 = Resource1.shot_green;
+            else if (p.owner == 5)
+                proj1 = Resource1.shot_grey;
+            else if (p.owner == 6)
+                proj1 = Resource1.shot_brown;
+            else if (p.owner == 7)
+                proj1 = Resource1.shot_white;
+            else if (p.owner == 8)
+                proj1 = Resource1.shot_red;
+            else if (p.owner == 9)
+                proj1 = Resource1.shot_blue;
+            else if (p.owner == 10)
+                proj1 = Resource1.shot_yellow;
+            else if (p.owner == 11)
+                proj1 = Resource1.shot_violet;
+            else if (p.owner == 12)
+                proj1 = Resource1.shot_green;
+            else if (p.owner == 13)
+                proj1 = Resource1.shot_grey;
+            else if (p.owner == 14)
+                proj1 = Resource1.shot_brown;
+            else 
+                proj1 = Resource1.shot_white;
+
 
             Rectangle r = new Rectangle(-(projWidth / 2), -(projWidth / 2), projWidth, projWidth);
             e.Graphics.DrawImage(proj1, r);
@@ -171,7 +250,7 @@ namespace View
 
                 foreach (Projectile p in theWorld.GetProjectiles())
                 {
-                    DrawObjectWithTransform(e, p, WorldSize, p.loc.GetX(), p.loc.GetY(), 0, ProjectileDrawer);
+                    DrawObjectWithTransform(e, p, WorldSize, p.loc.GetX(), p.loc.GetY(), p.dir.ToAngle(), ProjectileDrawer);
                 }
             }
             // Do anything that Panel (from which we inherit) needs to do
