@@ -24,49 +24,30 @@ namespace GameModel
             string color = this.color;
         }
 
-        public Vector.Vector2D GetLocation()
-        {
-            return this.loc;
-        }
-
-        public Vector.Vector2D GetOrientation()
-        {
-            return this.dir;
-        }
-
-        public int GetHP()
-        {
-            return this.hp;
-        }
-
-        public bool GetThrust()
-        {
-            return this.thrust;
-        }
 
         [JsonProperty(PropertyName = "ship")]
         public int ID { get; private set; }
 
         [JsonProperty]
-        private Vector.Vector2D loc { get; set; }
+        public Vector.Vector2D loc { get; private set; }
 
         [JsonProperty]
-        private Vector.Vector2D dir { get; set; }
+        public Vector.Vector2D dir { get; private set; }
 
         [JsonProperty]
-        private bool thrust { get; set; }
+        public bool thrust { get; private set; }
 
         [JsonProperty]
-        private string name { get; set; }
+        public string name { get; private set; }
 
         [JsonProperty]
-        private int hp { get; set; }
+        public int hp { get; private set; }
 
         [JsonProperty]
-        private int score { get; set; }
+        public int score { get; private set; }
 
         [JsonProperty]
-        private string color { get;  set; }
+        public string color { get;  private set; }
     }
 
 }

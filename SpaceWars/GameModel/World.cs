@@ -20,58 +20,16 @@ namespace GameModel
             StarsActive = new List<Star>();
         }
 
-        public void UpdateWorld(IEnumerable<string> messages)
+        
+
+        public void AddShip(Ship s)
         {
-            foreach (string s in messages)
-            {
-                Ship temp;
-                Star tempStar;
-                Projectile tempProj;
-                if (s.Length >= 4 && s[2] == 's' && s[3] == 'h')
-                {
-                    temp = JsonConvert.DeserializeObject<Ship>(s);
-                    if (!ShipsActive.Any(item => item.ID == temp.ID && temp.GetHP() != 0))
-                    {
-                        ShipsActive.Add(temp);
-                    }
-                    else if (ShipsActive.Any(item => item.ID == temp.ID))
-                    {
-                        ShipsActive.RemoveAll(item => item.ID == temp.ID);
-                        ShipsActive.Add(temp);
-                    }
-                    else if (temp.GetHP() == 0)
-                    {
-                        ShipsActive.RemoveAll(item => item.ID == temp.ID);
-                    }
-                }
-                if (s.Length >= 4 && s[2] == 's' && s[3] == 't')
-                {
-                    tempStar = JsonConvert.DeserializeObject<Star>(s);
-                    if (!StarsActive.Any(item => item.GetID() == tempStar.GetID()))
-                    {
-                        StarsActive.Add(tempStar);
-                    }
-                }
-                if (s.Length >= 4 && s[2] == 'p')
-                {
-                    tempProj = JsonConvert.DeserializeObject<Projectile>(s);
-                    if (!ProjectilesActive.Any(item => item.GetID() == tempProj.GetID()))
-                    {
-                        ProjectilesActive.Add(tempProj);
-                    }
-                    else if (ProjectilesActive.Any(item => item.GetID() == tempProj.GetID()))
-                    {
-                        ProjectilesActive.RemoveAll(item => item.GetID() == tempProj.GetID());
-                        ProjectilesActive.Add(tempProj);
-                    }
-                    else if (tempProj.GetAlive() == false)
-                    {
-                        ProjectilesActive.RemoveAll(item => item.GetID() == tempProj.GetID());
-                    }
-                }
+            this.ShipsActive.Add(s);
+        }
 
-
-            }
+        public void RemoveShip(int ID)
+        {
+            this.ShipsActive.RemoveAll((item) => item.ID == ID);
         }
 
         public IEnumerable<Ship> GetShips()
@@ -80,10 +38,32 @@ namespace GameModel
                 yield return s;
         }
 
+
+        public void AddProjectile(Projectile p)
+        {
+            this.ProjectilesActive.Add(p);
+        }
+
+        public void RemoveProjectile(int ID)
+        {
+            this.ProjectilesActive.RemoveAll((item) => item.ID == ID);
+
+        }
+
         public IEnumerable<Projectile> GetProjectiles()
         {
             foreach (Projectile p in ProjectilesActive)
                 yield return p;
+        }
+
+        public void AddStar(Star s)
+        {
+            this.StarsActive.Add(s);
+        }
+
+        public void RemoveStar(int ID)
+        {
+            this.StarsActive.RemoveAll((item) => item.ID == ID);
         }
 
         public IEnumerable<Star> GetStars()

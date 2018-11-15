@@ -24,7 +24,7 @@ namespace NetworkController
 
             public callMe _call;
             // This is the buffer where we will receive data from the socket
-            public byte[] messageBuffer = new byte[4000];
+            public byte[] messageBuffer = new byte[400000];
 
             // This is a larger (growable) buffer, in case a single receive does not contain the full message.
             public StringBuilder sb = new StringBuilder();
@@ -173,7 +173,7 @@ namespace NetworkController
 
                 // Continue the "event loop" that was started on line 100.
                 // Start listening for more parts of a message, or more new messages
-                ss.theSocket.BeginReceive(ss.messageBuffer, 0, ss.messageBuffer.Length, SocketFlags.None, ReceiveCallback, ss);
+                // ss.theSocket.BeginReceive(ss.messageBuffer, 0, ss.messageBuffer.Length, SocketFlags.None, ReceiveCallback, ss);
 
             }
             /// <summary>

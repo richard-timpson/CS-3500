@@ -19,40 +19,21 @@ namespace GameModel
             bool alive = this.alive;
             int owner = this.owner;
         }
-        public int GetID()
-        {
-            return this.ID;
-        }
-
-        public Vector.Vector2D GetLocation()
-        {
-            return this.loc;
-        }
-
-        public Vector.Vector2D GetOrientation()
-        {
-            return this.dir;
-        }
-
-        public bool GetAlive()
-        {
-            return this.alive;
-        }
 
         [JsonProperty(PropertyName = "proj")]
-        private int ID;
+        public int ID { get; private set; }
 
         [JsonProperty]
-        private Vector.Vector2D loc;
+        public Vector.Vector2D loc { get; private set; }
 
         [JsonProperty]
-        private Vector.Vector2D dir;
+        public Vector.Vector2D dir { get; private set; }
 
         [JsonProperty]
-        private bool alive;
+        public bool alive { get; private set; }
 
         [JsonProperty]
-        private int owner;
+        public int owner { get; private set; }
 
     }
 

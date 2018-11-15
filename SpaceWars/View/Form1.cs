@@ -32,7 +32,7 @@ namespace View
         {
             MethodInvoker m = new MethodInvoker(() =>
             {
-                drawingPanel = new DrawingPanel(WorldSize);
+                drawingPanel = new DrawingPanel(WorldSize, Controller.theWorld);
                 drawingPanel.Location = new Point(0, 30);
                 drawingPanel.Size = new Size(WorldSize, WorldSize);
                 drawingPanel.BackColor = Color.Black;
@@ -43,21 +43,12 @@ namespace View
             });
             this.Invoke(m);
         }
-        private void UpdateWorld(IEnumerable<string> messages)
+        private void UpdateWorld()
         {
             MethodInvoker me = new MethodInvoker(() =>
             {
                 drawingPanel.Refresh();
                 this.Invalidate(true);
-
-                foreach (string s in messages)
-                {
-                    Console.WriteLine(s);
-                }
-                foreach (object s in drawingPanel.theWorld.GetShips())
-                {
-                    Console.WriteLine("Ship");
-                }
             });
             this.Invoke(me);
             

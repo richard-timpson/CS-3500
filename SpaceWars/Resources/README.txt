@@ -44,5 +44,12 @@ Potential problems may be that the code takes too long to update the objects,cop
 draw them in the time that the next message is processed. We may also have potential race conditions.
 
 We also need to figure out how to send messages for fire and move. 
+*********************************
+
+11/14/18
+
+As of now, the data structure for the objects is a list. 
+We may want to switch to a hashset depending on the performance, 
+especially for the projectiles. 
 
 

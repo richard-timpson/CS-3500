@@ -106,7 +106,7 @@ namespace View
             int shipWidth = 35;
             Ship s = o as Ship;
             Image ship1;
-            if (s.GetThrust() == false)
+            if (s.thrust == false)
             {
                 if (s.ID == 0)
                     ship1 = Resource1.ship_coast_red;
@@ -144,9 +144,9 @@ namespace View
             int projWidth = 12;
             Projectile p = o as Projectile;
             Image proj1;
-            if (p.GetID() == 0)
+            if (p.ID == 0)
                 proj1 = Resource1.shot_red;
-            else if (p.GetID() == 1)
+            else if (p.ID == 1)
                 proj1 = Resource1.shot_blue;
             else
                 proj1 = Resource1.shot_yellow;
@@ -157,19 +157,22 @@ namespace View
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            foreach (Ship s in theWorld.GetShips())
+            lock (this.theWorld)
             {
-                DrawObjectWithTransform(e, s, WorldSize, s.GetLocation().GetX(), s.GetLocation().GetY(), s.GetOrientation().ToAngle(), ShipDrawer);
-            }
+                foreach (Ship s in theWorld.GetShips())
+                {
+                    DrawObjectWithTransform(e, s, WorldSize, s.loc.GetX(), s.loc.GetY(), s.dir.ToAngle(), ShipDrawer);
+                }
 
-            foreach (Star s in theWorld.GetStars())
-            {
-                DrawObjectWithTransform(e, s, WorldSize, s.GetLocation().GetX(), s.GetLocation().GetY(), 0, StarDrawer);
-            }
+                foreach (Star s in theWorld.GetStars())
+                {
+                    DrawObjectWithTransform(e, s, WorldSize, s.loc.GetX(), s.loc.GetY(), 0, StarDrawer);
+                }
 
-            foreach (Projectile p in theWorld.GetProjectiles())
-            {
-                DrawObjectWithTransform(e, p, WorldSize, p.GetLocation().GetX(), p.GetLocation().GetY(), 0, ProjectileDrawer);
+                foreach (Projectile p in theWorld.GetProjectiles())
+                {
+                    DrawObjectWithTransform(e, p, WorldSize, p.loc.GetX(), p.loc.GetY(), 0, ProjectileDrawer);
+                }
             }
             // Do anything that Panel (from which we inherit) needs to do
             base.OnPaint(e);

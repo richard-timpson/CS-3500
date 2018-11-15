@@ -18,23 +18,14 @@ namespace GameModel
             double mass = this.mass;
         }
 
-        public int GetID()
-        {
-            return this.ID;
-        }
-
-        public Vector.Vector2D GetLocation()
-        {
-            return this.loc;
-        }
 
         [JsonProperty(PropertyName = "star")]
-        private int ID;
+        public int ID { get; private set; }
 
         [JsonProperty]
-        private Vector.Vector2D loc;
+        public Vector.Vector2D loc { get; private set; }
 
         [JsonProperty]
-        private double mass;
+        public double mass { get; private set; }
     }
 }
