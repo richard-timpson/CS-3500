@@ -52,4 +52,9 @@ As of now, the data structure for the objects is a list.
 We may want to switch to a hashset depending on the performance, 
 especially for the projectiles. 
 
+**********************************
+11/15/18
+We have the networking controller working well enough, that the ships are
+being displayed properly. 
+
 

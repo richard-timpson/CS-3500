@@ -95,6 +95,10 @@
       <Project>{38a64a70-6804-45f4-be84-d3bea810118c}</Project>
       <Name>GameModel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NetworkController\NetworkController.csproj">
+      <Project>{caf69d0f-d442-49b5-a1dd-26cd9dcce59d}</Project>
+      <Name>NetworkController</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Resources\Resources.csproj">
       <Project>{4dab9e4c-2aeb-4a3d-94ae-1acd9e36c687}</Project>
       <Name>Resources</Name>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Threading;
 using NetworkController;
 using GameModel;
 using Newtonsoft.Json;
@@ -21,9 +22,11 @@ namespace Game
 
         public delegate void InitializeWorldHandler(int WorldSize);
         public delegate void UpdateWorldHandler();
+        public delegate void SendMessageHandler(Networking.SocketState ss);
 
         public event InitializeWorldHandler WorldInitialized;
         public event UpdateWorldHandler WorldUpdated;
+        public event SendMessageHandler SendMessage;
 
         public GameController()
         {
@@ -60,6 +63,7 @@ namespace Game
             WorldInitialized(WorldSize);
             ss._call = ReceiveWorld;
             Networking.NetworkController.GetData(ss);
+            TiggerSendKeyEvent(ss);
 
         }
         
@@ -71,7 +75,7 @@ namespace Game
 
                 foreach (string s in parts)
                 {
-                    if (s.Length == 0)
+                if (s.Length == 0)
                     {
                         continue;
                     }
@@ -107,7 +111,6 @@ namespace Game
             Ship temp;
             Star tempStar;
             Projectile tempProj;
-            Console.WriteLine(s);
             // if the object is a ship
             if (s.Length >= 4 && s[2] == 's' && s[3] == 'h')
             {
@@ -120,7 +123,6 @@ namespace Game
                 // if the ship is in the current list, and it is not dead
                 if (theWorld.GetShips().Any(item => item.ID == temp.ID) && temp.hp != 0)
                 {
-                    Console.WriteLine(temp.hp);
                     // remove old ship
                     theWorld.RemoveShip(temp.ID);
                     // add new ship
@@ -170,6 +172,20 @@ namespace Game
                 }
             }
             
+        }
+        private void TiggerSendKeyEvent(Networking.SocketState ss)
+        {
+            // every 15 ms, trigger the SendKey event
+
+            while(true)
+            {
+                Thread.Sleep(15);
+                SendMessage(ss);
+            }
+        }
+        public void SendControls(string message, Networking.SocketState ss)
+        {
+            Networking.NetworkController.Send(message, ss);
         }
     }
 }
