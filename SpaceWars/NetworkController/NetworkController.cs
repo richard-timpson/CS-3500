@@ -24,7 +24,7 @@ namespace NetworkController
 
             public callMe _call;
             // This is the buffer where we will receive data from the socket
-            public byte[] messageBuffer = new byte[400000];
+            public byte[] messageBuffer = new byte[4000];
 
             // This is a larger (growable) buffer, in case a single receive does not contain the full message.
             public StringBuilder sb = new StringBuilder();
@@ -167,7 +167,7 @@ namespace NetworkController
                     // Append the received data to the growable buffer.
                     // It may be an incomplete message, so we need to start building it up piece by piece
                     ss.sb.Append(theMessage);
-
+                    Console.WriteLine("The message in the network controlle: " + theMessage);
                     ss._call(ss);
                 }
 
