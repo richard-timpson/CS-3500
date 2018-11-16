@@ -16,13 +16,14 @@ namespace View
     public class DrawingPanel : Panel
     {
         public World theWorld;
-        int WorldSize;
+        private int WorldSize;
         public DrawingPanel(int WorldSize, World _theWorld)
         {
             DoubleBuffered = true;
             this.theWorld = _theWorld;
             this.WorldSize = WorldSize;
         }
+
 
         /// <summary>
         /// helper method for DrawObjectsWithTransform
@@ -236,9 +237,11 @@ namespace View
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            Rectangle rect = new Rectangle(new Point(WorldSize, 30), new Size(200, WorldSize));
+            e.Graphics.FillRectangle(new SolidBrush(Color.White), rect);
             lock (this.theWorld)
             {
-                foreach (Ship s in theWorld.GetShips())
+                foreach (Ship s in theWorld.GetShipsActive())
                 {
                     DrawObjectWithTransform(e, s, WorldSize, s.loc.GetX(), s.loc.GetY(), s.dir.ToAngle(), ShipDrawer);
                 }

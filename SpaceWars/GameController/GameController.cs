@@ -114,43 +114,55 @@ namespace Game
             Ship temp;
             Star tempStar;
             Projectile tempProj;
-            int[] tempArr = new int[2];
+            object[] tempArr = new object[2];
             // if the object is a ship
             if (s.Length >= 4 && s[2] == 's' && s[3] == 'h')
             {
                 temp = JsonConvert.DeserializeObject<Ship>(s);
-                tempArr[0] = temp.score;
-                tempArr[1] = temp.hp;
 
-                if (!theWorld.PlayerScores.ContainsKey(temp.name))
-                {
-                    theWorld.PlayerScores.Add(temp.name, tempArr);
-                }
-                if (theWorld.PlayerScores.ContainsKey(temp.name))
-                {
-                    theWorld.PlayerScores.Remove(temp.name);
-                    theWorld.PlayerScores.Add(temp.name, tempArr);
-                }
+                // logic for active ships
+           
                 // if the ship isn't in the current list, and it is not dead
-                if (!theWorld.GetShips().Any(item => item.ID == temp.ID && temp.hp != 0))
+                if (!theWorld.GetShipsActive().Any(item => item.ID == temp.ID && temp.hp != 0))
                 {
-                    theWorld.AddShip(temp);
+                    theWorld.AddShipActive(temp);
                 }
                 // if the ship is in the current list, and it is not dead
-                if (theWorld.GetShips().Any(item => item.ID == temp.ID) && temp.hp != 0)
+                if (theWorld.GetShipsActive().Any(item => item.ID == temp.ID) && temp.hp != 0)
                 {
                     // remove old ship
-                    theWorld.RemoveShip(temp.ID);
+                    theWorld.RemoveShipActive(temp.ID);
                     // add new ship
-                    theWorld.AddShip(temp);
+                    theWorld.AddShipActive(temp);
                 }
                 // if the ship is dead, remove it
-                if (theWorld.GetShips().Any(item => item.ID == temp.ID) && temp.hp == 0)
+                if (theWorld.GetShipsActive().Any(item => item.ID == temp.ID) && temp.hp == 0)
                 {
                     // need to tell view to explode 
 
-                    theWorld.RemoveShip(temp.ID);
+                    theWorld.RemoveShipActive(temp.ID);
                 }
+
+
+
+                // logic for all ships
+                
+                // if the ship is not in the list, add it
+                if(!theWorld.GetShips().Any(item => item.ID == temp.ID))
+                {
+                    theWorld.AddShip(temp);
+                }
+                // if the ship is in the list, update it
+                if (theWorld.GetShips().Any(item => item.ID == temp.ID))
+                {
+                    theWorld.RemoveShip(temp.ID);
+                    theWorld.AddShip(temp);
+                }
+
+
+
+
+
             }
             // if the object is a start
             if (s.Length >= 4 && s[2] == 's' && s[3] == 't')
@@ -187,6 +199,7 @@ namespace Game
                     theWorld.RemoveProjectile(tempProj.ID);
                 }
             }
+            sort();
             
         }
         private void TiggerSendKeyEvent(Networking.SocketState ss)
@@ -198,6 +211,11 @@ namespace Game
                 Thread.Sleep(15);
                 SendMessage(ss);
             }
+        }
+        private void sort()
+        {
+            theWorld.Players.Sort();
+            theWorld.Players.Reverse();
         }
         public void SendControls(string message, Networking.SocketState ss)
         {

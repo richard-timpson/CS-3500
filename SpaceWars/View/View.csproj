@@ -48,7 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ScoreBoardPanel.cs">
+    <Compile Include="ScoreBoard.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DrawingPanel.cs">

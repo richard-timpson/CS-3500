@@ -15,6 +15,7 @@ namespace View
     public partial class Form1 : Form
     {
         DrawingPanel drawingPanel;
+        ScoreBoard scoreBoard;
         GameController Controller;
         private StringBuilder message;
 
@@ -53,18 +54,21 @@ namespace View
                 drawingPanel.BackColor = Color.Black;
                 this.Controls.Add(drawingPanel);
                 drawingPanel.Focus();
+
+                scoreBoard = new ScoreBoard(Controller.theWorld);
+                scoreBoard.Location = new Point(WorldSize, 30);
+                scoreBoard.Size = new Size(200, WorldSize);
+                scoreBoard.BackColor = Color.White;
+
+                this.Controls.Add(scoreBoard);
+
+
                 Controller.WorldUpdated += UpdateWorld;
-                InitializeScoreBoard(WorldSize);
+                
+
                 this.Invalidate(true);
             });
             this.Invoke(m);
-        }
-
-        private void InitializeScoreBoard(int WorldSize)
-        {
-
-
-
         }
 
         private void UpdateWorld()
@@ -74,6 +78,7 @@ namespace View
                 this.KeyDown += Form1_KeyDown;
                 this.KeyUp += Form1_KeyUp;
                 drawingPanel.Refresh();
+                scoreBoard.Refresh();
                 this.Invalidate(true);
             });
             this.Invoke(me);
@@ -100,7 +105,6 @@ namespace View
             }
             this.message.Append(")");
             string message = this.message.ToString();
-            Console.WriteLine(message);
             Controller.SendControls(message, ss);
             this.message.Clear();
         }
