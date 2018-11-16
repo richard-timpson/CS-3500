@@ -9,15 +9,17 @@ namespace GameModel
 {   
     public class World
     {
-        List<Ship> ShipsActive;
-        HashSet<Projectile> ProjectilesActive;
-        List<Star> StarsActive;
+        private List<Ship> ShipsActive;
+        private HashSet<Projectile> ProjectilesActive;
+        private List<Star> StarsActive;
+        public Dictionary<string, int[]> PlayerScores { get; private set; }
 
         public World()
         {
             ShipsActive = new List<Ship>();
             ProjectilesActive = new HashSet<Projectile>();
             StarsActive = new List<Star>();
+            PlayerScores = new Dictionary<string, int[]>();
         }
 
         

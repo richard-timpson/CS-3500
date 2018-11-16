@@ -17,15 +17,17 @@ namespace View
         DrawingPanel drawingPanel;
         GameController Controller;
         private StringBuilder message;
+
         private bool keyRight = false;
         private bool keyLeft = false;
         private bool keyThrust = false;
         private bool keyFire = false;
+
         public Form1()
         {
             InitializeComponent();
             message = new StringBuilder();
-            this.Size = new Size(900, 800);
+            this.Size = new Size(500, 500);
             KeyPreview = true;
         }
 
@@ -47,14 +49,24 @@ namespace View
                 drawingPanel = new DrawingPanel(WorldSize, Controller.theWorld);
                 drawingPanel.Location = new Point(0, 30);
                 drawingPanel.Size = new Size(WorldSize, WorldSize);
+                this.Size = new Size(WorldSize + 200, WorldSize + 70);
                 drawingPanel.BackColor = Color.Black;
                 this.Controls.Add(drawingPanel);
                 drawingPanel.Focus();
                 Controller.WorldUpdated += UpdateWorld;
+                InitializeScoreBoard(WorldSize);
                 this.Invalidate(true);
             });
             this.Invoke(m);
         }
+
+        private void InitializeScoreBoard(int WorldSize)
+        {
+
+
+
+        }
+
         private void UpdateWorld()
         {
             MethodInvoker me = new MethodInvoker(() =>

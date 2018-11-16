@@ -48,6 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ScoreBoardPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="DrawingPanel.cs">
       <SubType>Component</SubType>
     </Compile>

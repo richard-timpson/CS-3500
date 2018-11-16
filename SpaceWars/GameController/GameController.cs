@@ -17,6 +17,8 @@ namespace Game
         private string Host { get; set; }
         private int ID { get; set; }
 
+        
+
         //private int WorldSize;
         public World theWorld { get; private set; }
 
@@ -31,6 +33,7 @@ namespace Game
         public GameController()
         {
             this.theWorld = new World();
+            
         }
 
         private void FirstContact(Networking.SocketState ss)
@@ -111,10 +114,23 @@ namespace Game
             Ship temp;
             Star tempStar;
             Projectile tempProj;
+            int[] tempArr = new int[2];
             // if the object is a ship
             if (s.Length >= 4 && s[2] == 's' && s[3] == 'h')
             {
                 temp = JsonConvert.DeserializeObject<Ship>(s);
+                tempArr[0] = temp.score;
+                tempArr[1] = temp.hp;
+
+                if (!theWorld.PlayerScores.ContainsKey(temp.name))
+                {
+                    theWorld.PlayerScores.Add(temp.name, tempArr);
+                }
+                if (theWorld.PlayerScores.ContainsKey(temp.name))
+                {
+                    theWorld.PlayerScores.Remove(temp.name);
+                    theWorld.PlayerScores.Add(temp.name, tempArr);
+                }
                 // if the ship isn't in the current list, and it is not dead
                 if (!theWorld.GetShips().Any(item => item.ID == temp.ID && temp.hp != 0))
                 {
