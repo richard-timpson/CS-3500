@@ -55,9 +55,17 @@ namespace View
         private void connectButton_Click(object sender, EventArgs e)
         {
             Controller = new GameController();
-            Controller.ConnectInitial(nameInput.Text, serverInput.Text);
+            try
+            {
+                Controller.ConnectInitial(nameInput.Text, serverInput.Text);
+            }
+            catch (Exception exc)
+            {
+                DisplayError(exc.Message);
+            }
             Controller.WorldInitialized += IntilializeGame;
             Controller.SendMessage += SendKeyPress;
+            Networking.NetworkController.Error += DisplayError;
             nameInput.Enabled = false;
             serverInput.Enabled = false;
             connectButton.Enabled = false;
@@ -137,7 +145,14 @@ namespace View
             }
             this.message.Append(")");
             string message = this.message.ToString();
+            try
+            {
             Controller.SendControls(message, ss);
+            }
+            catch(Exception e)
+            {
+                DisplayError(e.Message);
+            }
             this.message.Clear();
         }
 
@@ -187,6 +202,18 @@ namespace View
                     keyFire = false;
                     break;
             }
+        }
+
+        private void DisplayError(string message)
+        {
+            MessageBox.Show(message);
+            MethodInvoker me = new MethodInvoker(() =>
+            {
+                nameInput.Enabled = true;
+                serverInput.Enabled = true;
+                connectButton.Enabled = true;
+            });
+            this.Invoke(me);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Game
         public GameController()
         {
             this.theWorld = new World();
-            
+
         }
 
         /// <summary>
@@ -43,8 +43,16 @@ namespace Game
         {
             ss._call = ReceiveStartup; // change delegate
             string protocolUserName = this.UserName + "\n";
-            Networking.NetworkController.Send(protocolUserName, ss); // send the name
-            Networking.NetworkController.GetData(ss); // start the loop to get data. 
+            try
+            {
+                Networking.NetworkController.Send(protocolUserName, ss); // send the name
+                Networking.NetworkController.GetData(ss); // start the loop to get data. 
+
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message);
+            }
 
         }
 
@@ -66,7 +74,14 @@ namespace Game
                 }
                 if (s[s.Length - 1] != '\n')
                 {
-                    Networking.NetworkController.GetData(ss);
+                    try
+                    {
+                        Networking.NetworkController.GetData(ss);
+                    }
+                    catch (Exception e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e.Message);
+                    }
                     break;
                 }
             }
@@ -75,40 +90,55 @@ namespace Game
             int WorldSize = Convert.ToInt32(parts[1]); //set worldsize to worldsize sent from server
             WorldInitialized(WorldSize); //initialize world event
             ss._call = ReceiveWorld; //set the callMe delegate to ReceiveWorld
-            Networking.NetworkController.GetData(ss); //get data from server
+            try
+            {
+                Networking.NetworkController.GetData(ss); //get data from server
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message);
+            }
             TiggerSendKeyEvent(ss); //enable user key input to move ship and fire
 
         }
-        
+
         private void ReceiveWorld(Networking.SocketState ss)
         {
-                string totalData = ss.sb.ToString();
-                string[] parts = Regex.Split(totalData, @"(?<=[\n])");
-                string temp = "";
-                
-                //loop to process objects only if complete object. If message contains an
-                //incomplete object, then the stringbuilder is cleared and the partial
-                //is then appended to the stringbuilder.
-                foreach (string s in parts)
-                {
+            string totalData = ss.sb.ToString();
+            string[] parts = Regex.Split(totalData, @"(?<=[\n])");
+            string temp = "";
+
+            //loop to process objects only if complete object. If message contains an
+            //incomplete object, then the stringbuilder is cleared and the partial
+            //is then appended to the stringbuilder.
+            foreach (string s in parts)
+            {
                 if (s.Length == 0)
-                    {
-                        continue;
-                    }
-                    if (s[s.Length - 1] != '\n')
-                    {
-                        temp = s;
-                        break;
-                    }
-                    lock (this.theWorld)
-                    {
-                        ProcessObject(s);
-                    }
+                {
+                    continue;
                 }
-                ss.sb.Clear();
-                ss.sb.Append(temp);
+                if (s[s.Length - 1] != '\n')
+                {
+                    temp = s;
+                    break;
+                }
+                lock (this.theWorld)
+                {
+                    ProcessObject(s);
+                }
+            }
+            ss.sb.Clear();
+            ss.sb.Append(temp);
+            try
+            {
                 Networking.NetworkController.GetData(ss);
-                WorldUpdated(); //update world event
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message);
+
+            }
+            WorldUpdated(); //update world event
 
 
 
@@ -123,14 +153,22 @@ namespace Game
         {
             this.UserName = Name;
             this.Host = Host;
-            Networking.NetworkController.ConnectToServer(this.Host, FirstContact);
+            try
+            {
+                Networking.NetworkController.ConnectToServer(this.Host, FirstContact);
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message);
+
+            }
         }
 
         /// <summary>
         /// Updates the world by updating the lists that contain the objects of the world.
         /// </summary>
         /// <param name="s"></param>
-        private void ProcessObject(string s )
+        private void ProcessObject(string s)
         {
             Ship temp;
             Star tempStar;
@@ -142,7 +180,7 @@ namespace Game
                 temp = JsonConvert.DeserializeObject<Ship>(s);
 
                 // logic for active ships
-           
+
                 // if the ship isn't in the current list, and it is not dead
                 if (!theWorld.GetShipsActive().Any(item => item.ID == temp.ID && temp.hp != 0))
                 {
@@ -167,9 +205,9 @@ namespace Game
 
 
                 // logic for all ships
-                
+
                 // if the ship is not in the list, add it
-                if(!theWorld.GetShips().Any(item => item.ID == temp.ID))
+                if (!theWorld.GetShips().Any(item => item.ID == temp.ID))
                 {
                     theWorld.AddShip(temp);
                 }
@@ -230,7 +268,7 @@ namespace Game
         {
             // every 15 ms, trigger the SendKey event
 
-            while(true)
+            while (true)
             {
                 Thread.Sleep(15);
                 SendMessage(ss);
@@ -244,7 +282,14 @@ namespace Game
         /// <param name="ss"></param>
         public void SendControls(string message, Networking.SocketState ss)
         {
-            Networking.NetworkController.Send(message, ss);
+            try
+            {
+                Networking.NetworkController.Send(message, ss);
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message);
+            }
         }
     }
 }
