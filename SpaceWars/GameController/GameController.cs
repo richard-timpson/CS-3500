@@ -26,6 +26,8 @@ namespace Game
         public event UpdateWorldHandler WorldUpdated;
         public event SendMessageHandler SendMessage;
 
+        
+
         /// <summary>
         /// Constructor the GameController. Initiallizes the world.
         /// </summary>
@@ -164,12 +166,19 @@ namespace Game
             }
         }
 
+        private void SendExplosion(Ship s)
+        {
+            theWorld.AddExplosion(s);
+        }
+
+
         /// <summary>
         /// Updates the world by updating the lists that contain the objects of the world.
         /// </summary>
         /// <param name="s"></param>
         private void ProcessObject(string s)
         {
+            
             Ship temp;
             Star tempStar;
             Projectile tempProj;
@@ -178,6 +187,13 @@ namespace Game
             if (s.Length >= 4 && s[2] == 's' && s[3] == 'h')
             {
                 temp = JsonConvert.DeserializeObject<Ship>(s);
+
+                //logic for explosion
+                if (theWorld.GetShipsActive().Any<Ship>(x => x.ID == temp.ID) && temp.hp == 0)
+                {
+                    Console.WriteLine("Adding Ship");
+                    SendExplosion(temp);
+                }
 
                 // logic for active ships
 

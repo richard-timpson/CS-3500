@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Reflection;
-using System.Windows.Forms;
-using System.Drawing;
-using GameModel;
-using Vector;
+﻿using GameModel;
 using Resources;
+using System.Drawing;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace View
 {
@@ -28,6 +21,7 @@ namespace View
             DoubleBuffered = true;
             this.theWorld = _theWorld;
             this.WorldSize = WorldSize;
+            
         }
 
 
@@ -44,6 +38,7 @@ namespace View
 
         //Delegate for Drawing an object
         public delegate void ObjectDrawer(object o, PaintEventArgs e);
+        
         
 
         /// <summary>
@@ -227,6 +222,40 @@ namespace View
             e.Graphics.DrawImage(star1, r);
         }
 
+        private void ExplosionDrawer(object o, PaintEventArgs e)
+        {
+            int explosionWidth = 40;
+            Image explosion;
+            int randNum = 1;
+            System.Random rand = new System.Random();
+            randNum = rand.Next(1, 4);
+
+            explosionWidth = rand.Next(15, 45);
+
+            switch (randNum)
+            {
+                case 1:
+                    explosion = Resource1.explosionfire;
+                    break;
+                case 2:
+                    explosion = Resource1.explosionfire2;
+                    break;
+                case 3:
+                    explosion = Resource1.explosionfire3;
+                    break;
+                case 4:
+                    explosion = Resource1.explosionfire4;
+                    break;
+                default:
+                    explosion = Resource1.explosionfire3;
+                    break;
+            }
+
+
+            Rectangle r = new Rectangle(-(explosionWidth / 2), -(explosionWidth / 2), explosionWidth, explosionWidth);
+            e.Graphics.DrawImage(explosion, r);
+        }
+
         /// <summary>
         /// Delegate used to draw projectile.
         /// </summary>
@@ -282,6 +311,7 @@ namespace View
             e.Graphics.DrawImage(proj1, r);
         }
 
+
         /// <summary>
         /// Paints the images to the drawing board using loops to obtain each object in the world
         /// </summary>
@@ -292,6 +322,11 @@ namespace View
             e.Graphics.FillRectangle(new SolidBrush(Color.White), rect);
             lock (this.theWorld)
             {
+                foreach(Ship s in theWorld.GetExplosions())
+                {
+                    DrawObjectWithTransform(e, s, WorldSize, s.loc.GetX(), s.loc.GetY(), 0, ExplosionDrawer);
+                }
+
                 foreach (Ship s in theWorld.GetShipsActive())
                 {
                     DrawObjectWithTransform(e, s, WorldSize, s.loc.GetX(), s.loc.GetY(), s.dir.ToAngle(), ShipDrawer);

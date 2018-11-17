@@ -52,7 +52,7 @@ namespace View
                 float count = 30;
                 foreach (Ship s in ships)
                 {
-                    Console.WriteLine(s.name);
+                    
                     string drawString = s.name + ": " + s.score.ToString();
                     System.Drawing.Font drawFont = new System.Drawing.Font("Arial", 16);
                     System.Drawing.SolidBrush drawBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Black);

@@ -112,6 +112,7 @@ namespace View
             {
                 this.KeyDown += Form1_KeyDown;
                 this.KeyUp += Form1_KeyUp;
+                
                 drawingPanel.Refresh();
                 scoreBoard.Refresh();
                 this.Invalidate(true);
@@ -215,5 +216,6 @@ namespace View
             });
             this.Invoke(me);
         }
+
     }
 }
