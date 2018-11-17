@@ -57,6 +57,15 @@
     <Content Include="Graphics\ship-thrust-red.png" />
     <Content Include="Graphics\ship-thrust-violet.png" />
     <Content Include="Graphics\ship-thrust-white.png" />
+    <None Include="Resources\explosionfire8.png" />
+    <None Include="Resources\explosionfire7.png" />
+    <None Include="Resources\explosionfire6.png" />
+    <None Include="Resources\explosionfire5.png" />
+    <None Include="Resources\explosionfire4.png" />
+    <None Include="Resources\explosionfire3.png" />
+    <None Include="Resources\explosionfire2.png" />
+    <None Include="Resources\explosionfire.png" />
+    <None Include="Resources\explosion1.bmp" />
     <None Include="Graphics\shot-red1.png" />
     <None Include="Graphics\shot-grey1.png" />
     <None Include="Graphics\shot-green1.png" />
