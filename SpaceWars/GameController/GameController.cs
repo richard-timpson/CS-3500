@@ -16,10 +16,6 @@ namespace Game
         private string UserName { get; set; }
         private string Host { get; set; }
         private int ID { get; set; }
-
-        
-
-        //private int WorldSize;
         public World theWorld { get; private set; }
 
         public delegate void InitializeWorldHandler(int WorldSize);
@@ -30,12 +26,19 @@ namespace Game
         public event UpdateWorldHandler WorldUpdated;
         public event SendMessageHandler SendMessage;
 
+        /// <summary>
+        /// Constructor the GameController. Initiallizes the world.
+        /// </summary>
         public GameController()
         {
             this.theWorld = new World();
             
         }
 
+        /// <summary>
+        /// Method for making first contact with server
+        /// </summary>
+        /// <param name="ss"></param>
         private void FirstContact(Networking.SocketState ss)
         {
             ss._call = ReceiveStartup; // change delegate
@@ -44,10 +47,17 @@ namespace Game
             Networking.NetworkController.GetData(ss); // start the loop to get data. 
 
         }
+
+        /// <summary>
+        /// Receives unique ID and worldSize from server and starts the callMe delegate loop to
+        /// continually receive data from server.
+        /// </summary>
+        /// <param name="ss"></param>
         private void ReceiveStartup(Networking.SocketState ss)
         {
             string totalData = ss.sb.ToString();
             string[] parts = Regex.Split(totalData, @"(?<=[\n])");
+            //loop to find incomplete messages 
             foreach (string s in parts)
             {
                 if (s.Length == 0)
@@ -60,13 +70,13 @@ namespace Game
                     break;
                 }
             }
-            ss.sb.Clear();
-            this.ID = Convert.ToInt32(parts[0]);
-            int WorldSize = Convert.ToInt32(parts[1]);
-            WorldInitialized(WorldSize);
-            ss._call = ReceiveWorld;
-            Networking.NetworkController.GetData(ss);
-            TiggerSendKeyEvent(ss);
+            ss.sb.Clear(); //clear stringbuilder
+            this.ID = Convert.ToInt32(parts[0]); //set ID to Id sent from server
+            int WorldSize = Convert.ToInt32(parts[1]); //set worldsize to worldsize sent from server
+            WorldInitialized(WorldSize); //initialize world event
+            ss._call = ReceiveWorld; //set the callMe delegate to ReceiveWorld
+            Networking.NetworkController.GetData(ss); //get data from server
+            TiggerSendKeyEvent(ss); //enable user key input to move ship and fire
 
         }
         
@@ -75,7 +85,10 @@ namespace Game
                 string totalData = ss.sb.ToString();
                 string[] parts = Regex.Split(totalData, @"(?<=[\n])");
                 string temp = "";
-
+                
+                //loop to process objects only if complete object. If message contains an
+                //incomplete object, then the stringbuilder is cleared and the partial
+                //is then appended to the stringbuilder.
                 foreach (string s in parts)
                 {
                 if (s.Length == 0)
@@ -95,12 +108,17 @@ namespace Game
                 ss.sb.Clear();
                 ss.sb.Append(temp);
                 Networking.NetworkController.GetData(ss);
-                WorldUpdated();
+                WorldUpdated(); //update world event
 
 
 
         }
 
+        /// <summary>
+        /// Initiates initial connection with server.
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="Host"></param>
         public void ConnectInitial(string Name, string Host)
         {
             this.UserName = Name;
@@ -108,7 +126,10 @@ namespace Game
             Networking.NetworkController.ConnectToServer(this.Host, FirstContact);
         }
 
-
+        /// <summary>
+        /// Updates the world by updating the lists that contain the objects of the world.
+        /// </summary>
+        /// <param name="s"></param>
         private void ProcessObject(string s )
         {
             Ship temp;
@@ -199,9 +220,12 @@ namespace Game
                     theWorld.RemoveProjectile(tempProj.ID);
                 }
             }
-            sort();
-            
         }
+
+        /// <summary>
+        /// Sends the user key inputs every 15 ms.
+        /// </summary>
+        /// <param name="ss"></param>
         private void TiggerSendKeyEvent(Networking.SocketState ss)
         {
             // every 15 ms, trigger the SendKey event
@@ -212,11 +236,12 @@ namespace Game
                 SendMessage(ss);
             }
         }
-        private void sort()
-        {
-            theWorld.Players.Sort();
-            theWorld.Players.Reverse();
-        }
+
+        /// <summary>
+        /// Sends the message to the server with keyinputs.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="ss"></param>
         public void SendControls(string message, Networking.SocketState ss)
         {
             Networking.NetworkController.Send(message, ss);

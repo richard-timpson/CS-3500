@@ -17,6 +17,12 @@ namespace View
     {
         public World theWorld;
         private int WorldSize;
+
+        /// <summary>
+        /// DrawingPanel constructor that takes in a worldsize value and the world.
+        /// </summary>
+        /// <param name="WorldSize"></param>
+        /// <param name="_theWorld"></param>
         public DrawingPanel(int WorldSize, World _theWorld)
         {
             DoubleBuffered = true;
@@ -36,6 +42,7 @@ namespace View
             return (int)w + size / 2;
         }
 
+        //Delegate for Drawing an object
         public delegate void ObjectDrawer(object o, PaintEventArgs e);
 
         /// <summary>
@@ -48,52 +55,18 @@ namespace View
         /// <param name="worldY">The Y coordinate of the object in world space</param>
         /// <param name="angle">The orientation of the objec, measured in degrees clockwise from "up"</param>
         /// <param name="drawer">The drawer delegate. After the transformation is applied, the delegate is invoked to draw whatever it wants</param>
-        private void DrawObjectWithTransform(PaintEventArgs e, Ship s, int worldSize, double locX, double locY, float angle,  ObjectDrawer drawer)
+        private void DrawObjectWithTransform(PaintEventArgs e, object o, int worldSize, double locX, double locY, float angle,  ObjectDrawer drawer)
         {
             // Perform the transformation
             int x = WorldSpaceToImageSpace(worldSize, locX);
             int y = WorldSpaceToImageSpace(worldSize, locY);
             e.Graphics.TranslateTransform(x, y);
-            object o = s;
             e.Graphics.RotateTransform((float)angle);
             // Draw the object 
             drawer(o, e);
             // Then undo the transformation
             e.Graphics.ResetTransform();
         }
-
-        private void DrawObjectWithTransform(PaintEventArgs e, Projectile p, int worldSize, double locX, double locY, float angle, ObjectDrawer drawer)
-        {
-            // Perform the transformation
-            int x = WorldSpaceToImageSpace(worldSize, locX);
-            int y = WorldSpaceToImageSpace(worldSize, locY);
-            e.Graphics.TranslateTransform(x, y);
-            object o = p;
-            e.Graphics.RotateTransform((float)angle);
-            // Draw the object 
-            drawer(o, e);
-            // Then undo the transformation
-            e.Graphics.ResetTransform();
-        }
-
-        private void DrawObjectWithTransform(PaintEventArgs e, Star s, int worldSize, double locX, double locY, float angle, ObjectDrawer drawer)
-        {
-            // Perform the transformation
-            int x = WorldSpaceToImageSpace(worldSize, locX);
-            int y = WorldSpaceToImageSpace(worldSize, locY);
-            e.Graphics.TranslateTransform(x, y);
-            object o = s;
-            e.Graphics.RotateTransform((float)angle);
-            // Draw the object 
-            drawer(o, e);
-            // Then undo the transformation
-            e.Graphics.ResetTransform();
-        }
-
-
-
-        //private void DrawObjectWithTransform(PaintEventArgs e, object o, int worldSize, double worldX, double worldY, double angle, ObjectDrawer drawer)
-
 
         /// <summary>
         /// Acts as a drawing delegate for DrawObjectWithTransform
@@ -107,81 +80,102 @@ namespace View
             int shipWidth = 35;
             Ship s = o as Ship;
             Image ship1;
+
+            //if thrust is not active, set image for ship to draw based on player ID
             if (s.thrust == false)
             {
-                if (s.ID == 0)
-                    ship1 = Resource1.ship_coast_red;
-                else if (s.ID == 1)
-                    ship1 = Resource1.ship_coast_blue;
-                else if (s.ID == 2)
-                    ship1 = Resource1.ship_coast_yellow;
-                else if (s.ID == 3)
-                    ship1 = Resource1.ship_coast_violet;
-                else if (s.ID == 4)
-                    ship1 = Resource1.ship_coast_green;
-                else if (s.ID == 5)
-                    ship1 = Resource1.ship_coast_grey;
-                else if (s.ID == 6)
-                    ship1 = Resource1.ship_coast_brown;
-                else if (s.ID == 7)
-                    ship1 = Resource1.ship_coast_white;
-                else if (s.ID == 8)
-                    ship1 = Resource1.ship_coast_red;
-                else if (s.ID == 9)
-                    ship1 = Resource1.ship_coast_blue;
-                else if (s.ID == 10)
-                    ship1 = Resource1.ship_coast_yellow;
-                else if (s.ID == 11)
-                    ship1 = Resource1.ship_coast_violet;
-                else if (s.ID == 12)
-                    ship1 = Resource1.ship_coast_green;
-                else if (s.ID == 13)
-                    ship1 = Resource1.ship_coast_grey;
-                else if (s.ID == 14)
-                    ship1 = Resource1.ship_coast_brown;
-                else 
-                    ship1 = Resource1.ship_coast_white;
+                switch(s.ID)
+                {
+                    case 0:
+                    case 8:
+                        ship1 = Resource1.ship_coast_red;
+                        break;
+                    case 1:
+                    case 9:
+                        ship1 = Resource1.ship_coast_blue;
+                        break;
+                    case 2:
+                    case 10:
+                        ship1 = Resource1.ship_coast_yellow;
+                        break;
+                    case 3:
+                    case 11:
+                        ship1 = Resource1.ship_coast_violet;
+                        break;
+                    case 4:
+                    case 12:
+                        ship1 = Resource1.ship_coast_green;
+                        break;
+                    case 5:
+                    case 13:
+                        ship1 = Resource1.ship_coast_grey;
+                        break;
+                    case 6:
+                    case 14:
+                        ship1 = Resource1.ship_coast_brown;
+                        break;
+                    case 7:
+                    case 15:
+                        ship1 = Resource1.ship_coast_white;
+                        break;
+                    default:
+                        ship1 = Resource1.ship_coast_white;
+                        break;
+                }
             }
+            //if thrust is active, set image for ship to draw based on player ID
             else
             {
-                if (s.ID == 0)
-                    ship1 = Resource1.ship_thrust_red;
-                else if (s.ID == 1)
-                    ship1 = Resource1.ship_thrust_blue;
-                else if (s.ID == 2)
-                    ship1 = Resource1.ship_thrust_yellow;
-                else if (s.ID == 3)
-                    ship1 = Resource1.ship_thrust_violet;
-                else if (s.ID == 4)
-                    ship1 = Resource1.ship_thrust_green;
-                else if (s.ID == 5)
-                    ship1 = Resource1.ship_thrust_grey;
-                else if (s.ID == 6)
-                    ship1 = Resource1.ship_thrust_brown;
-                else if (s.ID == 7)
-                    ship1 = Resource1.ship_thrust_white;
-                else if (s.ID == 8)
-                    ship1 = Resource1.ship_thrust_red;
-                else if (s.ID == 9)
-                    ship1 = Resource1.ship_thrust_blue;
-                else if (s.ID == 10)
-                    ship1 = Resource1.ship_thrust_yellow;
-                else if (s.ID == 11)
-                    ship1 = Resource1.ship_thrust_violet;
-                else if (s.ID == 12)
-                    ship1 = Resource1.ship_thrust_green;
-                else if (s.ID == 13)
-                    ship1 = Resource1.ship_thrust_grey;
-                else if (s.ID == 14)
-                    ship1 = Resource1.ship_thrust_brown;
-                else
-                    ship1 = Resource1.ship_thrust_white;
+                switch (s.ID)
+                {
+                    case 0:
+                    case 8:
+                        ship1 = Resource1.ship_thrust_red;
+                        break;
+                    case 1:
+                    case 9:
+                        ship1 = Resource1.ship_thrust_blue;
+                        break;
+                    case 2:
+                    case 10:
+                        ship1 = Resource1.ship_thrust_yellow;
+                        break;
+                    case 3:
+                    case 11:
+                        ship1 = Resource1.ship_thrust_violet;
+                        break;
+                    case 4:
+                    case 12:
+                        ship1 = Resource1.ship_thrust_green;
+                        break;
+                    case 5:
+                    case 13:
+                        ship1 = Resource1.ship_thrust_grey;
+                        break;
+                    case 6:
+                    case 14:
+                        ship1 = Resource1.ship_thrust_brown;
+                        break;
+                    case 7:
+                    case 15:
+                        ship1 = Resource1.ship_thrust_white;
+                        break;
+                    default:
+                        ship1 = Resource1.ship_thrust_white;
+                        break;
+                }
+
             }
 
             Rectangle r = new Rectangle(-(shipWidth/2), -(shipWidth/2), shipWidth, shipWidth);
             e.Graphics.DrawImage(ship1, r);
         }
-
+        
+        /// <summary>
+        /// Delegate used to draw star.
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
         private void StarDrawer(object o, PaintEventArgs e)
         {
             int starWidth = 35;
@@ -192,49 +186,65 @@ namespace View
             e.Graphics.DrawImage(star1, r);
         }
 
+        /// <summary>
+        /// Delegate used to draw projectile.
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
         private void ProjectileDrawer(object o, PaintEventArgs e)
         {
             int projWidth = 24;
             Projectile p = o as Projectile;
             Image proj1;
-            if (p.owner == 0)
-                proj1 = Resource1.shot_red;
-            else if (p.owner == 1)
-                proj1 = Resource1.shot_blue;
-            else if (p.owner == 2)
-                proj1 = Resource1.shot_yellow;
-            else if (p.owner == 3)
-                proj1 = Resource1.shot_violet;
-            else if (p.owner == 4)
-                proj1 = Resource1.shot_green;
-            else if (p.owner == 5)
-                proj1 = Resource1.shot_grey;
-            else if (p.owner == 6)
-                proj1 = Resource1.shot_brown;
-            else if (p.owner == 7)
-                proj1 = Resource1.shot_white;
-            else if (p.owner == 8)
-                proj1 = Resource1.shot_red;
-            else if (p.owner == 9)
-                proj1 = Resource1.shot_blue;
-            else if (p.owner == 10)
-                proj1 = Resource1.shot_yellow;
-            else if (p.owner == 11)
-                proj1 = Resource1.shot_violet;
-            else if (p.owner == 12)
-                proj1 = Resource1.shot_green;
-            else if (p.owner == 13)
-                proj1 = Resource1.shot_grey;
-            else if (p.owner == 14)
-                proj1 = Resource1.shot_brown;
-            else 
-                proj1 = Resource1.shot_white;
 
+            //sets the image of the projectile based on owner
+            switch (p.owner)
+            {
+                case 0:
+                case 8:
+                    proj1 = Resource1.shot_red;
+                    break;
+                case 1:
+                case 9:
+                    proj1 = Resource1.shot_blue;
+                    break;
+                case 2:
+                case 10:
+                    proj1 = Resource1.shot_yellow;
+                    break;
+                case 3:
+                case 11:
+                    proj1 = Resource1.shot_violet;
+                    break;
+                case 4:
+                case 12:
+                    proj1 = Resource1.shot_green;
+                    break;
+                case 5:
+                case 13:
+                    proj1 = Resource1.shot_grey;
+                    break;
+                case 6:
+                case 14:
+                    proj1 = Resource1.shot_brown;
+                    break;
+                case 7:
+                case 15:
+                    proj1 = Resource1.shot_white;
+                    break;
+                default:
+                    proj1 = Resource1.shot_white;
+                    break;
+            }
 
             Rectangle r = new Rectangle(-(projWidth / 2), -(projWidth / 2), projWidth, projWidth);
             e.Graphics.DrawImage(proj1, r);
         }
 
+        /// <summary>
+        /// Paints the images to the drawing board using loops to obtain each object in the world
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnPaint(PaintEventArgs e)
         {
             Rectangle rect = new Rectangle(new Point(WorldSize, 30), new Size(200, WorldSize));

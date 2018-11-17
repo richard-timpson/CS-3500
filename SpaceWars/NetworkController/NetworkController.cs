@@ -190,7 +190,12 @@ namespace NetworkController
                 // Nothing much to do here, just conclude the send operation so the socket is happy.
                 s.EndSend(ar);
             }
-
+            
+            /// <summary>
+            /// Sends messages to server.
+            /// </summary>
+            /// <param name="message"></param>
+            /// <param name="ss"></param>
             public static void Send(string message, Networking.SocketState ss)
             {
                 
@@ -199,6 +204,10 @@ namespace NetworkController
                 ss.theSocket.BeginSend(messageBytes, 0, messageBytes.Length, SocketFlags.None, SendCallback, ss.theSocket);
             }
 
+            /// <summary>
+            /// Calls BeginReceive to get data from the server.
+            /// </summary>
+            /// <param name="ss"></param>
             public static void GetData(Networking.SocketState ss)
             {
                 ss.theSocket.BeginReceive(ss.messageBuffer, 0, ss.messageBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), ss);

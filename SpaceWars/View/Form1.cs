@@ -24,14 +24,34 @@ namespace View
         private bool keyThrust = false;
         private bool keyFire = false;
 
+
+        /// <summary>
+        /// Constructor for the form.
+        /// </summary>
         public Form1()
         {
             InitializeComponent();
             message = new StringBuilder();
             this.Size = new Size(500, 500);
             KeyPreview = true;
+            this.FormClosed += Form1_FormClosed;
         }
 
+        /// <summary>
+        /// EventHandler for a clean exit.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            System.Environment.Exit(1);
+        }
+
+        /// <summary>
+        /// Event handler for connect button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void connectButton_Click(object sender, EventArgs e)
         {
             Controller = new GameController();
@@ -43,10 +63,15 @@ namespace View
             connectButton.Enabled = false;
         }
 
+        /// <summary>
+        /// Initializes the Game after connection to server
+        /// </summary>
+        /// <param name="WorldSize"></param>
         private void IntilializeGame(int WorldSize)
         {
             MethodInvoker m = new MethodInvoker(() =>
             {
+                //create the drawingPanel
                 drawingPanel = new DrawingPanel(WorldSize, Controller.theWorld);
                 drawingPanel.Location = new Point(0, 30);
                 drawingPanel.Size = new Size(WorldSize, WorldSize);
@@ -55,6 +80,7 @@ namespace View
                 this.Controls.Add(drawingPanel);
                 drawingPanel.Focus();
 
+                //create the scoreboard
                 scoreBoard = new ScoreBoard(Controller.theWorld);
                 scoreBoard.Location = new Point(WorldSize, 30);
                 scoreBoard.Size = new Size(200, WorldSize);
@@ -62,15 +88,16 @@ namespace View
 
                 this.Controls.Add(scoreBoard);
 
-
                 Controller.WorldUpdated += UpdateWorld;
                 
-
                 this.Invalidate(true);
             });
             this.Invoke(m);
         }
 
+        /// <summary>
+        /// Refreshes the world every frame.
+        /// </summary>
         private void UpdateWorld()
         {
             MethodInvoker me = new MethodInvoker(() =>
@@ -84,6 +111,11 @@ namespace View
             this.Invoke(me);
             
         }
+
+        /// <summary>
+        /// Appends command to string builder for flags set to true.
+        /// </summary>
+        /// <param name="ss"></param>
         private void SendKeyPress(Networking.SocketState ss)
         {
             this.message.Append("(");
@@ -109,8 +141,12 @@ namespace View
             this.message.Clear();
         }
 
-
-        void Form1_KeyDown(object sender, KeyEventArgs e)
+        /// <summary>
+        /// Sets flags for keyinputs to true for key down
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
@@ -129,7 +165,12 @@ namespace View
             }
         }
 
-        void Form1_KeyUp(object sneder, KeyEventArgs e)
+        /// <summary>
+        /// Sets flag for key inputs to false for key up
+        /// </summary>
+        /// <param name="sneder"></param>
+        /// <param name="e"></param>
+        private void Form1_KeyUp(object sneder, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
@@ -147,8 +188,5 @@ namespace View
                     break;
             }
         }
-
-
-
     }
 }

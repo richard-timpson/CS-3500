@@ -11,6 +11,9 @@ namespace GameModel
     [JsonObject(MemberSerialization.OptIn)]
     public class Star
     {    
+        /// <summary>
+        /// Constructor for a star.
+        /// </summary>
         public Star()
         {
             int ID = this.ID;
@@ -18,13 +21,21 @@ namespace GameModel
             double mass = this.mass;
         }
 
-
+        /// <summary>
+        /// Unique ID for the star sent by the server.
+        /// </summary>
         [JsonProperty(PropertyName = "star")]
         public int ID { get; private set; }
 
+        /// <summary>
+        /// Location of the star.
+        /// </summary>
         [JsonProperty]
         public Vector.Vector2D loc { get; private set; }
 
+        /// <summary>
+        /// Mass of the star.
+        /// </summary>
         [JsonProperty]
         public double mass { get; private set; }
     }
