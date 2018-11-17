@@ -44,6 +44,7 @@ namespace View
 
         //Delegate for Drawing an object
         public delegate void ObjectDrawer(object o, PaintEventArgs e);
+        
 
         /// <summary>
         /// This method performs a translation and rotation to drawn an object in the world.
@@ -67,6 +68,46 @@ namespace View
             // Then undo the transformation
             e.Graphics.ResetTransform();
         }
+
+        private void DrawScoreOnShip(PaintEventArgs e, Ship s, int worldSize, double locX, double locY)
+        {
+            int x = WorldSpaceToImageSpace(worldSize, locX);
+            int y = WorldSpaceToImageSpace(worldSize, locY);
+            
+            scoreDrawer(s, e, x, y);
+            e.Graphics.ResetTransform();
+        }
+
+        private void scoreDrawer(Ship s, PaintEventArgs e, int locX, int locY)
+        {
+            int rectWidth = 0;
+
+            switch(s.hp)
+            {
+                case 1:
+                    rectWidth = 7;
+                    break;
+                case 2:
+                    rectWidth = 14;
+                    break;
+                case 3:
+                    rectWidth = 21;
+                    break;
+                case 4:
+                    rectWidth = 28;
+                    break;
+                case 5:
+                    rectWidth = 35;
+                    break;
+                default:
+                    rectWidth = 0;
+                    break;
+            }
+
+            Rectangle scoreRect = new Rectangle(new Point(locX - 17, locY - 28), new Size(rectWidth, 5));
+            e.Graphics.FillRectangle(new SolidBrush(Color.Green), scoreRect);
+        }
+        
 
         /// <summary>
         /// Acts as a drawing delegate for DrawObjectWithTransform
@@ -254,6 +295,7 @@ namespace View
                 foreach (Ship s in theWorld.GetShipsActive())
                 {
                     DrawObjectWithTransform(e, s, WorldSize, s.loc.GetX(), s.loc.GetY(), s.dir.ToAngle(), ShipDrawer);
+                    DrawScoreOnShip(e, s, WorldSize, s.loc.GetX(), s.loc.GetY());
                 }
 
                 foreach (Star s in theWorld.GetStars())
