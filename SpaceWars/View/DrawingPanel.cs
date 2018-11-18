@@ -11,6 +11,50 @@ namespace View
         public World theWorld;
         private int WorldSize;
 
+        private Image explosionFire;
+        private Image explosionFire2;
+        private Image explosionFire3;
+        private Image explosionFire4;
+        private Image explosionSmokeForming1;
+        private Image explosionSmokeForming2;
+        private Image explosionSmokeForming3;
+        private Image explosionSmokeForming4;
+        private Image explosionSmokeForming5;
+        private Image explosionSmoke1;
+        private Image explosionSmoke2;
+        private Image explosionSmoke3;
+        private Image explosionSmoke4;
+        private Image explosionSmoke5;
+        private Image explosionSmoke6;
+        private Image explosionSmoke7;
+        private Image explosionSmoke8;
+        private Image explosionSmoke9;
+        private Image ship_coast_red;
+        private Image ship_coast_violet;
+        private Image ship_coast_grey;
+        private Image ship_coast_brown;
+        private Image ship_coast_green;
+        private Image ship_coast_blue;
+        private Image ship_coast_yellow;
+        private Image ship_coast_white;
+        private Image ship_thrust_red;
+        private Image ship_thrust_violet;
+        private Image ship_thrust_grey;
+        private Image ship_thrust_brown;
+        private Image ship_thrust_green;
+        private Image ship_thrust_blue;
+        private Image ship_thrust_yellow;
+        private Image ship_thrust_white;
+        private Image shot_red;
+        private Image shot_violet;
+        private Image shot_grey;
+        private Image shot_brown;
+        private Image shot_green;
+        private Image shot_blue;
+        private Image shot_yellow;
+        private Image shot_white;
+        private Image star1;
+
         /// <summary>
         /// DrawingPanel constructor that takes in a worldsize value and the world.
         /// </summary>
@@ -21,9 +65,67 @@ namespace View
             DoubleBuffered = true;
             this.theWorld = _theWorld;
             this.WorldSize = WorldSize;
-            
+            Point p = new Point(40, 40);
+            Size size = new Size(p);
+            Point p2 = new Point(32, 32);
+            Size sizeShip = new Size(p2);
+            Point p3 = new Point(20, 20);
+            Size sizeProj = new Size(p3);
+
+            explosionFire = Resample(Resource1.explosionfire, size);
+            explosionFire2 = Resample(Resource1.explosionfire2, size);
+            explosionFire3 = Resample(Resource1.explosionfire3, size);
+            explosionFire4 = Resample(Resource1.explosionfire4, size);
+            explosionSmokeForming1 = Resample(Resource1.ExplosionSmokeForming1, size);
+            explosionSmokeForming2 = Resample(Resource1.ExplosionSmokeForming2, size);
+            explosionSmokeForming3 = Resample(Resource1.ExplosionSmokeForming3, size);
+            explosionSmokeForming4 = Resample(Resource1.ExplosionSmokeForming4, size);
+            explosionSmokeForming5 = Resample(Resource1.ExplosionSmokeForming5, size);
+            explosionSmoke1 = Resample(Resource1.ExplosionSmoke1, size);
+            explosionSmoke2 = Resample(Resource1.ExplosionSmoke2, size);
+            explosionSmoke3 = Resample(Resource1.ExplosionSmoke3, size);
+            explosionSmoke4 = Resample(Resource1.ExplosionSmoke4, size);
+            explosionSmoke5 = Resample(Resource1.ExplosionSmoke5, size);
+            explosionSmoke6 = Resample(Resource1.ExplosionSmoke6, size);
+            explosionSmoke7 = Resample(Resource1.ExplosionSmoke7, size);
+            explosionSmoke8 = Resample(Resource1.ExplosionSmoke8, size);
+            explosionSmoke9 = Resample(Resource1.ExplosionSmoke9, size);
+            ship_coast_red = Resample(Resource1.ship_coast_red, sizeShip);
+            ship_coast_yellow = Resample(Resource1.ship_coast_yellow, sizeShip);
+            ship_coast_blue = Resample(Resource1.ship_coast_blue, sizeShip);
+            ship_coast_violet = Resample(Resource1.ship_coast_violet, sizeShip);
+            ship_coast_grey = Resample(Resource1.ship_coast_grey, sizeShip);
+            ship_coast_green = Resample(Resource1.ship_coast_green, sizeShip);
+            ship_coast_white = Resample(Resource1.ship_coast_white, sizeShip);
+            ship_coast_brown = Resample(Resource1.ship_coast_brown, sizeShip);
+            ship_thrust_red = Resample(Resource1.ship_thrust_red, sizeShip);
+            ship_thrust_yellow = Resample(Resource1.ship_thrust_yellow, sizeShip);
+            ship_thrust_blue = Resample(Resource1.ship_thrust_blue, sizeShip);
+            ship_thrust_violet = Resample(Resource1.ship_thrust_violet, sizeShip);
+            ship_thrust_grey = Resample(Resource1.ship_thrust_grey, sizeShip);
+            ship_thrust_green = Resample(Resource1.ship_thrust_green, sizeShip);
+            ship_thrust_white = Resample(Resource1.ship_thrust_white, sizeShip);
+            ship_thrust_brown = Resample(Resource1.ship_thrust_brown, sizeShip);
+            shot_red = Resample(Resource1.shot_red, sizeProj);
+            shot_yellow = Resample(Resource1.shot_yellow, sizeProj);
+            shot_blue = Resample(Resource1.shot_blue, sizeProj);
+            shot_violet = Resample(Resource1.shot_violet, sizeProj);
+            shot_grey = Resample(Resource1.shot_grey, sizeProj);
+            shot_green = Resample(Resource1.shot_green, sizeProj);
+            shot_white = Resample(Resource1.shot_white, sizeProj);
+            shot_brown = Resample(Resource1.shot_brown, sizeProj);
+            star1 = Resample(Resource1.star, size);
         }
 
+        private static Bitmap Resample(Image img, Size size)
+        {
+            var bmp = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            using (var graphic = Graphics.FromImage(bmp))
+            {
+                graphic.DrawImage(img, new Rectangle(Point.Empty, size));
+            }
+            return bmp;
+        }
 
         /// <summary>
         /// helper method for DrawObjectsWithTransform
@@ -124,31 +226,31 @@ namespace View
                 {
                     case 0:
                     case 8:
-                        ship1 = Resource1.ship_coast_red;
+                        ship1 = ship_coast_red;
                         break;
                     case 1:
                     case 9:
-                        ship1 = Resource1.ship_coast_blue;
+                        ship1 = ship_coast_blue;
                         break;
                     case 2:
                     case 10:
-                        ship1 = Resource1.ship_coast_yellow;
+                        ship1 = ship_coast_yellow;
                         break;
                     case 3:
                     case 11:
-                        ship1 = Resource1.ship_coast_violet;
+                        ship1 = ship_coast_violet;
                         break;
                     case 4:
                     case 12:
-                        ship1 = Resource1.ship_coast_green;
+                        ship1 = ship_coast_green;
                         break;
                     case 5:
                     case 13:
-                        ship1 = Resource1.ship_coast_grey;
+                        ship1 = ship_coast_grey;
                         break;
                     case 6:
                     case 14:
-                        ship1 = Resource1.ship_coast_brown;
+                        ship1 = ship_coast_brown;
                         break;
                     case 7:
                     case 15:
@@ -166,38 +268,38 @@ namespace View
                 {
                     case 0:
                     case 8:
-                        ship1 = Resource1.ship_thrust_red;
+                        ship1 = ship_thrust_red;
                         break;
                     case 1:
                     case 9:
-                        ship1 = Resource1.ship_thrust_blue;
+                        ship1 = ship_thrust_blue;
                         break;
                     case 2:
                     case 10:
-                        ship1 = Resource1.ship_thrust_yellow;
+                        ship1 = ship_thrust_yellow;
                         break;
                     case 3:
                     case 11:
-                        ship1 = Resource1.ship_thrust_violet;
+                        ship1 = ship_thrust_violet;
                         break;
                     case 4:
                     case 12:
-                        ship1 = Resource1.ship_thrust_green;
+                        ship1 = ship_thrust_green;
                         break;
                     case 5:
                     case 13:
-                        ship1 = Resource1.ship_thrust_grey;
+                        ship1 = ship_thrust_grey;
                         break;
                     case 6:
                     case 14:
-                        ship1 = Resource1.ship_thrust_brown;
+                        ship1 = ship_thrust_brown;
                         break;
                     case 7:
                     case 15:
-                        ship1 = Resource1.ship_thrust_white;
+                        ship1 = ship_thrust_white;
                         break;
                     default:
-                        ship1 = Resource1.ship_thrust_white;
+                        ship1 = ship_thrust_white;
                         break;
                 }
 
@@ -214,9 +316,9 @@ namespace View
         /// <param name="e"></param>
         private void StarDrawer(object o, PaintEventArgs e)
         {
-            int starWidth = 35;
+            int starWidth = 40;
             Star s = o as Star;
-            Image star1 = Resource1.star;
+            
 
             Rectangle r = new Rectangle(-(starWidth / 2), -(starWidth / 2), starWidth, starWidth);
             e.Graphics.DrawImage(star1, r);
@@ -240,134 +342,134 @@ namespace View
                 case 3:
                 case 4:
                 case 5:
-                    explosion = Resource1.explosionfire;
+                    explosion = explosionFire;
                     break;
                 case 6:
                 case 7:
                 case 8:
                 case 9:
                 case 10:
-                    explosion = Resource1.explosionfire2;
+                    explosion = explosionFire2;
                     break;
                 case 11:
                 case 12:
                 case 13:
                 case 14:
                 case 15:
-                    explosion = Resource1.explosionfire3;
+                    explosion = explosionFire3;
                     break;
                 case 16:
                 case 17:
                 case 18:
                 case 19:
                 case 20:
-                    explosion = Resource1.explosionfire4;
+                    explosion = explosionFire4;
                     break;
                 case 21:
                 case 22:
                 case 23:
                 case 24:
                 case 25:
-                    explosion = Resource1.ExplosionSmokeForming1;
+                    explosion = explosionSmokeForming1;
                     break;
                 case 26:
                 case 27:
                 case 28:
                 case 29:
                 case 30:
-                    explosion = Resource1.ExplosionSmokeForming2;
+                    explosion = explosionSmokeForming2;
                     break;
                 case 31:
                 case 32:
                 case 33:
                 case 34:
                 case 35:
-                    explosion = Resource1.ExplosionSmokeForming3;
+                    explosion = explosionSmokeForming3;
                     break;
                 case 36:
                 case 37:
                 case 38:
                 case 39:
                 case 40:
-                    explosion = Resource1.ExplosionSmokeForming4;
+                    explosion = explosionSmokeForming4;
                     break;
                 case 41:
                 case 42:
                 case 43:
                 case 44:
                 case 45:
-                    explosion = Resource1.ExplosionSmokeForming5;
+                    explosion = explosionSmokeForming5;
                     break;
                 case 46:
                 case 47:
                 case 48:
                 case 49:
                 case 50:
-                    explosion = Resource1.ExplosionSmoke1;
+                    explosion = explosionSmoke1;
                     break;
                 case 51:
                 case 52:
                 case 53:
                 case 54:
                 case 55:
-                    explosion = Resource1.ExplosionSmoke2;
+                    explosion = explosionSmoke2;
                     break;
                 case 56:
                 case 57:
                 case 58:
                 case 59:
                 case 60:
-                    explosion = Resource1.ExplosionSmoke3;
+                    explosion = explosionSmoke3;
                     break;
                 case 61:
                 case 62:
                 case 63:
                 case 64:
                 case 65:
-                    explosion = Resource1.ExplosionSmoke4;
+                    explosion = explosionSmoke4;
                     break;
                 case 66:
                 case 67:
                 case 68:
                 case 69:
                 case 70:
-                    explosion = Resource1.ExplosionSmoke5;
+                    explosion = explosionSmoke5;
                     break;
                 case 71:
                 case 72:
                 case 73:
                 case 74:
                 case 75:
-                    explosion = Resource1.ExplosionSmoke6;
+                    explosion = explosionSmoke6;
                     break;
                 case 76:
                 case 77:
                 case 78:
                 case 79:
                 case 80:
-                    explosion = Resource1.ExplosionSmoke7;
+                    explosion = explosionSmoke7;
                     break;
                 case 81:
                 case 82:
                 case 83:
                 case 84:
                 case 85:
-                    explosion = Resource1.ExplosionSmoke8;
+                    explosion = explosionSmoke8;
                     break;
                 case 86:
                 case 87:
                 case 88:
                 case 89:
                 case 90:
-                    explosion = Resource1.ExplosionSmoke9;
+                    explosion = explosionSmoke9;
                     break;
                 case 91:
                 case 92:
                 case 93:
-                    explosion = Resource1.ExplosionSmoke9;
+                    explosion = explosionSmoke9;
                     break;
                 default:
-                    explosion = Resource1.explosionfire3;
+                    explosion = explosionFire3;
                     break;
             }
 
@@ -383,7 +485,7 @@ namespace View
         /// <param name="e"></param>
         private void ProjectileDrawer(object o, PaintEventArgs e)
         {
-            int projWidth = 24;
+            int projWidth = 20;
             Projectile p = o as Projectile;
             Image proj1;
 
@@ -396,34 +498,34 @@ namespace View
                     break;
                 case 1:
                 case 9:
-                    proj1 = Resource1.shot_blue;
+                    proj1 = shot_blue;
                     break;
                 case 2:
                 case 10:
-                    proj1 = Resource1.shot_yellow;
+                    proj1 = shot_yellow;
                     break;
                 case 3:
                 case 11:
-                    proj1 = Resource1.shot_violet;
+                    proj1 = shot_violet;
                     break;
                 case 4:
                 case 12:
-                    proj1 = Resource1.shot_green;
+                    proj1 = shot_green;
                     break;
                 case 5:
                 case 13:
-                    proj1 = Resource1.shot_grey;
+                    proj1 = shot_grey;
                     break;
                 case 6:
                 case 14:
-                    proj1 = Resource1.shot_brown;
+                    proj1 = shot_brown;
                     break;
                 case 7:
                 case 15:
-                    proj1 = Resource1.shot_white;
+                    proj1 = shot_white;
                     break;
                 default:
-                    proj1 = Resource1.shot_white;
+                    proj1 = shot_white;
                     break;
             }
 
@@ -450,7 +552,7 @@ namespace View
                         s.IncrementCount();
                     }
                     //else
-                        //theWorld.RemoveExplosion(s.GetID());
+                        //theWorld.RemoveExplosion(s.GetID()); 
                 }
 
                 foreach (Ship s in theWorld.GetShipsActive())
