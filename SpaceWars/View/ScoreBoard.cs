@@ -16,7 +16,6 @@ namespace View
     public class ScoreBoard : Panel
     {
         public World theWorld;
-        private int WorldSize;
         private List<Ship> ships;
 
         /// <summary>
@@ -57,9 +56,9 @@ namespace View
                     System.Drawing.Font drawFont = new System.Drawing.Font("Arial", 16);
                     System.Drawing.SolidBrush drawBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Black);
                     System.Drawing.StringFormat drawFormat = new System.Drawing.StringFormat();
-                    e.Graphics.DrawString(drawString, drawFont, drawBrush, WorldSize + 10, count, drawFormat);
+                    e.Graphics.DrawString(drawString, drawFont, drawBrush, 10, count, drawFormat);
 
-                    Rectangle OutlineRect = new Rectangle(new Point(WorldSize + 10, (int)count + 30), new Size(150, 20));
+                    Rectangle OutlineRect = new Rectangle(new Point(10, (int)count + 30), new Size(150, 20));
                     e.Graphics.DrawRectangle(new Pen(Brushes.Black), OutlineRect);
 
                     Rectangle ScoreRect;
@@ -67,26 +66,26 @@ namespace View
                     switch (s.hp)
                     {
                         case 1:
-                            ScoreRect = new Rectangle(new Point(WorldSize + 11, (int)count + 31), new Size(29, 19));
+                            ScoreRect = new Rectangle(new Point(11, (int)count + 31), new Size(29, 19));
                             e.Graphics.FillRectangle(new SolidBrush(Color.Green), ScoreRect);
                             break;
                         case 2:
-                            ScoreRect = new Rectangle(new Point(WorldSize + 11, (int)count + 31), new Size(59, 19));
+                            ScoreRect = new Rectangle(new Point(11, (int)count + 31), new Size(59, 19));
                             e.Graphics.FillRectangle(new SolidBrush(Color.Green), ScoreRect);
 
                             break;
                         case 3:
-                            ScoreRect = new Rectangle(new Point(WorldSize + 11, (int)count + 31), new Size(89, 19));
+                            ScoreRect = new Rectangle(new Point(11, (int)count + 31), new Size(89, 19));
                             e.Graphics.FillRectangle(new SolidBrush(Color.Green), ScoreRect);
 
                             break;
                         case 4:
-                            ScoreRect = new Rectangle(new Point(WorldSize + 11, (int)count + 31), new Size(119, 19));
+                            ScoreRect = new Rectangle(new Point(11, (int)count + 31), new Size(119, 19));
                             e.Graphics.FillRectangle(new SolidBrush(Color.Green), ScoreRect);
 
                             break;
                         case 5:
-                            ScoreRect = new Rectangle(new Point(WorldSize + 11, (int)count + 31), new Size(149, 19));
+                            ScoreRect = new Rectangle(new Point(11, (int)count + 31), new Size(149, 19));
                             e.Graphics.FillRectangle(new SolidBrush(Color.Green), ScoreRect);
 
                             break;
