@@ -329,6 +329,7 @@ namespace Game
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e.Message);
+                Connected = false;
             }
         }
         private void StopConnection(string message)

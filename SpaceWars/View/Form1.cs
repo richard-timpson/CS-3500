@@ -36,6 +36,7 @@ namespace View
             KeyPreview = true;
             this.FormClosed += Form1_FormClosed;
             Networking.NetworkController.Error += DisplayError;
+            Controller = new GameController();
         }
 
         /// <summary>
@@ -55,7 +56,7 @@ namespace View
         /// <param name="e"></param>
         private void connectButton_Click(object sender, EventArgs e)
         {
-            Controller = new GameController();
+            
             try
             {
                 MethodInvoker me = new MethodInvoker(() =>
