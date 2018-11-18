@@ -199,10 +199,9 @@ namespace Game
                     Explosion exp = new Explosion(temp);
                     theWorld.AddExplosion(exp);
                 }
-                if (theWorld.GetExplosions().Any(item => item.GetCount() == 94) && theWorld.GetExplosions().Any<Explosion>(x => x.GetID() == temp.ID))
+                if (theWorld.GetExplosions().Any(item => item.GetCount() == 109 && item.GetID() == temp.ID))
                 {
                     theWorld.RemoveExplosion(temp.ID);
-                    Console.WriteLine("Explosion removed.");
                 }
 
                 // logic for active ships
