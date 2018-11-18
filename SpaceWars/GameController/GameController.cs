@@ -10,6 +10,8 @@ using System.Threading;
 using NetworkController;
 using GameModel;
 using Newtonsoft.Json;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace Game
 {
@@ -150,8 +152,6 @@ namespace Game
 
             }
             WorldUpdated(); //update world event
-
-
 
         }
 
@@ -337,6 +337,114 @@ namespace Game
         private void StopConnection(string message)
         {
             Connected = false;
+
+
+            //create a copy of world objects to iterate thru and delete everything upon loss of connection
+            List<Ship> ShipsCopy = new List<Ship>();
+            List<Star> StarsCopy = new List<Star>();
+            List<Projectile> ProjectilesCopy = new List<Projectile>();
+            List<Explosion> ExplosionsCopy = new List<Explosion>();
+            IEnumerable<Ship> Ships = DeepCopyShip(theWorld.GetShipsActive(), ShipsCopy);
+            IEnumerable<Star> Stars = DeepCopyStar(theWorld.GetStars(), StarsCopy);
+            IEnumerable<Projectile> Projectiles = DeepCopyProj(theWorld.GetProjectiles(), ProjectilesCopy);
+            IEnumerable<Explosion> Explosions = DeepCopyExp(theWorld.GetExplosions(), ExplosionsCopy);
+
+            lock (theWorld)
+            {
+                //remove objects from the world on disconnect
+                foreach (Ship s in Ships)
+                {
+                    theWorld.RemoveShipActive(s.ID);
+                }
+                foreach (Projectile p in Projectiles)
+                {
+                    theWorld.RemoveProjectile(p.ID);
+                }
+                foreach (Star s in Stars)
+                {
+                    theWorld.RemoveStar(s.ID);
+                }
+                foreach (Explosion exp in Explosions)
+                {
+                    theWorld.RemoveExplosion(exp.GetID());
+                }
+            }
         }
+
+        /// <summary>
+        /// helper method to create deep copy
+        /// </summary>
+        /// <param name="ships"></param>
+        /// <param name="copy"></param>
+        /// <returns></returns>
+        public IEnumerable<Ship> DeepCopyShip(IEnumerable<Ship> ships, List<Ship> copy)
+        {
+            foreach (Ship s in ships)
+            {
+                Ship temp = new Ship();
+                temp = s;
+                copy.Add(temp);
+            }
+            foreach (Ship s in copy)
+                yield return s;
+        }
+
+        /// <summary>
+        /// helper method to create deep copy
+        /// </summary>
+        /// <param name="stars"></param>
+        /// <param name="copy"></param>
+        /// <returns></returns>
+        public IEnumerable<Star> DeepCopyStar(IEnumerable<Star> stars, List<Star> copy)
+        {
+            foreach (Star s in stars)
+            {
+                Star temp = new Star();
+                temp = s;
+                copy.Add(temp);
+            }
+            foreach (Star s in copy)
+                yield return s;
+        }
+
+        /// <summary>
+        /// helper method to create deep copy
+        /// </summary>
+        /// <param name="projectiles"></param>
+        /// <param name="copy"></param>
+        /// <returns></returns>
+        public IEnumerable<Projectile> DeepCopyProj(IEnumerable<Projectile> projectiles, List<Projectile> copy)
+        {
+            foreach (Projectile p in projectiles)
+            {
+                Projectile temp = new Projectile();
+                temp = p;
+                copy.Add(temp);
+            }
+            foreach (Projectile p in copy)
+                yield return p;
+        }
+
+        /// <summary>
+        /// helper method to create deep copy
+        /// </summary>
+        /// <param name="explosions"></param>
+        /// <param name="copy"></param>
+        /// <returns></returns>
+        public IEnumerable<Explosion> DeepCopyExp(IEnumerable<Explosion> explosions, List<Explosion> copy)
+        {
+            foreach (Explosion e in explosions)
+            {
+                Ship s = new Ship();
+                Explosion temp = new Explosion(s);
+                temp = e;
+                copy.Add(temp);
+            }
+            foreach (Explosion e in copy)
+                yield return e;
+        }
+
+
     }
+
 }
