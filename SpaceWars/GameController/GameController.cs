@@ -211,6 +211,7 @@ namespace Game
                 if (!theWorld.GetShipsActive().Any(item => item.ID == temp.ID && temp.hp != 0))
                 {
                     theWorld.AddShipActive(temp);
+                    Console.WriteLine("Adding ship: " + temp.name);
                 }
                 // if the ship is in the current list, and it is not dead
                 if (theWorld.GetShipsActive().Any(item => item.ID == temp.ID) && temp.hp != 0)
@@ -219,6 +220,8 @@ namespace Game
                     theWorld.RemoveShipActive(temp.ID);
                     // add new ship
                     theWorld.AddShipActive(temp);
+                    Console.WriteLine("Adding ship: " + temp.name);
+
                 }
                 // if the ship is dead, remove it
                 if (theWorld.GetShipsActive().Any(item => item.ID == temp.ID) && temp.hp == 0)

@@ -186,6 +186,7 @@ namespace NetworkController
                 catch (Exception e)
                 {
                     ss.Connected = false;
+                    ss.theSocket.Close();
                     Error(e.Message);
                 }
 

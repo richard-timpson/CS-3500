@@ -317,6 +317,7 @@ namespace View
         private void StarDrawer(object o, PaintEventArgs e)
         {
             int starWidth = 40;
+
             Star s = o as Star;
             
 

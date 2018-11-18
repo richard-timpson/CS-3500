@@ -162,7 +162,6 @@ namespace View
         /// <param name="e"></param>
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            Console.WriteLine("Key down event");
             switch (e.KeyCode)
             {
                 case Keys.Left:
@@ -187,7 +186,6 @@ namespace View
         /// <param name="e"></param>
         private void Form1_KeyUp(object sneder, KeyEventArgs e)
         {
-            Console.WriteLine("Key up event");
             switch (e.KeyCode)
             {
                 case Keys.Left:
