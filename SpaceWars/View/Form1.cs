@@ -35,6 +35,7 @@ namespace View
             this.Size = new Size(500, 500);
             KeyPreview = true;
             this.FormClosed += Form1_FormClosed;
+            Networking.NetworkController.Error += DisplayError;
         }
 
         /// <summary>
@@ -57,18 +58,21 @@ namespace View
             Controller = new GameController();
             try
             {
-                Controller.ConnectInitial(nameInput.Text, serverInput.Text);
+                MethodInvoker me = new MethodInvoker(() =>
+                {
+                    Controller.ConnectInitial(nameInput.Text, serverInput.Text);
+                    Controller.WorldInitialized += IntilializeGame;
+                    Controller.SendMessage += SendKeyPress;
+                    nameInput.Enabled = false;
+                    serverInput.Enabled = false;
+                    connectButton.Enabled = false;
+                });
+                this.Invoke(me);
             }
-            catch (Exception exc)
+            catch (Exception E)
             {
-                DisplayError(exc.Message);
+
             }
-            Controller.WorldInitialized += IntilializeGame;
-            Controller.SendMessage += SendKeyPress;
-            Networking.NetworkController.Error += DisplayError;
-            nameInput.Enabled = false;
-            serverInput.Enabled = false;
-            connectButton.Enabled = false;
         }
 
         /// <summary>
@@ -97,7 +101,9 @@ namespace View
                 this.Controls.Add(scoreBoard);
 
                 Controller.WorldUpdated += UpdateWorld;
-                
+
+                this.KeyDown += Form1_KeyDown;
+                this.KeyUp += Form1_KeyUp;
                 this.Invalidate(true);
             });
             this.Invoke(m);
@@ -110,15 +116,13 @@ namespace View
         {
             MethodInvoker me = new MethodInvoker(() =>
             {
-                this.KeyDown += Form1_KeyDown;
-                this.KeyUp += Form1_KeyUp;
-                
+
                 drawingPanel.Refresh();
                 scoreBoard.Refresh();
                 this.Invalidate(true);
             });
             this.Invoke(me);
-            
+
         }
 
         /// <summary>
@@ -146,14 +150,8 @@ namespace View
             }
             this.message.Append(")");
             string message = this.message.ToString();
-            try
-            {
             Controller.SendControls(message, ss);
-            }
-            catch(Exception e)
-            {
-                DisplayError(e.Message);
-            }
+
             this.message.Clear();
         }
 
@@ -164,6 +162,7 @@ namespace View
         /// <param name="e"></param>
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
+            Console.WriteLine("Key down event");
             switch (e.KeyCode)
             {
                 case Keys.Left:
@@ -188,6 +187,7 @@ namespace View
         /// <param name="e"></param>
         private void Form1_KeyUp(object sneder, KeyEventArgs e)
         {
+            Console.WriteLine("Key up event");
             switch (e.KeyCode)
             {
                 case Keys.Left:

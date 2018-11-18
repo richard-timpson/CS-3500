@@ -23,7 +23,7 @@ namespace NetworkController
             public delegate void ErrorHandler(string message);
 
             public delegate void callMe(SocketState ss);
-            
+
 
             public callMe _call;
             public ErrorHandler handleError;
@@ -32,6 +32,8 @@ namespace NetworkController
 
             // This is a larger (growable) buffer, in case a single receive does not contain the full message.
             public StringBuilder sb = new StringBuilder();
+
+            public bool Connected { get; set; }
 
             public SocketState(Socket s, int id, callMe callMeCallBack)
             {
@@ -79,7 +81,6 @@ namespace NetworkController
                         if (!foundIPV4)
                         {
                             System.Diagnostics.Debug.WriteLine("Invalid addres: " + hostName);
-                            Error("Invalid Address");
                             throw new ArgumentException("Invalid IP");
                         }
                     }
@@ -88,7 +89,6 @@ namespace NetworkController
                         // see if host name is actually an ipaddress, i.e., 155.99.123.456
                         System.Diagnostics.Debug.WriteLine("using IP");
                         ipAddress = IPAddress.Parse(hostName);
-                        Error("Invalid IP");
                     }
 
                     // Create a TCP/IP socket.
@@ -125,15 +125,7 @@ namespace NetworkController
 
                 SocketState ss = new SocketState(socket, -1, cb);
 
-                try
-                {
-                    socket.BeginConnect(ipAddress, NetworkController.DEFAULT_PORT, ConnectedCallback, ss);
-                }
-                catch (Exception e)
-                {
-                    Error(e.Message);
-                    throw e;
-                }
+                socket.BeginConnect(ipAddress, NetworkController.DEFAULT_PORT, ConnectedCallback, ss);
 
 
                 return socket;
@@ -149,18 +141,16 @@ namespace NetworkController
             {
                 SocketState ss = (SocketState)ar.AsyncState;
 
+                // Complete the connection.
                 try
                 {
-                    // Complete the connection.
                     ss.theSocket.EndConnect(ar);
                     ss._call(ss);
                 }
                 catch (Exception e)
                 {
-                    System.Diagnostics.Debug.WriteLine("Unable to connect to server. Error occured: " + e);
                     Error(e.Message);
                 }
-
 
             }
 
@@ -172,34 +162,33 @@ namespace NetworkController
             private static void ReceiveCallback(IAsyncResult ar)
             {
                 SocketState ss = (SocketState)ar.AsyncState;
-                int bytesRead;
+                ss.Connected = true;
+                int bytesRead = 0;
                 try
                 {
                     bytesRead = ss.theSocket.EndReceive(ar);
+                    // If the socket is still open
+                    if (bytesRead > 0)
+                    {
+                        string theMessage = Encoding.UTF8.GetString(ss.messageBuffer, 0, bytesRead);
+                        // Append the received data to the growable buffer.
+                        // It may be an incomplete message, so we need to start building it up piece by piece
+                        ss.sb.Append(theMessage);
+                        ss._call(ss);
+
+                    }
+                    else
+                    {
+                        Error("Stopped getting data from server");
+                        ss.theSocket.Close();
+                    }
                 }
                 catch (Exception e)
                 {
-                    Error("Unable to get data from server");
-                    throw e;
+                    ss.Connected = false;
+                    Error(e.Message);
                 }
 
-                // If the socket is still open
-                if (bytesRead > 0)
-                {
-                    string theMessage = Encoding.UTF8.GetString(ss.messageBuffer, 0, bytesRead);
-                    // Append the received data to the growable buffer.
-                    // It may be an incomplete message, so we need to start building it up piece by piece
-                    ss.sb.Append(theMessage);
-                    ss._call(ss);
-
-                }
-                else
-                {
-                    ss.theSocket.Close();
-                }
-                // Continue the "event loop" that was started on line 100.
-                // Start listening for more parts of a message, or more new messages
-                // ss.theSocket.BeginReceive(ss.messageBuffer, 0, ss.messageBuffer.Length, SocketFlags.None, ReceiveCallback, ss);
 
             }
             /// <summary>
@@ -210,16 +199,7 @@ namespace NetworkController
             private static void SendCallback(IAsyncResult ar)
             {
                 Socket s = (Socket)ar.AsyncState;
-                // Nothing much to do here, just conclude the send operation so the socket is happy.
-                try
-                {
-                    s.EndSend(ar);
-                }
-                catch (Exception e)
-                {
-                    Error(e.Message);
-                    throw new ArgumentException("Unable to send data.");
-                }
+                s.EndSend(ar);
             }
 
             /// <summary>
@@ -232,15 +212,7 @@ namespace NetworkController
 
                 // Append a newline, since that is our protocol's terminating character for a message.
                 byte[] messageBytes = Encoding.UTF8.GetBytes(message + "\n");
-                try
-                {
-                    ss.theSocket.BeginSend(messageBytes, 0, messageBytes.Length, SocketFlags.None, SendCallback, ss.theSocket);
-                }
-                catch (Exception e)
-                {
-                    Error(e.Message);
-                    throw new ArgumentException("Unable to send data.");
-                }
+                ss.theSocket.BeginSend(messageBytes, 0, messageBytes.Length, SocketFlags.None, SendCallback, ss.theSocket);
             }
 
             /// <summary>
@@ -249,15 +221,7 @@ namespace NetworkController
             /// <param name="ss"></param>
             public static void GetData(Networking.SocketState ss)
             {
-                try
-                {
-                    ss.theSocket.BeginReceive(ss.messageBuffer, 0, ss.messageBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), ss);
-                }
-                catch (Exception e)
-                {
-                    Error(e.Message);
-                    throw new ArgumentException("Unable to send data.");
-                }
+                ss.theSocket.BeginReceive(ss.messageBuffer, 0, ss.messageBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), ss);
             }
         }
     }

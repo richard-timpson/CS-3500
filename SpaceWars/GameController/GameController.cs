@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Timers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +18,8 @@ namespace Game
         private string UserName { get; set; }
         private string Host { get; set; }
         private int ID { get; set; }
+
+        private bool Connected { get; set; }
         public World theWorld { get; private set; }
 
         public delegate void InitializeWorldHandler(int WorldSize);
@@ -34,6 +38,7 @@ namespace Game
         public GameController()
         {
             this.theWorld = new World();
+            Networking.NetworkController.Error += StopConnection;
 
         }
 
@@ -49,6 +54,7 @@ namespace Game
             {
                 Networking.NetworkController.Send(protocolUserName, ss); // send the name
                 Networking.NetworkController.GetData(ss); // start the loop to get data. 
+                Connected = true;
 
             }
             catch (Exception e)
@@ -83,6 +89,7 @@ namespace Game
                     catch (Exception e)
                     {
                         System.Diagnostics.Debug.WriteLine(e.Message);
+                        Connected = false;
                     }
                     break;
                 }
@@ -99,8 +106,9 @@ namespace Game
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e.Message);
+                Connected = false;
             }
-            TiggerSendKeyEvent(ss); //enable user key input to move ship and fire
+            TriggerTimer(ss); //enable user key input to move ship and fire
 
         }
 
@@ -138,6 +146,7 @@ namespace Game
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e.Message);
+                Connected = false;
 
             }
             WorldUpdated(); //update world event
@@ -162,7 +171,7 @@ namespace Game
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e.Message);
-
+                throw e;
             }
         }
 
@@ -178,7 +187,6 @@ namespace Game
         /// <param name="s"></param>
         private void ProcessObject(string s)
         {
-            
             Ship temp;
             Star tempStar;
             Projectile tempProj;
@@ -191,7 +199,6 @@ namespace Game
                 //logic for explosion
                 if (theWorld.GetShipsActive().Any<Ship>(x => x.ID == temp.ID) && temp.hp == 0)
                 {
-                    Console.WriteLine("Adding Ship");
                     SendExplosion(temp);
                 }
 
@@ -280,18 +287,31 @@ namespace Game
         /// Sends the user key inputs every 15 ms.
         /// </summary>
         /// <param name="ss"></param>
-        private void TiggerSendKeyEvent(Networking.SocketState ss)
+        private void TriggerTimer(Networking.SocketState ss)
         {
             // every 15 ms, trigger the SendKey event
 
-            while (true)
+            while (Connected)
             {
-                Thread.Sleep(15);
+
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
+                while( watch.ElapsedMilliseconds < 16) { }
                 SendMessage(ss);
+                watch.Reset();
+                //System.Timers.Timer timer = new System.Timers.Timer(15);
+                //timer.Elapsed += delegate { TriggerSendMessage(ss)};
+                //timer.AutoReset = true;
+                //timer.Enabled = true;
             }
+        }
+        private void TriggerSendMessage(Networking.SocketState ss)
+        {
+                SendMessage(ss);
         }
 
         /// <summary>
+        /// 
         /// Sends the message to the server with keyinputs.
         /// </summary>
         /// <param name="message"></param>
@@ -306,6 +326,10 @@ namespace Game
             {
                 System.Diagnostics.Debug.WriteLine(e.Message);
             }
+        }
+        private void StopConnection(string message)
+        {
+            Connected = false;
         }
     }
 }
