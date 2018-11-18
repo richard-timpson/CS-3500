@@ -203,6 +203,12 @@ namespace View
 
             Rectangle scoreRect = new Rectangle(new Point(locX - 17, locY - 28), new Size(rectWidth, 5));
             e.Graphics.FillRectangle(new SolidBrush(Color.Green), scoreRect);
+
+            string drawString = s.name + ": " + s.score.ToString();
+            System.Drawing.Font drawFont = new System.Drawing.Font("Arial", 8);
+            System.Drawing.SolidBrush drawBrush = new System.Drawing.SolidBrush(System.Drawing.Color.White);
+            System.Drawing.StringFormat drawFormat = new System.Drawing.StringFormat();
+            e.Graphics.DrawString(drawString, drawFont, drawBrush, locX - 17, locY-42, drawFormat);
         }
         
 
@@ -226,34 +232,50 @@ namespace View
                 {
                     case 0:
                     case 8:
+                    case 16:
+                    case 24:
                         ship1 = ship_coast_red;
                         break;
                     case 1:
                     case 9:
+                    case 17:
+                    case 25:
                         ship1 = ship_coast_blue;
                         break;
                     case 2:
                     case 10:
+                    case 18:
+                    case 26:
                         ship1 = ship_coast_yellow;
                         break;
                     case 3:
                     case 11:
+                    case 19:
+                    case 27:
                         ship1 = ship_coast_violet;
                         break;
                     case 4:
                     case 12:
+                    case 20:
+                    case 28:
                         ship1 = ship_coast_green;
                         break;
                     case 5:
                     case 13:
+                    case 21:
+                    case 29:
                         ship1 = ship_coast_grey;
                         break;
                     case 6:
                     case 14:
+                    case 22:
+                    case 30:
                         ship1 = ship_coast_brown;
                         break;
                     case 7:
                     case 15:
+                    case 23:
+                    case 31:
                         ship1 = Resource1.ship_coast_white;
                         break;
                     default:
@@ -268,34 +290,50 @@ namespace View
                 {
                     case 0:
                     case 8:
+                    case 16:
+                    case 24:
                         ship1 = ship_thrust_red;
                         break;
                     case 1:
                     case 9:
+                    case 17:
+                    case 25:
                         ship1 = ship_thrust_blue;
                         break;
                     case 2:
                     case 10:
+                    case 18:
+                    case 26:
                         ship1 = ship_thrust_yellow;
                         break;
                     case 3:
                     case 11:
+                    case 19:
+                    case 27:
                         ship1 = ship_thrust_violet;
                         break;
                     case 4:
                     case 12:
+                    case 20:
+                    case 28:
                         ship1 = ship_thrust_green;
                         break;
                     case 5:
                     case 13:
+                    case 21:
+                    case 29:
                         ship1 = ship_thrust_grey;
                         break;
                     case 6:
                     case 14:
+                    case 22:
+                    case 30:
                         ship1 = ship_thrust_brown;
                         break;
                     case 7:
                     case 15:
+                    case 23:
+                    case 31:
                         ship1 = ship_thrust_white;
                         break;
                     default:
@@ -327,9 +365,13 @@ namespace View
 
         private void ExplosionDrawer(object o, PaintEventArgs e)
         {
+            //size of the explosion
             int explosionWidth = 40;
+
             Image explosion;
             Explosion exp = o as Explosion;
+
+            //make size of explosion random
             int randNum = 1;
             System.Random rand = new System.Random();
             randNum = rand.Next(1, 4);
@@ -350,125 +392,144 @@ namespace View
                 case 8:
                 case 9:
                 case 10:
-                    explosion = explosionFire2;
+                    explosion = explosionFire3;
                     break;
                 case 11:
                 case 12:
                 case 13:
                 case 14:
                 case 15:
-                    explosion = explosionFire3;
+                    explosion = explosionFire2;
                     break;
                 case 16:
                 case 17:
                 case 18:
                 case 19:
                 case 20:
-                    explosion = explosionFire4;
+                    explosion = explosionFire;
                     break;
                 case 21:
                 case 22:
                 case 23:
                 case 24:
                 case 25:
-                    explosion = explosionSmokeForming1;
+                    explosion = explosionFire3;
                     break;
                 case 26:
                 case 27:
                 case 28:
                 case 29:
                 case 30:
-                    explosion = explosionSmokeForming2;
+                    explosion = explosionFire4;
                     break;
                 case 31:
                 case 32:
                 case 33:
                 case 34:
                 case 35:
-                    explosion = explosionSmokeForming3;
+                    explosion = explosionSmokeForming1;
                     break;
                 case 36:
                 case 37:
                 case 38:
                 case 39:
                 case 40:
-                    explosion = explosionSmokeForming4;
+                    explosion = explosionSmokeForming2;
                     break;
                 case 41:
                 case 42:
                 case 43:
                 case 44:
                 case 45:
-                    explosion = explosionSmokeForming5;
+                    explosion = explosionSmokeForming3;
                     break;
                 case 46:
                 case 47:
                 case 48:
                 case 49:
                 case 50:
-                    explosion = explosionSmoke1;
+                    explosion = explosionSmokeForming4;
                     break;
                 case 51:
                 case 52:
                 case 53:
                 case 54:
                 case 55:
-                    explosion = explosionSmoke2;
+                    explosion = explosionSmokeForming5;
                     break;
                 case 56:
                 case 57:
                 case 58:
                 case 59:
                 case 60:
-                    explosion = explosionSmoke3;
+                    explosion = explosionSmoke1;
                     break;
                 case 61:
                 case 62:
                 case 63:
                 case 64:
                 case 65:
-                    explosion = explosionSmoke4;
+                    explosion = explosionSmoke2;
                     break;
                 case 66:
                 case 67:
                 case 68:
                 case 69:
                 case 70:
-                    explosion = explosionSmoke5;
+                    explosion = explosionSmoke3;
                     break;
                 case 71:
                 case 72:
                 case 73:
                 case 74:
                 case 75:
-                    explosion = explosionSmoke6;
+                    explosion = explosionSmoke4;
                     break;
                 case 76:
                 case 77:
                 case 78:
                 case 79:
                 case 80:
-                    explosion = explosionSmoke7;
+                    explosion = explosionSmoke5;
                     break;
                 case 81:
                 case 82:
                 case 83:
                 case 84:
                 case 85:
-                    explosion = explosionSmoke8;
+                    explosion = explosionSmoke6;
                     break;
                 case 86:
                 case 87:
                 case 88:
                 case 89:
                 case 90:
-                    explosion = explosionSmoke9;
+                    explosion = explosionSmoke7;
                     break;
                 case 91:
                 case 92:
                 case 93:
+                case 94:
+                case 95:
+                    explosion = explosionSmoke8;
+                    break;
+                case 96:
+                case 97:
+                case 98:
+                case 99:
+                case 100:
+                case 101:
+                case 102:
+                case 103:
+                case 104:
+                case 105:
+                case 106:
+                case 107:
+                case 108:
                     explosion = explosionSmoke9;
                     break;
+
+
                 default:
                     explosion = explosionFire3;
                     break;
@@ -486,7 +547,9 @@ namespace View
         /// <param name="e"></param>
         private void ProjectileDrawer(object o, PaintEventArgs e)
         {
+            //size of the projectile
             int projWidth = 20;
+
             Projectile p = o as Projectile;
             Image proj1;
 
@@ -495,34 +558,50 @@ namespace View
             {
                 case 0:
                 case 8:
+                case 16:
+                case 24:
                     proj1 = Resource1.shot_red;
                     break;
                 case 1:
                 case 9:
+                case 17:
+                case 25:
                     proj1 = shot_blue;
                     break;
                 case 2:
                 case 10:
+                case 18:
+                case 26:
                     proj1 = shot_yellow;
                     break;
                 case 3:
                 case 11:
+                case 19:
+                case 27:
                     proj1 = shot_violet;
                     break;
                 case 4:
                 case 12:
+                case 20:
+                case 28:
                     proj1 = shot_green;
                     break;
                 case 5:
                 case 13:
+                case 21:
+                case 29:
                     proj1 = shot_grey;
                     break;
                 case 6:
                 case 14:
+                case 22:
+                case 30:
                     proj1 = shot_brown;
                     break;
                 case 7:
                 case 15:
+                case 23:
+                case 31:
                     proj1 = shot_white;
                     break;
                 default:
@@ -541,32 +620,32 @@ namespace View
         /// <param name="e"></param>
         protected override void OnPaint(PaintEventArgs e)
         {
-            Rectangle rect = new Rectangle(new Point(WorldSize, 30), new Size(200, WorldSize));
-            e.Graphics.FillRectangle(new SolidBrush(Color.White), rect);
             lock (this.theWorld)
             {
+                //Draws each explosion according to the counter in the instance explosion class, and increments counter
                 foreach(Explosion s in theWorld.GetExplosions())
                 {
-                    if (s.GetCount() <= 93)
+                    if (s.GetCount() <= 108)
                     {
                         DrawObjectWithTransform(e, s, WorldSize, s.GetLoc().GetX(), s.GetLoc().GetY(), 0, ExplosionDrawer);
                         s.IncrementCount();
                     }
-                    //else
-                        //theWorld.RemoveExplosion(s.GetID()); 
                 }
 
+                //Draws each ship with healthbar, name and score above the ship.
                 foreach (Ship s in theWorld.GetShipsActive())
                 {
                     DrawObjectWithTransform(e, s, WorldSize, s.loc.GetX(), s.loc.GetY(), s.dir.ToAngle(), ShipDrawer);
                     DrawScoreOnShip(e, s, WorldSize, s.loc.GetX(), s.loc.GetY());
                 }
 
+                //Draws each star
                 foreach (Star s in theWorld.GetStars())
                 {
                     DrawObjectWithTransform(e, s, WorldSize, s.loc.GetX(), s.loc.GetY(), 0, StarDrawer);
                 }
 
+                //draws each projectile
                 foreach (Projectile p in theWorld.GetProjectiles())
                 {
                     DrawObjectWithTransform(e, p, WorldSize, p.loc.GetX(), p.loc.GetY(), p.dir.ToAngle(), ProjectileDrawer);

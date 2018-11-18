@@ -36,6 +36,7 @@ namespace View
             KeyPreview = true;
             this.FormClosed += Form1_FormClosed;
             Networking.NetworkController.Error += DisplayError;
+            Controller = new GameController();
         }
 
         /// <summary>
@@ -55,9 +56,9 @@ namespace View
         /// <param name="e"></param>
         private void connectButton_Click(object sender, EventArgs e)
         {
-            Controller = new GameController();
             try
             {
+                //Initiates connection with server and disables the connect button and textBox fields.
                 MethodInvoker me = new MethodInvoker(() =>
                 {
                     Controller.ConnectInitial(nameInput.Text, serverInput.Text);
@@ -203,6 +204,7 @@ namespace View
             }
         }
 
+        //Restores the connect button and input fields if there is a connection error to allow for reconnection.
         private void DisplayError(string message)
         {
             MessageBox.Show(message);

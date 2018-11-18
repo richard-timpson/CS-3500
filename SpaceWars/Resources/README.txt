@@ -57,4 +57,11 @@ especially for the projectiles.
 We have the networking controller working well enough, that the ships are
 being displayed properly. 
 
+**********************************
+
+11/17/18
+Added an explosion class for creating explosions objects upon death. Runs on a frame counter that expires
+after 130 frames. I made about 20 seperate flame and smoke images in photoshop, and they are run in sequence
+for 5 frames each. I implemented a random number generator that randomly alters the size of the explosion image,
+which helps simulate motion.
 
