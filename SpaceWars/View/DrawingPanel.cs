@@ -226,25 +226,145 @@ namespace View
         {
             int explosionWidth = 40;
             Image explosion;
+            Explosion exp = o as Explosion;
             int randNum = 1;
             System.Random rand = new System.Random();
             randNum = rand.Next(1, 4);
 
             explosionWidth = rand.Next(15, 45);
 
-            switch (randNum)
+            switch (exp.GetCount())
             {
                 case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
                     explosion = Resource1.explosionfire;
                     break;
-                case 2:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 10:
                     explosion = Resource1.explosionfire2;
                     break;
-                case 3:
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
                     explosion = Resource1.explosionfire3;
                     break;
-                case 4:
+                case 16:
+                case 17:
+                case 18:
+                case 19:
+                case 20:
                     explosion = Resource1.explosionfire4;
+                    break;
+                case 21:
+                case 22:
+                case 23:
+                case 24:
+                case 25:
+                    explosion = Resource1.ExplosionSmokeForming1;
+                    break;
+                case 26:
+                case 27:
+                case 28:
+                case 29:
+                case 30:
+                    explosion = Resource1.ExplosionSmokeForming2;
+                    break;
+                case 31:
+                case 32:
+                case 33:
+                case 34:
+                case 35:
+                    explosion = Resource1.ExplosionSmokeForming3;
+                    break;
+                case 36:
+                case 37:
+                case 38:
+                case 39:
+                case 40:
+                    explosion = Resource1.ExplosionSmokeForming4;
+                    break;
+                case 41:
+                case 42:
+                case 43:
+                case 44:
+                case 45:
+                    explosion = Resource1.ExplosionSmokeForming5;
+                    break;
+                case 46:
+                case 47:
+                case 48:
+                case 49:
+                case 50:
+                    explosion = Resource1.ExplosionSmoke1;
+                    break;
+                case 51:
+                case 52:
+                case 53:
+                case 54:
+                case 55:
+                    explosion = Resource1.ExplosionSmoke2;
+                    break;
+                case 56:
+                case 57:
+                case 58:
+                case 59:
+                case 60:
+                    explosion = Resource1.ExplosionSmoke3;
+                    break;
+                case 61:
+                case 62:
+                case 63:
+                case 64:
+                case 65:
+                    explosion = Resource1.ExplosionSmoke4;
+                    break;
+                case 66:
+                case 67:
+                case 68:
+                case 69:
+                case 70:
+                    explosion = Resource1.ExplosionSmoke5;
+                    break;
+                case 71:
+                case 72:
+                case 73:
+                case 74:
+                case 75:
+                    explosion = Resource1.ExplosionSmoke6;
+                    break;
+                case 76:
+                case 77:
+                case 78:
+                case 79:
+                case 80:
+                    explosion = Resource1.ExplosionSmoke7;
+                    break;
+                case 81:
+                case 82:
+                case 83:
+                case 84:
+                case 85:
+                    explosion = Resource1.ExplosionSmoke8;
+                    break;
+                case 86:
+                case 87:
+                case 88:
+                case 89:
+                case 90:
+                    explosion = Resource1.ExplosionSmoke9;
+                    break;
+                case 91:
+                case 92:
+                case 93:
+                    explosion = Resource1.ExplosionSmoke9;
                     break;
                 default:
                     explosion = Resource1.explosionfire3;
@@ -322,9 +442,15 @@ namespace View
             e.Graphics.FillRectangle(new SolidBrush(Color.White), rect);
             lock (this.theWorld)
             {
-                foreach(Ship s in theWorld.GetExplosions())
+                foreach(Explosion s in theWorld.GetExplosions())
                 {
-                    DrawObjectWithTransform(e, s, WorldSize, s.loc.GetX(), s.loc.GetY(), 0, ExplosionDrawer);
+                    if (s.GetCount() <= 93)
+                    {
+                        DrawObjectWithTransform(e, s, WorldSize, s.GetLoc().GetX(), s.GetLoc().GetY(), 0, ExplosionDrawer);
+                        s.IncrementCount();
+                    }
+                    //else
+                        //theWorld.RemoveExplosion(s.GetID());
                 }
 
                 foreach (Ship s in theWorld.GetShipsActive())

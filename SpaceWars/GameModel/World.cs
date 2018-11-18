@@ -13,7 +13,7 @@ namespace GameModel
         private List<Ship> ShipsTotal;
         private HashSet<Projectile> ProjectilesActive;
         private List<Star> StarsActive;
-        private List<Ship> Explosions;
+        private List<Explosion> Explosions;
 
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace GameModel
             ShipsTotal = new List<Ship>();
             ProjectilesActive = new HashSet<Projectile>();
             StarsActive = new List<Star>();
-            Explosions = new List<Ship>();
+            Explosions = new List<Explosion>();
         }
 
         
@@ -85,9 +85,9 @@ namespace GameModel
             this.ShipsTotal.RemoveAll((item) => item.ID == ID);
         }
 
-        public void AddExplosion(Ship s)
+        public void AddExplosion(Explosion e)
         {
-            this.Explosions.Add(s);
+            this.Explosions.Add(e);
         }
 
         /// <summary>
@@ -96,13 +96,13 @@ namespace GameModel
         /// <param name="ID"></param>
         public void RemoveExplosion(int ID)
         {
-            this.Explosions.RemoveAll((item) => item.ID == ID);
+            this.Explosions.RemoveAll((item) => item.GetID() == ID);
         }
 
-        public IEnumerable<Ship> GetExplosions()
+        public IEnumerable<Explosion> GetExplosions()
         {
-            foreach (Ship p in Explosions)
-                yield return p;
+            foreach (Explosion e in Explosions)
+                yield return e;
         }
 
         /// <summary>

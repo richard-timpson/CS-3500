@@ -175,10 +175,7 @@ namespace Game
             }
         }
 
-        private void SendExplosion(Ship s)
-        {
-            theWorld.AddExplosion(s);
-        }
+       
 
 
         /// <summary>
@@ -199,7 +196,8 @@ namespace Game
                 //logic for explosion
                 if (theWorld.GetShipsActive().Any<Ship>(x => x.ID == temp.ID) && temp.hp == 0)
                 {
-                    SendExplosion(temp);
+                    Explosion exp = new Explosion(temp);
+                    theWorld.AddExplosion(exp);
                 }
 
                 // logic for active ships

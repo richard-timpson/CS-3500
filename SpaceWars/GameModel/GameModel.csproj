@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Explosion.cs" />
     <Compile Include="Projectile.cs" />
     <Compile Include="Ship.cs" />
     <Compile Include="Star.cs" />

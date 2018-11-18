@@ -130,6 +130,48 @@
   <data name="explosionfire4" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\explosionfire8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="ExplosionSmoke1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmoke1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmoke2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmoke2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmoke3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmoke3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmoke4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmoke4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmoke5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmoke5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmoke6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmoke6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmoke7" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmoke7.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmoke8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmoke8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmoke9" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmoke9.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmokeForming1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmokeForming6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmokeForming2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmokeForming5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmokeForming3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmokeForming3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmokeForming4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmokeForming4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExplosionSmokeForming5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ExplosionSmokeForming8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="ship_coast_blue" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Graphics\ship-coast-blue.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
