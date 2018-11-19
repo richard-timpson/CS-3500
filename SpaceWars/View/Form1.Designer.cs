@@ -38,40 +38,45 @@
             // serverLabel
             // 
             this.serverLabel.AutoSize = true;
-            this.serverLabel.Location = new System.Drawing.Point(12, 9);
+            this.serverLabel.Location = new System.Drawing.Point(22, 17);
+            this.serverLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.serverLabel.Name = "serverLabel";
-            this.serverLabel.Size = new System.Drawing.Size(39, 13);
+            this.serverLabel.Size = new System.Drawing.Size(72, 25);
             this.serverLabel.TabIndex = 0;
             this.serverLabel.Text = "server:";
             // 
             // serverInput
             // 
-            this.serverInput.Location = new System.Drawing.Point(57, 6);
+            this.serverInput.Location = new System.Drawing.Point(105, 11);
+            this.serverInput.Margin = new System.Windows.Forms.Padding(6);
             this.serverInput.Name = "serverInput";
-            this.serverInput.Size = new System.Drawing.Size(125, 20);
+            this.serverInput.Size = new System.Drawing.Size(226, 29);
             this.serverInput.TabIndex = 1;
             // 
             // nameLabel
             // 
             this.nameLabel.AutoSize = true;
-            this.nameLabel.Location = new System.Drawing.Point(189, 9);
+            this.nameLabel.Location = new System.Drawing.Point(347, 17);
+            this.nameLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.nameLabel.Name = "nameLabel";
-            this.nameLabel.Size = new System.Drawing.Size(36, 13);
+            this.nameLabel.Size = new System.Drawing.Size(67, 25);
             this.nameLabel.TabIndex = 2;
             this.nameLabel.Text = "name:";
             // 
             // nameInput
             // 
-            this.nameInput.Location = new System.Drawing.Point(231, 6);
+            this.nameInput.Location = new System.Drawing.Point(424, 11);
+            this.nameInput.Margin = new System.Windows.Forms.Padding(6);
             this.nameInput.Name = "nameInput";
-            this.nameInput.Size = new System.Drawing.Size(104, 20);
+            this.nameInput.Size = new System.Drawing.Size(187, 29);
             this.nameInput.TabIndex = 3;
             // 
             // connectButton
             // 
-            this.connectButton.Location = new System.Drawing.Point(349, 4);
+            this.connectButton.Location = new System.Drawing.Point(640, 7);
+            this.connectButton.Margin = new System.Windows.Forms.Padding(6);
             this.connectButton.Name = "connectButton";
-            this.connectButton.Size = new System.Drawing.Size(75, 23);
+            this.connectButton.Size = new System.Drawing.Size(138, 42);
             this.connectButton.TabIndex = 4;
             this.connectButton.Text = "connect";
             this.connectButton.UseVisualStyleBackColor = true;
@@ -79,14 +84,15 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1467, 831);
             this.Controls.Add(this.connectButton);
             this.Controls.Add(this.nameInput);
             this.Controls.Add(this.nameLabel);
             this.Controls.Add(this.serverInput);
             this.Controls.Add(this.serverLabel);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);

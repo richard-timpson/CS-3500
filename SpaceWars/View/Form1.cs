@@ -33,10 +33,11 @@ namespace View
             InitializeComponent();
             message = new StringBuilder();
             this.Size = new Size(500, 500);
-            KeyPreview = true;
             this.FormClosed += Form1_FormClosed;
+            KeyPreview = true;
             Networking.NetworkController.Error += DisplayError;
             Controller = new GameController();
+            
         }
 
         /// <summary>
@@ -67,6 +68,7 @@ namespace View
                     nameInput.Enabled = false;
                     serverInput.Enabled = false;
                     connectButton.Enabled = false;
+                    
                 });
                 this.Invoke(me);
             }
@@ -152,7 +154,6 @@ namespace View
             this.message.Append(")");
             string message = this.message.ToString();
             Controller.SendControls(message, ss);
-
             this.message.Clear();
         }
 
@@ -163,6 +164,7 @@ namespace View
         /// <param name="e"></param>
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
+            Console.WriteLine("Key down event");
             switch (e.KeyCode)
             {
                 case Keys.Left:
@@ -178,6 +180,7 @@ namespace View
                     keyFire = true;
                     break;
             }
+
         }
 
         /// <summary>
@@ -187,6 +190,7 @@ namespace View
         /// <param name="e"></param>
         private void Form1_KeyUp(object sneder, KeyEventArgs e)
         {
+            Console.WriteLine("Key up event");
             switch (e.KeyCode)
             {
                 case Keys.Left:
@@ -202,6 +206,9 @@ namespace View
                     keyFire = false;
                     break;
             }
+            e.Handled = true;
+            drawingPanel.Focus();
+
         }
 
         //Restores the connect button and input fields if there is a connection error to allow for reconnection.

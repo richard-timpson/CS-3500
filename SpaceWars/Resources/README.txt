@@ -65,3 +65,8 @@ after 130 frames. I made about 20 seperate flame and smoke images in photoshop, 
 for 5 frames each. I implemented a random number generator that randomly alters the size of the explosion image,
 which helps simulate motion.
 
+**********************************
+11/18/18
+The game is mostly working. We just need to refactor the code a little bit and possibly add a small help menu. 
+The error handling is working well. 
+

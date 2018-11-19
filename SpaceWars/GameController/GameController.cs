@@ -143,7 +143,8 @@ namespace Game
             ss.sb.Append(temp);
             try
             {
-                Networking.NetworkController.GetData(ss);
+                if (Connected)
+                    Networking.NetworkController.GetData(ss);
             }
             catch (Exception e)
             {
@@ -210,7 +211,6 @@ namespace Game
                 if (!theWorld.GetShipsActive().Any(item => item.ID == temp.ID && temp.hp != 0))
                 {
                     theWorld.AddShipActive(temp);
-                    Console.WriteLine("Adding ship: " + temp.name);
                 }
                 // if the ship is in the current list, and it is not dead
                 if (theWorld.GetShipsActive().Any(item => item.ID == temp.ID) && temp.hp != 0)
@@ -219,7 +219,6 @@ namespace Game
                     theWorld.RemoveShipActive(temp.ID);
                     // add new ship
                     theWorld.AddShipActive(temp);
-                    Console.WriteLine("Adding ship: " + temp.name);
 
                 }
                 // if the ship is dead, remove it
@@ -334,9 +333,14 @@ namespace Game
                 Connected = false;
             }
         }
-        private void StopConnection(string message)
+        public void StopConnection(string message)
         {
             Connected = false;
+
+            // pause the program to wait for the sockets to close
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            while (watch.ElapsedMilliseconds < 500) { } 
 
 
             //create a copy of world objects to iterate thru and delete everything upon loss of connection
