@@ -114,6 +114,11 @@ namespace Game
 
         }
 
+        /// <summary>
+        /// Receives the message from the server and calls process object on a complete
+        /// object to update the world.
+        /// </summary>
+        /// <param name="ss"></param>
         private void ReceiveWorld(Networking.SocketState ss)
         {
             string totalData = ss.sb.ToString();
@@ -143,8 +148,7 @@ namespace Game
             ss.sb.Append(temp);
             try
             {
-                if (Connected)
-                    Networking.NetworkController.GetData(ss);
+                Networking.NetworkController.GetData(ss);
             }
             catch (Exception e)
             {
@@ -210,7 +214,7 @@ namespace Game
                 // if the ship isn't in the current list, and it is not dead
                 if (!theWorld.GetShipsActive().Any(item => item.ID == temp.ID && temp.hp != 0))
                 {
-                    theWorld.AddShipActive(temp);
+                    theWorld.AddShipActive(temp);                
                 }
                 // if the ship is in the current list, and it is not dead
                 if (theWorld.GetShipsActive().Any(item => item.ID == temp.ID) && temp.hp != 0)
@@ -219,7 +223,6 @@ namespace Game
                     theWorld.RemoveShipActive(temp.ID);
                     // add new ship
                     theWorld.AddShipActive(temp);
-
                 }
                 // if the ship is dead, remove it
                 if (theWorld.GetShipsActive().Any(item => item.ID == temp.ID) && temp.hp == 0)
@@ -310,13 +313,17 @@ namespace Game
                 //timer.Enabled = true;
             }
         }
+
+        /// <summary>
+        /// Sends user input to the server
+        /// </summary>
+        /// <param name="ss"></param>
         private void TriggerSendMessage(Networking.SocketState ss)
         {
                 SendMessage(ss);
         }
 
         /// <summary>
-        /// 
         /// Sends the message to the server with keyinputs.
         /// </summary>
         /// <param name="message"></param>
@@ -333,14 +340,16 @@ namespace Game
                 Connected = false;
             }
         }
-        public void StopConnection(string message)
+
+        /// <summary>
+        /// Stop connection is a helper method called whenever the connection is terminated.
+        /// It sets the connection value to false and empties the world objects so that the game
+        /// redraws from scratch upon reconnecting to the server.
+        /// </summary>
+        /// <param name="message"></param>
+        private void StopConnection(string message)
         {
             Connected = false;
-
-            // pause the program to wait for the sockets to close
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            while (watch.ElapsedMilliseconds < 500) { } 
 
 
             //create a copy of world objects to iterate thru and delete everything upon loss of connection

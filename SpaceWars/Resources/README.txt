@@ -66,7 +66,16 @@ for 5 frames each. I implemented a random number generator that randomly alters 
 which helps simulate motion.
 
 **********************************
+
 11/18/18
-The game is mostly working. We just need to refactor the code a little bit and possibly add a small help menu. 
-The error handling is working well. 
+The explosion animation, as it is now, is resource intensive when there are a dozen or so AI
+clients. The framerate may drop slightly. I made a number of optimazations, including formating the pictures
+upon initialization of the drawingPanel, but there is still a lot of overhead for the animation, because they
+have to be resized on every frame. This is due to the random number generator choosing the size of the image 
+drawn for the explosion. (This is critiical for the animation as it gives it the appearance that there is motion
+and fluidity between frames). A possible solution to make it even faster would be to simulate the randomness of 
+the size of the image by preloading a bunch of different sizes for each image, but ultimately we ran out of 
+time to implement it.
+
+
 

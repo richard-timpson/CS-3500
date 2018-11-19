@@ -211,7 +211,10 @@ namespace View
 
         }
 
-        //Restores the connect button and input fields if there is a connection error to allow for reconnection.
+        /// <summary>
+        /// Restores the connect button and input fields if there is a connection error to allow for reconnection.
+        /// </summary>
+        /// <param name="message"></param>
         private void DisplayError(string message)
         {
             MessageBox.Show(message);
