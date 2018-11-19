@@ -33,6 +33,7 @@
             this.nameLabel = new System.Windows.Forms.Label();
             this.nameInput = new System.Windows.Forms.TextBox();
             this.connectButton = new System.Windows.Forms.Button();
+            this.help = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // serverLabel
@@ -77,18 +78,29 @@
             this.connectButton.UseVisualStyleBackColor = true;
             this.connectButton.Click += new System.EventHandler(this.connectButton_Click);
             // 
+            // help
+            // 
+            this.help.Location = new System.Drawing.Point(713, 3);
+            this.help.Name = "help";
+            this.help.Size = new System.Drawing.Size(75, 23);
+            this.help.TabIndex = 5;
+            this.help.Text = "Help";
+            this.help.UseVisualStyleBackColor = true;
+            this.help.Click += new System.EventHandler(this.help_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.help);
             this.Controls.Add(this.connectButton);
             this.Controls.Add(this.nameInput);
             this.Controls.Add(this.nameLabel);
             this.Controls.Add(this.serverInput);
             this.Controls.Add(this.serverLabel);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "SpaceWars";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -101,6 +113,7 @@
         private System.Windows.Forms.Label nameLabel;
         private System.Windows.Forms.TextBox nameInput;
         private System.Windows.Forms.Button connectButton;
+        private System.Windows.Forms.Button help;
     }
 }
 

@@ -32,7 +32,7 @@ namespace View
         {
             InitializeComponent();
             message = new StringBuilder();
-            this.Size = new Size(500, 500);
+            this.Size = new Size(820, 500);
             KeyPreview = true;
             this.FormClosed += Form1_FormClosed;
             Networking.NetworkController.Error += DisplayError;
@@ -220,5 +220,9 @@ namespace View
             this.Invoke(me);
         }
 
+        private void help_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(" SpaceWars!!! \n\n Controls: \n Thrust - UpArrow \n Left - LeftArrow \n Right - RightArrow \n Fire - SpaceBar \n\n Gameplay: \nThe star in the center of the game has gravity that will pull you in towards it. \nAvoid contact with the star, and kill as many opponents as you can!");
+        }
     }
 }

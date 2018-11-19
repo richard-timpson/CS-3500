@@ -77,5 +77,5 @@ and fluidity between frames). A possible solution to make it even faster would b
 the size of the image by preloading a bunch of different sizes for each image, but ultimately we ran out of 
 time to implement it.
 
-
+Other than that, everything works perfectly.
 
