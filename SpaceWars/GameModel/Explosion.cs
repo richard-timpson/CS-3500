@@ -23,25 +23,36 @@ namespace GameModel
             this.loc = s.loc;
         }
 
-        //Increments count once per frame to simulate animation
+        /// <summary>
+        /// Increments count once per frame to simulate animation
+        /// </summary>
         public void IncrementCount()
         {
             count++;
         }
 
-        //returns frame count
+        /// <summary>
+        /// returns frame count
+        /// </summary>
+        /// <returns></returns>
         public int GetCount()
         {
             return count;
         }
 
-        //returns ID of explosion
+        /// <summary>
+        /// returns ID of explosion
+        /// </summary>
+        /// <returns></returns>
         public int GetID()
         {
             return ID;
         }
 
-        //returns location of explosion
+        /// <summary>
+        /// returns location of explosion
+        /// </summary>
+        /// <returns></returns>
         public Vector.Vector2D GetLoc()
         {
             return loc;

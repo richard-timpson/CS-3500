@@ -85,6 +85,10 @@ namespace GameModel
             this.ShipsTotal.RemoveAll((item) => item.ID == ID);
         }
 
+        /// <summary>
+        /// Adds explosion to the world
+        /// </summary>
+        /// <param name="e"></param>
         public void AddExplosion(Explosion e)
         {
             this.Explosions.Add(e);
@@ -99,6 +103,10 @@ namespace GameModel
             this.Explosions.RemoveAll((item) => item.GetID() == ID);
         }
 
+        /// <summary>
+        /// retrieves all active explosions in the world.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Explosion> GetExplosions()
         {
             foreach (Explosion e in Explosions)

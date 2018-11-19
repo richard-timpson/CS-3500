@@ -46,8 +46,10 @@ namespace View
         {
             lock (theWorld)
             {
+                //retrive all ships in the world and sort from highest score to lowest
                 ships = theWorld.GetShipsAll().ToList<Ship>();
                 sortShipList(ships);
+                //count provides spacing between the players on the scoreboard
                 float count = 30;
                 foreach (Ship s in ships)
                 {
@@ -63,6 +65,7 @@ namespace View
 
                     Rectangle ScoreRect;
 
+                    //sets the size of the healthbar rectanlge on the scoreboard to the health of the player
                     switch (s.hp)
                     {
                         case 1:
@@ -90,9 +93,6 @@ namespace View
 
                             break;
                     }
-
-
-
 
                     count += 60;
                 }

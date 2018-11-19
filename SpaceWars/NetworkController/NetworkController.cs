@@ -35,6 +35,12 @@ namespace NetworkController
 
             public bool Connected { get; set; }
 
+            /// <summary>
+            /// Constructor for the socketState
+            /// </summary>
+            /// <param name="s"></param>
+            /// <param name="id"></param>
+            /// <param name="callMeCallBack"></param>
             public SocketState(Socket s, int id, callMe callMeCallBack)
             {
                 theSocket = s;
