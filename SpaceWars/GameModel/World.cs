@@ -61,7 +61,7 @@ namespace GameModel
         /// Retrives an enumerable of total ships in game.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Ship> GetShips()
+        public IEnumerable<Ship> GetShipsAll()
         {
             foreach (Ship s in ShipsTotal)
                 yield return s;
@@ -71,7 +71,7 @@ namespace GameModel
         /// Adds ship to list of total ships in game.
         /// </summary>
         /// <param name="s"></param>
-        public void AddShip(Ship s)
+        public void AddShipAll(Ship s)
         {
             this.ShipsTotal.Add(s);
         }
@@ -80,7 +80,7 @@ namespace GameModel
         /// removes ship from list of total ships in game.
         /// </summary>
         /// <param name="ID"></param>
-        public void RemoveShip(int ID)
+        public void RemoveShipAll(int ID)
         {
             this.ShipsTotal.RemoveAll((item) => item.ID == ID);
         }

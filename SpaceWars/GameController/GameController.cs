@@ -235,15 +235,15 @@ namespace Game
                 // logic for all ships
 
                 // if the ship is not in the list, add it
-                if (!theWorld.GetShips().Any(item => item.ID == temp.ID))
+                if (!theWorld.GetShipsAll().Any(item => item.ID == temp.ID))
                 {
-                    theWorld.AddShip(temp);
+                    theWorld.AddShipAll(temp);
                 }
                 // if the ship is in the list, update it
-                if (theWorld.GetShips().Any(item => item.ID == temp.ID))
+                if (theWorld.GetShipsAll().Any(item => item.ID == temp.ID))
                 {
-                    theWorld.RemoveShip(temp.ID);
-                    theWorld.AddShip(temp);
+                    theWorld.RemoveShipAll(temp.ID);
+                    theWorld.AddShipAll(temp);
                 }
 
 
@@ -340,11 +340,13 @@ namespace Game
 
 
             //create a copy of world objects to iterate thru and delete everything upon loss of connection
-            List<Ship> ShipsCopy = new List<Ship>();
+            List<Ship> ShipsActiveCopy = new List<Ship>();
+            List<Ship> ShipsAllCopy = new List<Ship>();
             List<Star> StarsCopy = new List<Star>();
             List<Projectile> ProjectilesCopy = new List<Projectile>();
             List<Explosion> ExplosionsCopy = new List<Explosion>();
-            IEnumerable<Ship> Ships = DeepCopyShip(theWorld.GetShipsActive(), ShipsCopy);
+            IEnumerable<Ship> ShipsActive = DeepCopyShip(theWorld.GetShipsActive(), ShipsActiveCopy);
+            IEnumerable<Ship> ShipsAll = DeepCopyShip(theWorld.GetShipsAll(), ShipsAllCopy);
             IEnumerable<Star> Stars = DeepCopyStar(theWorld.GetStars(), StarsCopy);
             IEnumerable<Projectile> Projectiles = DeepCopyProj(theWorld.GetProjectiles(), ProjectilesCopy);
             IEnumerable<Explosion> Explosions = DeepCopyExp(theWorld.GetExplosions(), ExplosionsCopy);
@@ -352,7 +354,11 @@ namespace Game
             lock (theWorld)
             {
                 //remove objects from the world on disconnect
-                foreach (Ship s in Ships)
+                foreach (Ship s in ShipsAll)
+                {
+                    theWorld.RemoveShipAll(s.ID);
+                }
+                foreach (Ship s in ShipsActive)
                 {
                     theWorld.RemoveShipActive(s.ID);
                 }

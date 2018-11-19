@@ -46,7 +46,7 @@ namespace View
         {
             lock (theWorld)
             {
-                ships = theWorld.GetShips().ToList<Ship>();
+                ships = theWorld.GetShipsAll().ToList<Ship>();
                 sortShipList(ships);
                 float count = 30;
                 foreach (Ship s in ships)
