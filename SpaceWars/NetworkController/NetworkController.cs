@@ -18,7 +18,6 @@ namespace NetworkController
         public class SocketState
         {
             public Socket theSocket;
-            public int ID;
 
             public delegate void ErrorHandler(string message);
 
@@ -41,13 +40,24 @@ namespace NetworkController
             /// <param name="s"></param>
             /// <param name="id"></param>
             /// <param name="callMeCallBack"></param>
-            public SocketState(Socket s, int id, callMe callMeCallBack)
+            public SocketState(Socket s, callMe callMeCallBack)
             {
                 theSocket = s;
-                ID = id;
                 _call = callMeCallBack;
             }
         }
+        public class ListenerState
+        {
+            public TcpListener listener;
+            public delegate void callMe(SocketState ss);
+            public SocketState.callMe _call;
+            public ListenerState(SocketState.callMe callMeCallBack, TcpListener _listener)
+            {
+                listener = _listener;
+                _call = callMeCallBack;
+            }
+        }
+
 
         public class NetworkController
         {
@@ -114,7 +124,26 @@ namespace NetworkController
                     throw e;
                 }
             }
+            public void ServerAwaitingClientLoop(SocketState.callMe callMe)
+            {
+                IPAddress address = IPAddress.Parse("127.0.0.1");
+                int port = 11000;
 
+                TcpListener listener = new TcpListener(address, port);
+                listener.Start();
+                ListenerState ls = new ListenerState(callMe, listener);
+                listener.BeginAcceptSocket(AcceptNewClient, ls);
+
+            }
+            public void AcceptNewClient(IAsyncResult ar)
+            {
+                ListenerState ls = (ListenerState)ar.AsyncState;
+               
+                Socket socket = ls.listener.EndAcceptSocket(ar);
+                SocketState ss = new SocketState(socket, ls._call);
+                ls._call(ss);
+                ls.listener.BeginAcceptSocket(AcceptNewClient, ls);
+            }
 
             // TODO: Move all networking code to this class. Left as an exercise.
             // Networking code should be completely general-purpose, and useable by any other application.
@@ -129,7 +158,7 @@ namespace NetworkController
 
                 NetworkController.MakeSocket(hostName, out socket, out ipAddress);
 
-                SocketState ss = new SocketState(socket, -1, cb);
+                SocketState ss = new SocketState(socket, cb);
 
                 socket.BeginConnect(ipAddress, NetworkController.DEFAULT_PORT, ConnectedCallback, ss);
 
