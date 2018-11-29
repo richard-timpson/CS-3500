@@ -32,12 +32,11 @@ namespace View
         {
             InitializeComponent();
             message = new StringBuilder();
-            this.Size = new Size(500, 500);
-            this.FormClosed += Form1_FormClosed;
+            this.Size = new Size(820, 500);
             KeyPreview = true;
+            this.FormClosed += Form1_FormClosed;
             Networking.NetworkController.Error += DisplayError;
             Controller = new GameController();
-            
         }
 
         /// <summary>
@@ -68,7 +67,6 @@ namespace View
                     nameInput.Enabled = false;
                     serverInput.Enabled = false;
                     connectButton.Enabled = false;
-                    
                 });
                 this.Invoke(me);
             }
@@ -154,6 +152,7 @@ namespace View
             this.message.Append(")");
             string message = this.message.ToString();
             Controller.SendControls(message, ss);
+
             this.message.Clear();
         }
 
@@ -164,7 +163,6 @@ namespace View
         /// <param name="e"></param>
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            Console.WriteLine("Key down event");
             switch (e.KeyCode)
             {
                 case Keys.Left:
@@ -180,7 +178,6 @@ namespace View
                     keyFire = true;
                     break;
             }
-
         }
 
         /// <summary>
@@ -190,7 +187,6 @@ namespace View
         /// <param name="e"></param>
         private void Form1_KeyUp(object sneder, KeyEventArgs e)
         {
-            Console.WriteLine("Key up event");
             switch (e.KeyCode)
             {
                 case Keys.Left:
@@ -206,9 +202,6 @@ namespace View
                     keyFire = false;
                     break;
             }
-            e.Handled = true;
-            drawingPanel.Focus();
-
         }
 
         /// <summary>
@@ -227,5 +220,9 @@ namespace View
             this.Invoke(me);
         }
 
+        private void help_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(" SpaceWars!!! \n\n Controls: \n Thrust - UpArrow \n Left - LeftArrow \n Right - RightArrow \n Fire - SpaceBar \n\n Gameplay: \nThe star in the center of the game has gravity that will pull you in towards it. \nAvoid contact with the star, and kill as many opponents as you can!");
+        }
     }
 }
