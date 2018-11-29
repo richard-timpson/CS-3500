@@ -67,6 +67,7 @@ namespace View
                     nameInput.Enabled = false;
                     serverInput.Enabled = false;
                     connectButton.Enabled = false;
+                    help.Enabled = false;
                 });
                 this.Invoke(me);
             }
@@ -216,6 +217,7 @@ namespace View
                 nameInput.Enabled = true;
                 serverInput.Enabled = true;
                 connectButton.Enabled = true;
+                help.Enabled = true;
             });
             this.Invoke(me);
         }
