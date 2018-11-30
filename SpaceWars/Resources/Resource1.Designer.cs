@@ -241,6 +241,34 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;SpaceSettings&gt;
+        ///  &lt;UniverseSize&gt;850&lt;/UniverseSize&gt;
+        ///  &lt;MSPerFrame&gt;16&lt;/MSPerFrame&gt;
+        ///  &lt;FramesPerShot&gt;8&lt;/FramesPerShot&gt;
+        ///  &lt;RespawnRate&gt;300&lt;/RespawnRate&gt; 
+        ///  &lt;Star&gt;
+        ///    &lt;x&gt;0&lt;/x&gt;
+        ///    &lt;y&gt;0&lt;/y&gt;
+        ///    &lt;mass&gt;0.01&lt;/mass&gt;
+        ///  &lt;/Star&gt;
+        ///
+        ///
+        ///&lt;!-- We can add other stars too (or none) 
+        ///  &lt;Star&gt;
+        ///    &lt;x&gt;100&lt;/x&gt;
+        ///    &lt;y&gt;100&lt;/y&gt;
+        ///    &lt;mass&gt;0.005&lt;/mass&gt;
+        ///  &lt;/Star&gt;
+        /// --&gt;
+        ///&lt;/SpaceSettings&gt;.
+        /// </summary>
+        public static string settings {
+            get {
+                return ResourceManager.GetString("settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap ship_coast_blue {

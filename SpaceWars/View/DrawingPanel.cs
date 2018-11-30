@@ -372,11 +372,11 @@ namespace View
             Explosion exp = o as Explosion;
 
             //make size of explosion random
-            int randNum = 1;
+            //int randNum = 1;
             System.Random rand = new System.Random();
-            randNum = rand.Next(1, 4);
+            //randNum = rand.Next(1, 4);
 
-            explosionWidth = rand.Next(15, 45);
+            explosionWidth = rand.Next(25, 45);
 
             switch (exp.GetCount())
             {
