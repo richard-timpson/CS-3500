@@ -80,5 +80,18 @@ time to implement it.
 Other than that, everything works perfectly.
 
 
+**********************************
+
+12/1
+
+We have started the project and have most of the networking code finished. 
+The server is at the point where we can connect multiple clients and get their name
+We are working on creating a world and sending it back to the clients. 
+As of now our plan is get the world created and sending back to clients with the correct json
+strings by the end of the day. We are going to use a random number generator to create the 
+random number positions of the ships when the client connects. 
+Once we get the random positions we will have everything we need to start listening for moves,
+and then we can start working on the physics. 
+
 
 
