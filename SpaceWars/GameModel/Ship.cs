@@ -69,6 +69,40 @@ namespace GameModel
         [JsonProperty]
         public int score { get; private set; }
 
+        public void SetID(int id)
+        {
+            this.ID = id;
+        }
+
+        public void SetLoc(Vector2D loc)
+        {
+            this.loc = loc;
+        }
+
+        public void SetDir(Vector2D dir)
+        {
+            this.dir = dir;
+        }
+
+        public void SetThrust(bool thrust)
+        {
+            this.thrust = thrust;
+        }
+
+        public void SetName(string name)
+        {
+            this.name = name;
+        }
+
+        public void SetHp(int hp)
+        {
+            this.hp = hp;
+        }
+
+        public void SetScore(int score)
+        {
+            this.score = score;
+        }
     }
 
 }

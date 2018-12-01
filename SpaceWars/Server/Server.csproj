@@ -49,9 +49,21 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GameModel\GameModel.csproj">
+      <Project>{38a64a70-6804-45f4-be84-d3bea810118c}</Project>
+      <Name>GameModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NetworkController\NetworkController.csproj">
+      <Project>{caf69d0f-d442-49b5-a1dd-26cd9dcce59d}</Project>
+      <Name>NetworkController</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Resources\Resources.csproj">
       <Project>{4dab9e4c-2aeb-4a3d-94ae-1acd9e36c687}</Project>
       <Name>Resources</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Vector2D\Vector2D.csproj">
+      <Project>{ba6af58f-6723-48af-ad47-5d12a51a3881}</Project>
+      <Name>Vector2D</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -124,7 +124,7 @@ namespace NetworkController
                     throw e;
                 }
             }
-            public void ServerAwaitingClientLoop(SocketState.callMe callMe)
+            public static void ServerAwaitingClientLoop(SocketState.callMe callMe)
             {
                 IPAddress address = IPAddress.Parse("127.0.0.1");
                 int port = 11000;
@@ -135,7 +135,7 @@ namespace NetworkController
                 listener.BeginAcceptSocket(AcceptNewClient, ls);
 
             }
-            public void AcceptNewClient(IAsyncResult ar)
+            public static void AcceptNewClient(IAsyncResult ar)
             {
                 ListenerState ls = (ListenerState)ar.AsyncState;
                

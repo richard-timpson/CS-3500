@@ -57,6 +57,7 @@
     <Content Include="Graphics\ship-thrust-red.png" />
     <Content Include="Graphics\ship-thrust-violet.png" />
     <Content Include="Graphics\ship-thrust-white.png" />
+    <Content Include="settings.xml" />
     <None Include="Resources\settings.xml" />
     <None Include="Resources\ExplosionSmokeForming8.png" />
     <None Include="Resources\ExplosionSmokeForming6.png" />

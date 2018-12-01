@@ -38,5 +38,20 @@ namespace GameModel
         /// </summary>
         [JsonProperty]
         public double mass { get; private set; }
+
+        public void SetID(int id)
+        {
+            this.ID = id;
+        }
+
+        public void SetLoc(Vector2D loc)
+        {
+            this.loc = loc;
+        }
+
+        public void SetMass (double mass)
+        {
+            this.mass = mass;
+        }
     }
 }
