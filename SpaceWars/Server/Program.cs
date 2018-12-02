@@ -71,6 +71,7 @@ namespace Server
             string startupInfo = ss.ID + "\n" + gameSettings["UniverseSize"] + "\n";
             InsertShip(ss.ID, name[0]);
             Networking.NetworkController.Send(startupInfo, ss);
+            Networking.NetworkController.GetData(ss);
         }
         private static void ReceiveCommand(Networking.SocketState ss)
         {
