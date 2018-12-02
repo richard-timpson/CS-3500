@@ -13,16 +13,18 @@ namespace Server
 {
     class Program
     {
-        private static Dictionary<int, string> ClientConnections { get; set; }
+        private static List<Client> ClientConnections { get; set; }
         private static int IdCounter { get; set; }
 
         private static Dictionary<string, object> gameSettings { get; set; }
 
         private static World TheWorld { get; set; }
 
+
+
         static void Main(string[] args)
         {
-            ClientConnections = new Dictionary<int, string>();
+            ClientConnections = new List<Client>();
             IdCounter = 0;
             gameSettings = XmlSettingsReader();
             TheWorld = new World();
@@ -49,13 +51,15 @@ namespace Server
             
             ss._call = ReceiveCommand;
             string totalData = ss.sb.ToString();
-            string[] parts = totalData.Split('\n');
-            ClientConnections.Add(IdCounter, parts[0]);
-            foreach (KeyValuePair<int, string> connection in ClientConnections)
+            string[] name = totalData.Split('\n');
+            Client client = new Client(IdCounter, name[0]);
+            ClientConnections.Add(client);
+            foreach (Client c in ClientConnections)
             {
-                Console.WriteLine(connection);
+                Console.WriteLine(c);
             }
             string startupInfo = IdCounter + "\n" + gameSettings["UniverseSize"] + "\n";
+            InsertShip(IdCounter, name[0]);
             IdCounter++;
             Networking.NetworkController.Send(startupInfo, ss);
         }
@@ -104,6 +108,11 @@ namespace Server
                                 {
                                     reader.Read();
                                     gameSettings.Add("RespawnRate", reader.Value);
+                                }
+                                if (reader.Name == "StartingHP")
+                                {
+                                    reader.Read();
+                                    gameSettings.Add("StartingHP", reader.Value);
                                 }
                                 if (reader.Name == "Star")
                                 {
@@ -180,20 +189,98 @@ namespace Server
                 Vector2D loc = new Vector2D(Convert.ToDouble(s[0]), Convert.ToDouble(s[1]));
                 star.SetLoc(loc);
                 star.SetMass(Convert.ToDouble(s[2]));
+                TheWorld.AddStar(star);
                 StarIdCounter++;
             }
         }
 
-        private static void InsertShip()
+        private static void InsertShip(int id, string name)
         {
             Ship s = new Ship();
-            int id = IdCounter;
+
+            Random rand = new Random();
+            int LocX;
+            int LocY;
+            bool safeSpawn = false;
+            Vector2D position = new Vector2D(0.0, 0.0);
+
+            //loop through potential random spawn locations to find location that is 
+            //not near a star or a ship.
+            while (!safeSpawn)
+            {
+                int worldSize = Convert.ToInt32(gameSettings["UniverseSize"]) - 1;
+                LocX = rand.Next(-(worldSize/2), worldSize/2);
+                LocY = rand.Next(-(worldSize / 2), worldSize / 2);
+                position = new Vector2D(LocX, LocY);
+
+                bool starSpawn = true;
+                bool shipSpawn = true;
+
+                foreach (Star star in TheWorld.GetStars())
+                {
+                    if ((star.loc - position).Length() <= 50)
+                    {
+                        starSpawn = false;
+                    }
+
+                }
+
+                foreach (Ship ship in TheWorld.GetShipsAll())
+                {
+                    if ((ship.loc - position).Length() <= 50)
+                    {
+                        shipSpawn = false;
+                    }
+
+                }
+
+                if (starSpawn == true && shipSpawn == true)
+                {
+                    safeSpawn = true;
+                }
+            }
+
+            s.SetLoc(position);
+            s.SetHp(Convert.ToInt32(gameSettings["StartingHP"]));
             s.SetID(id);
+            s.SetName(name);
+            s.SetScore(0);
+            s.SetThrust(false);
 
-            
-
-            IdCounter++;
-            
+            Vector2D Dir = new Vector2D(0, 1);
+            s.SetDir(Dir);
+            TheWorld.AddShipAll(s);
+            foreach(Ship ship in TheWorld.GetShipsAll())
+            {
+                Console.WriteLine(ship.name);
+                Console.WriteLine(ship.loc);
+                
+            }
         }
+    }
+
+    public class Client
+    {
+        public int id;
+        public string name;
+        public string command { get; set; }
+
+        public bool fire { get; set; }
+        public bool thrust { get; set; }
+        public bool left { get; set; }
+        public bool right { get; set; }
+
+        public Client(int ID, string Name)
+        {
+            id = ID;
+            name = Name;
+            command = "";
+            fire = false;
+            thrust = false;
+            left = false;
+            right = false;
+        }
+
+
     }
 }

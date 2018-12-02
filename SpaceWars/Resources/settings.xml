@@ -2,7 +2,8 @@
   <UniverseSize>750</UniverseSize>
   <MSPerFrame>16</MSPerFrame>
   <FramesPerShot>6</FramesPerShot>
-  <RespawnRate>300</RespawnRate> 
+  <RespawnRate>300</RespawnRate>
+  <StartingHP>5</StartingHP>
   <Star>
     <x>0</x>
     <y>0</y>

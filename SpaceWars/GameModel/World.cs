@@ -15,11 +15,6 @@ namespace GameModel
         private List<Star> StarsActive;
         private List<Explosion> Explosions;
 
-        private List<Ship> ShipsServer;
-        private HashSet<Projectile> ProjectilesServer;
-        private List<Star> StarsServer;
-
-
         /// <summary>
         /// Constructor for the World.
         /// </summary>
@@ -30,9 +25,6 @@ namespace GameModel
             ProjectilesActive = new HashSet<Projectile>();
             StarsActive = new List<Star>();
             Explosions = new List<Explosion>();
-            ShipsServer = new List<Ship>();
-            ProjectilesServer = new HashSet<Projectile>();
-            StarsServer = new List<Star>();
         }
 
         
@@ -175,91 +167,6 @@ namespace GameModel
         {
             foreach (Star s in StarsActive)
                 yield return s;
-        }
-
-
-        /// <summary>
-        /// Adds ship to the server's list of ships in the game.
-        /// </summary>
-        /// <param name="s"></param>
-        public void AddShipServer(Ship s)
-        {
-            this.ShipsServer.Add(s);
-        }
-
-        /// <summary>
-        /// Removes ship from the server's list of ships in the game.
-        /// </summary>
-        /// <param name="ID"></param>
-        public void RemoveShipServer(int ID)
-        {
-            this.ShipsServer.RemoveAll((item) => item.ID == ID);
-        }
-
-        /// <summary>
-        /// returns an enumerable of ships on the server.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Ship> GetShipsServer()
-        {
-            foreach (Ship s in ShipsServer)
-                yield return s;
-        }
-        
-        /// <summary>
-        /// Adds star to server's list of active stars in the game.
-        /// </summary>
-        /// <param name="s"></param>
-        public void AddStarServer(Star s)
-        {
-            this.StarsServer.Add(s);
-        }
-
-        /// <summary>
-        /// Removes star from server's list of active stars in game.
-        /// </summary>
-        /// <param name="ID"></param>
-        public void RemoveStarsServer(int ID)
-        {
-            this.StarsServer.RemoveAll((item) => item.ID == ID);
-        }
-
-        /// <summary>
-        /// returns an enumerable of stars active on server.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Star> GetStarsServer()
-        {
-            foreach (Star s in StarsServer)
-                yield return s;
-        }
-
-        /// <summary>
-        /// Adds projectile to server's list of active projectiles.
-        /// </summary>
-        /// <param name="p"></param>
-        public void AddProjectileServer(Projectile p)
-        {
-            this.ProjectilesServer.Add(p);
-        }
-
-        /// <summary>
-        /// Removes projectile from server's list of active projectiles.
-        /// </summary>
-        /// <param name="ID"></param>
-        public void RemoveProjectileServer(int ID)
-        {
-            this.ProjectilesServer.RemoveWhere((item) => item.ID == ID);
-        }
-
-        /// <summary>
-        /// returns an enumerable of projectiles on the server.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Projectile> GetProjectilesServer()
-        {
-            foreach (Projectile p in ProjectilesServer)
-                yield return p;
         }
     }
 }
