@@ -8,13 +8,15 @@ using System.Xml;
 using NetworkController;
 using GameModel;
 using Vector;
+using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace Server
 {
     class Program
     {
         private static List<Client> ClientConnections { get; set; }
-        private static int IdCounter { get; set; }
+        //private static int IdCounter { get; set; }
 
         private static Dictionary<string, object> gameSettings { get; set; }
 
@@ -25,12 +27,20 @@ namespace Server
         static void Main(string[] args)
         {
             ClientConnections = new List<Client>();
-            IdCounter = 0;
             gameSettings = XmlSettingsReader();
             TheWorld = new World();
             InsertStars();
-            Networking.NetworkController.ServerAwaitingClientLoop(HandleNewClient);
-            Console.Read();
+            Networking.NetworkController.ServerAwaitingClientLoop(HandleNewClient, 0);
+            Stopwatch watch = new Stopwatch();
+            while (true)
+            {
+                watch.Start();
+                while (watch.ElapsedMilliseconds < 1000) { }
+                Update(TheWorld);
+                watch.Reset();
+            }
+            
+
         }
 
 
@@ -52,23 +62,53 @@ namespace Server
             ss._call = ReceiveCommand;
             string totalData = ss.sb.ToString();
             string[] name = totalData.Split('\n');
-            Client client = new Client(IdCounter, name[0]);
+            Client client = new Client(ss.ID, name[0], ss);
             ClientConnections.Add(client);
             foreach (Client c in ClientConnections)
             {
                 Console.WriteLine(c);
             }
-            string startupInfo = IdCounter + "\n" + gameSettings["UniverseSize"] + "\n";
-            InsertShip(IdCounter, name[0]);
-            IdCounter++;
+            string startupInfo = ss.ID + "\n" + gameSettings["UniverseSize"] + "\n";
+            InsertShip(ss.ID, name[0]);
             Networking.NetworkController.Send(startupInfo, ss);
         }
-        private static void ReceiveCommand(Networking.SocketState ss )
+        private static void ReceiveCommand(Networking.SocketState ss)
         {
             Console.WriteLine("Receiving commands");
             string totalData = ss.sb.ToString();
-            string[] parts = totalData.Split();
-            Console.WriteLine(parts);
+            Console.WriteLine(totalData);
+            string[] commands = totalData.Split();
+
+            foreach(Client client in ClientConnections)
+            {
+                if (client.ID == ss.ID)
+                {
+                    foreach(string s in commands)
+                    {
+                        if (s != "(" || s != ")")
+                        {
+                            switch (s)
+                            {
+                                case "L":
+                                    if (!client.right) client.left = true;
+                                    break;
+                                case "R":
+                                    if (!client.left) client.right = true;
+                                    break;
+                                case "T":
+                                    client.thrust = true;
+                                    break;
+                                case "F":
+                                    client.fire = true;
+                                    break;
+                            }
+                        }
+                     
+                    }
+
+                }
+            }
+            Networking.NetworkController.GetData(ss);
         }
         private static  Dictionary<string, object> XmlSettingsReader()
         {
@@ -257,11 +297,56 @@ namespace Server
                 
             }
         }
+
+        private static void Update(World TheWorld)
+        {
+            UpdateWorld(TheWorld);
+            SendWorld();
+        }
+
+        private static void UpdateWorld(World TheWorld)
+        {
+            lock (TheWorld)
+            {
+
+            }
+        }
+
+        private static void SendWorld()
+        {
+            string jsonString = "";
+            lock (TheWorld)
+            {
+                foreach (Ship ship in TheWorld.GetShipsAll())
+                {
+                    jsonString += JsonConvert.SerializeObject(ship) + "\n";
+                    Console.WriteLine(jsonString);
+                }
+                foreach (Star star in TheWorld.GetStars())
+                {
+                    jsonString += JsonConvert.SerializeObject(star) + "\n";
+                    Console.WriteLine(jsonString);
+                }
+                foreach (Projectile projectile in TheWorld.GetProjectiles())
+                {
+                    jsonString += JsonConvert.SerializeObject(projectile) + "\n";
+                    Console.WriteLine(jsonString);
+                }
+            }
+            lock (TheWorld)
+            {
+                foreach(Client client in ClientConnections)
+                {
+                    Networking.NetworkController.Send(jsonString, client.ss);
+                }
+            }
+        }
+
     }
 
     public class Client
     {
-        public int id;
+        public int ID { get; set;  }
         public string name;
         public string command { get; set; }
 
@@ -270,15 +355,18 @@ namespace Server
         public bool left { get; set; }
         public bool right { get; set; }
 
-        public Client(int ID, string Name)
+        public Networking.SocketState ss { get; set; }
+
+        public Client(int _ID, string Name, Networking.SocketState _ss)
         {
-            id = ID;
+            ID = _ID;
             name = Name;
             command = "";
             fire = false;
             thrust = false;
             left = false;
             right = false;
+            ss = _ss;
         }
 
 

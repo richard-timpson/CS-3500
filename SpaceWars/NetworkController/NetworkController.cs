@@ -23,6 +23,7 @@ namespace NetworkController
 
             public delegate void callMe(SocketState ss);
 
+            public int ID { get; private set; }
 
             public callMe _call;
             public ErrorHandler handleError;
@@ -40,10 +41,11 @@ namespace NetworkController
             /// <param name="s"></param>
             /// <param name="id"></param>
             /// <param name="callMeCallBack"></param>
-            public SocketState(Socket s, callMe callMeCallBack)
+            public SocketState(Socket s, callMe callMeCallBack, int _id)
             {
                 theSocket = s;
                 _call = callMeCallBack;
+                ID = _id;
             }
         }
         public class ListenerState
@@ -51,10 +53,12 @@ namespace NetworkController
             public TcpListener listener;
             public delegate void callMe(SocketState ss);
             public SocketState.callMe _call;
-            public ListenerState(SocketState.callMe callMeCallBack, TcpListener _listener)
+            public int ID { get;  set; }
+            public ListenerState(SocketState.callMe callMeCallBack, TcpListener _listener, int _id)
             {
                 listener = _listener;
                 _call = callMeCallBack;
+                ID = _id;
             }
         }
 
@@ -124,14 +128,14 @@ namespace NetworkController
                     throw e;
                 }
             }
-            public static void ServerAwaitingClientLoop(SocketState.callMe callMe)
+            public static void ServerAwaitingClientLoop(SocketState.callMe callMe, int ID)
             {
                 IPAddress address = IPAddress.Parse("127.0.0.1");
                 int port = 11000;
 
                 TcpListener listener = new TcpListener(address, port);
                 listener.Start();
-                ListenerState ls = new ListenerState(callMe, listener);
+                ListenerState ls = new ListenerState(callMe, listener, ID);
                 listener.BeginAcceptSocket(AcceptNewClient, ls);
 
             }
@@ -140,8 +144,9 @@ namespace NetworkController
                 ListenerState ls = (ListenerState)ar.AsyncState;
                
                 Socket socket = ls.listener.EndAcceptSocket(ar);
-                SocketState ss = new SocketState(socket, ls._call);
+                SocketState ss = new SocketState(socket, ls._call, ls.ID);
                 ls._call(ss);
+                ls.ID++;
                 ls.listener.BeginAcceptSocket(AcceptNewClient, ls);
             }
 
@@ -158,7 +163,7 @@ namespace NetworkController
 
                 NetworkController.MakeSocket(hostName, out socket, out ipAddress);
 
-                SocketState ss = new SocketState(socket, cb);
+                SocketState ss = new SocketState(socket, cb, -1);
 
                 socket.BeginConnect(ipAddress, NetworkController.DEFAULT_PORT, ConnectedCallback, ss);
 
