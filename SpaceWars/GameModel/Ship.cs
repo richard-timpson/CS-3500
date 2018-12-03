@@ -74,6 +74,8 @@ namespace GameModel
 
         public int deathCounter { get; set; }
 
+        public int fireRateCounter { get; set; }
+
         public void SetID(int _id)
         {
             this.ID = _id;

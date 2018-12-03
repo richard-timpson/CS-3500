@@ -316,13 +316,14 @@ namespace Server
                             s.SetThrust(true);
                             c.thrust = false;
                         }
-                        if (c.fire == true)
+                        if (c.fire == true && s.fireRateCounter == Convert.ToInt32(gameSettings["FramesPerShot"]))
                         {
                             Vector2D temp = new Vector2D(s.loc);
                             Vector2D projVel = new Vector2D(s.dir * 15);
                             Vector2D startPos = new Vector2D(s.loc + (s.dir * 20));
                             InsertProjectile(c.ID, startPos, s.dir, projVel);
                             c.fire = false;
+                            s.fireRateCounter = 0;
                         }
                     }
                 }
@@ -404,6 +405,10 @@ namespace Server
                 if (ship.deathCounter == Convert.ToInt32(gameSettings["RespawnTime"]))
                 {
                     SpawnShip(ship);
+                }
+                if (ship.fireRateCounter < Convert.ToInt32(gameSettings["FramesPerShot"]))
+                {
+                    ship.fireRateCounter++;
                 }
                 Vector2D totalAccel = new Vector2D(0, 0);
                 foreach (Star star in TheWorld.GetStars())
@@ -512,6 +517,7 @@ namespace Server
             s.deathCounter = 0;
             Vector2D Dir = new Vector2D(0, 1);
             s.SetDir(Dir);
+            s.fireRateCounter = Convert.ToInt32(gameSettings["FramesPerShot"]);
         }
 
         private static void SendWorld()
