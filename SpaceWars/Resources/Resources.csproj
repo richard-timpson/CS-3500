@@ -57,7 +57,9 @@
     <Content Include="Graphics\ship-thrust-red.png" />
     <Content Include="Graphics\ship-thrust-violet.png" />
     <Content Include="Graphics\ship-thrust-white.png" />
-    <Content Include="settings.xml" />
+    <Content Include="settings.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Resources\settings.xml" />
     <None Include="Resources\ExplosionSmokeForming8.png" />
     <None Include="Resources\ExplosionSmokeForming6.png" />
@@ -115,8 +117,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.CodeDom, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">

@@ -4,6 +4,8 @@
   <FramesPerShot>6</FramesPerShot>
   <RespawnRate>300</RespawnRate>
   <StartingHP>5</StartingHP>
+  <EnginePower>0.2</EnginePower>
+  <RespawnTime>120</RespawnTime>
   <Star>
     <x>0</x>
     <y>0</y>

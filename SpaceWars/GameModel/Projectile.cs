@@ -23,6 +23,16 @@ namespace GameModel
             int owner = this.owner;
         }
 
+        public Projectile(int _id, Vector2D _loc, Vector2D _dir, Vector2D _vel, bool _alive, int _owner)
+        {
+            this.ID = _id;
+            this.loc = _loc;
+            this.dir = _dir;
+            this.alive = _alive;
+            this.owner = _owner;
+            this.vel = _vel;
+        }
+
         /// <summary>
         /// Unique projectile ID assigned by server.
         /// </summary>
@@ -41,6 +51,9 @@ namespace GameModel
         [JsonProperty]
         public Vector.Vector2D dir { get; private set; }
 
+        [JsonProperty]
+        public Vector.Vector2D vel { get; private set; }
+
         /// <summary>
         /// Boolean value for whether projectile is active.
         /// </summary>
@@ -53,6 +66,15 @@ namespace GameModel
         [JsonProperty]
         public int owner { get; private set; }
 
+        public void SetLoc(Vector2D _loc)
+        {
+            this.loc = _loc;
+        }
+        
+        public void SetAlive(bool _alive)
+        {
+            this.alive = _alive;
+        }
     }
 
 }

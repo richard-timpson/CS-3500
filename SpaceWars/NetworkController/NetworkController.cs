@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace NetworkController
 {
+
     public class Networking
     {
+        
         /// <summary>
         /// This class holds all the necessary state to represent a socket connection
         /// Note that all of its fields are public because we are using it like a "struct"
@@ -68,6 +70,7 @@ namespace NetworkController
             public delegate void ErrorHandler(string message);
             public static event ErrorHandler Error;
             public const int DEFAULT_PORT = 11000;
+            private static int clientCounter = 0;
 
 
             /// <summary>
@@ -229,7 +232,6 @@ namespace NetworkController
                     ss.theSocket.Close();
                     Error(e.Message);
                 }
-
 
             }
             /// <summary>

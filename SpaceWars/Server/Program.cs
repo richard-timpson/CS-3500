@@ -22,7 +22,7 @@ namespace Server
 
         private static World TheWorld { get; set; }
 
-
+        public static int projectileCounter { get; private set; }
 
         static void Main(string[] args)
         {
@@ -30,13 +30,14 @@ namespace Server
             gameSettings = XmlSettingsReader();
             TheWorld = new World();
             InsertStars();
+            projectileCounter = 0;
             Networking.NetworkController.ServerAwaitingClientLoop(HandleNewClient, 0);
             Stopwatch watch = new Stopwatch();
             while (true)
             {
                 watch.Start();
-                while (watch.ElapsedMilliseconds < 1000) { }
-                Update(TheWorld);
+                while (watch.ElapsedMilliseconds < 16) { }
+                Update();
                 watch.Reset();
             }
             
@@ -64,42 +65,36 @@ namespace Server
             string[] name = totalData.Split('\n');
             Client client = new Client(ss.ID, name[0], ss);
             ClientConnections.Add(client);
-            foreach (Client c in ClientConnections)
-            {
-                Console.WriteLine(c);
-            }
             string startupInfo = ss.ID + "\n" + gameSettings["UniverseSize"] + "\n";
-            InsertShip(ss.ID, name[0]);
+            InsertShip(ss.ID, name[0], 0);
             Networking.NetworkController.Send(startupInfo, ss);
             Networking.NetworkController.GetData(ss);
         }
         private static void ReceiveCommand(Networking.SocketState ss)
         {
-            Console.WriteLine("Receiving commands");
             string totalData = ss.sb.ToString();
-            Console.WriteLine(totalData);
-            string[] commands = totalData.Split();
+            char[] commands = totalData.ToCharArray();
 
             foreach(Client client in ClientConnections)
             {
                 if (client.ID == ss.ID)
                 {
-                    foreach(string s in commands)
+                    foreach(char s in commands)
                     {
-                        if (s != "(" || s != ")")
+                        if (s != '(' || s != ')')
                         {
                             switch (s)
                             {
-                                case "L":
+                                case 'L':
                                     if (!client.right) client.left = true;
                                     break;
-                                case "R":
+                                case 'R':
                                     if (!client.left) client.right = true;
                                     break;
-                                case "T":
+                                case 'T':
                                     client.thrust = true;
                                     break;
-                                case "F":
+                                case 'F':
                                     client.fire = true;
                                     break;
                             }
@@ -109,6 +104,7 @@ namespace Server
 
                 }
             }
+            ss.sb.Clear();
             Networking.NetworkController.GetData(ss);
         }
         private static  Dictionary<string, object> XmlSettingsReader()
@@ -135,6 +131,11 @@ namespace Server
                                     reader.Read();
                                     gameSettings.Add("UniverseSize", reader.Value);
                                 }
+                                if (reader.Name == "EnginePower")
+                                {
+                                    reader.Read();
+                                    gameSettings.Add("EnginePower", reader.Value);
+                                }
                                 if (reader.Name == "MSPerFrame") 
                                 {
                                     reader.Read();
@@ -154,6 +155,11 @@ namespace Server
                                 {
                                     reader.Read();
                                     gameSettings.Add("StartingHP", reader.Value);
+                                }
+                                if (reader.Name == "RespawnTime")
+                                {
+                                    reader.Read();
+                                    gameSettings.Add("RespawnTime", reader.Value);
                                 }
                                 if (reader.Name == "Star")
                                 {
@@ -223,22 +229,238 @@ namespace Server
             List<string[]> temp = new List<string[]>();
             temp = (List<string[]>)(gameSettings["stars"]);
             int StarIdCounter = 0;
-            foreach (string[] s in temp)
+            lock(TheWorld)
             {
-                Star star = new Star();
-                star.SetID(StarIdCounter);
-                Vector2D loc = new Vector2D(Convert.ToDouble(s[0]), Convert.ToDouble(s[1]));
-                star.SetLoc(loc);
-                star.SetMass(Convert.ToDouble(s[2]));
-                TheWorld.AddStar(star);
-                StarIdCounter++;
+                foreach (string[] s in temp)
+                {
+                    Star star = new Star();
+                    star.SetID(StarIdCounter);
+                    Vector2D loc = new Vector2D(Convert.ToDouble(s[0]), Convert.ToDouble(s[1]));
+                    star.SetLoc(loc);
+                    star.SetMass(Convert.ToDouble(s[2]));
+                    TheWorld.AddStar(star);
+                    StarIdCounter++;
+                }
             }
         }
 
-        private static void InsertShip(int id, string name)
+        private static void InsertShip(int id, string name, int score)
         {
             Ship s = new Ship();
 
+           
+            s.SetID(id);
+            s.SetName(name);
+            s.SetScore(score);
+           
+            lock(TheWorld)
+            {
+                SpawnShip(s);
+                TheWorld.AddShipAll(s);
+            }
+        }
+
+        private static void InsertProjectile(int id, Vector2D loc, Vector2D dir, Vector2D vel)
+        {
+
+            Projectile p = new Projectile(projectileCounter, loc, dir, vel, true, id);
+
+            TheWorld.AddProjectile(p);
+            projectileCounter++;
+        }
+
+        private static void Update()
+        {
+            UpdateWorld();
+            SendWorld();
+        }
+
+        private static void UpdateWorld()
+        {
+            lock (TheWorld)
+            {
+                ProcessCommands();
+                ProcessProjectiles();
+                ProcessShips();
+            }
+        }
+
+        private static void ProcessCommands()
+        {
+            foreach (Client c in ClientConnections)
+            {
+                foreach (Ship s in TheWorld.GetShipsAll())
+                {
+                    if (s.ID == c.ID)
+                    {
+                        if (c.left == true)
+                        {
+                            Vector2D temp = new Vector2D(s.dir);
+                            temp.Rotate(-15);
+                            s.SetDir(temp);
+                            c.left = false;
+                        }
+                        if (c.right == true)
+                        {
+                            Vector2D temp = new Vector2D(s.dir);
+                            temp.Rotate(15);
+                            s.SetDir(temp);
+                            c.right = false;
+                        }
+                        if (c.thrust == false)
+                        {
+                            s.SetThrust(false);
+                        }
+                        if (c.thrust == true)
+                        {
+                            s.SetThrust(true);
+                            c.thrust = false;
+                        }
+                        if (c.fire == true)
+                        {
+                            Vector2D temp = new Vector2D(s.loc);
+                            Vector2D projVel = new Vector2D(s.dir * 15);
+                            Vector2D startPos = new Vector2D(s.loc + (s.dir * 20));
+                            InsertProjectile(c.ID, startPos, s.dir, projVel);
+                            c.fire = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void ProcessProjectiles()
+        {
+            int worldSize = Convert.ToInt32(gameSettings["UniverseSize"]) - 1;
+            List<Projectile> projToDelete = new List<Projectile>();
+
+            foreach (Projectile p in TheWorld.GetProjectiles())
+            {
+                if (p.alive == false)
+                {
+                    projToDelete.Add(p);
+                }
+                else
+                {
+                    Vector2D newLoc = new Vector2D(p.loc + p.vel);
+                    p.SetLoc(newLoc);
+                    if (p.loc.GetX() >= worldSize / 2 || p.loc.GetY() >= worldSize / 2 || p.loc.GetX() <= -worldSize / 2 || p.loc.GetY() <= -worldSize / 2)
+                    {
+                        p.SetAlive(false);
+                    }
+                    foreach (Ship ship in TheWorld.GetShipsAll())
+                    {
+                        List<int> ScoreAdder = new List<int>();
+                        if ((ship.loc - p.loc).Length() <= 20)
+                        {
+                            if (ship.hp > 0)
+                            {
+                                int newHP = ship.hp - 1;
+                                ship.SetHp(newHP);
+                                if (newHP == 0)
+                                {
+                                    foreach (Ship owner in TheWorld.GetShipsAll())
+                                    {
+                                        if (p.owner == owner.ID)
+                                        {
+                                            owner.SetScore(owner.score + 1);
+                                        }
+                                    }
+                                }
+                            }
+                            if (ship.hp == 0)
+                            {
+                                ship.deathCounter++;
+                            }
+                            p.SetAlive(false);
+                        }
+                    }
+                    foreach (Star star in TheWorld.GetStars())
+                    {
+                        if ((star.loc - p.loc).Length() <= 35)
+                        {
+                            p.SetAlive(false);
+                        }
+                    }
+                }
+            }
+
+            foreach (Projectile p in projToDelete)
+            {
+                TheWorld.RemoveProjectile(p.ID);
+            }
+            projToDelete.Clear();
+        }
+
+        private static void ProcessShips()
+        {
+            int worldSize = Convert.ToInt32(gameSettings["UniverseSize"]) - 1;
+            foreach (Ship ship in TheWorld.GetShipsAll())
+            {
+                if (ship.deathCounter > 0 && ship.deathCounter < Convert.ToInt32(gameSettings["RespawnTime"]))
+                {
+                    ship.deathCounter++;
+                }
+                if (ship.deathCounter == Convert.ToInt32(gameSettings["RespawnTime"]))
+                {
+                    SpawnShip(ship);
+                }
+                Vector2D totalAccel = new Vector2D(0, 0);
+                foreach (Star star in TheWorld.GetStars())
+                {
+                    Vector2D grav = star.loc - ship.loc;
+                    grav.Normalize();
+                    grav = grav * star.mass;
+                    totalAccel += grav;
+                }
+
+                double enginePower = Convert.ToDouble(gameSettings["EnginePower"]);
+                if (ship.thrust == true)
+                {
+                    Vector2D thrust = new Vector2D(ship.dir);
+                    thrust = thrust * enginePower;
+                    totalAccel += thrust;
+                }
+                Vector2D newVel = new Vector2D(ship.vel + totalAccel);
+                ship.SetVelocity(newVel);
+                Vector2D newLoc = new Vector2D(ship.loc + ship.vel);
+                ship.SetLoc(newLoc);
+
+                if (newLoc.GetX() >= worldSize / 2)
+                {
+                    Vector2D temp = new Vector2D(-worldSize / 2, newLoc.GetY());
+                    ship.SetLoc(temp);
+                }
+                if (newLoc.GetX() <= -worldSize / 2)
+                {
+                    Vector2D temp = new Vector2D(worldSize / 2, newLoc.GetY());
+                    ship.SetLoc(temp);
+                }
+                if (newLoc.GetY() >= worldSize / 2)
+                {
+                    Vector2D temp = new Vector2D(newLoc.GetX(), -worldSize / 2);
+                    ship.SetLoc(temp);
+                }
+                if (newLoc.GetY() <= -worldSize / 2)
+                {
+                    Vector2D temp = new Vector2D(newLoc.GetX(), worldSize / 2);
+                    ship.SetLoc(temp);
+                }
+
+                foreach (Star star in TheWorld.GetStars())
+                {
+                    if ((ship.loc - star.loc).Length() <= 35)
+                    {
+                        ship.SetHp(0);
+                        ship.deathCounter++;
+                    }
+                }
+
+            }
+        }
+
+        private static void SpawnShip(Ship s)
+        {
             Random rand = new Random();
             int LocX;
             int LocY;
@@ -250,12 +472,13 @@ namespace Server
             while (!safeSpawn)
             {
                 int worldSize = Convert.ToInt32(gameSettings["UniverseSize"]) - 1;
-                LocX = rand.Next(-(worldSize/2), worldSize/2);
+                LocX = rand.Next(-(worldSize / 2), worldSize / 2);
                 LocY = rand.Next(-(worldSize / 2), worldSize / 2);
                 position = new Vector2D(LocX, LocY);
 
                 bool starSpawn = true;
                 bool shipSpawn = true;
+
 
                 foreach (Star star in TheWorld.GetStars())
                 {
@@ -283,34 +506,12 @@ namespace Server
 
             s.SetLoc(position);
             s.SetHp(Convert.ToInt32(gameSettings["StartingHP"]));
-            s.SetID(id);
-            s.SetName(name);
-            s.SetScore(0);
             s.SetThrust(false);
-
+            Vector2D vel = new Vector2D(0, 0);
+            s.SetVelocity(vel);
+            s.deathCounter = 0;
             Vector2D Dir = new Vector2D(0, 1);
             s.SetDir(Dir);
-            TheWorld.AddShipAll(s);
-            foreach(Ship ship in TheWorld.GetShipsAll())
-            {
-                Console.WriteLine(ship.name);
-                Console.WriteLine(ship.loc);
-                
-            }
-        }
-
-        private static void Update(World TheWorld)
-        {
-            UpdateWorld(TheWorld);
-            SendWorld();
-        }
-
-        private static void UpdateWorld(World TheWorld)
-        {
-            lock (TheWorld)
-            {
-
-            }
         }
 
         private static void SendWorld()
@@ -321,17 +522,14 @@ namespace Server
                 foreach (Ship ship in TheWorld.GetShipsAll())
                 {
                     jsonString += JsonConvert.SerializeObject(ship) + "\n";
-                    Console.WriteLine(jsonString);
                 }
                 foreach (Star star in TheWorld.GetStars())
                 {
                     jsonString += JsonConvert.SerializeObject(star) + "\n";
-                    Console.WriteLine(jsonString);
                 }
                 foreach (Projectile projectile in TheWorld.GetProjectiles())
                 {
                     jsonString += JsonConvert.SerializeObject(projectile) + "\n";
-                    Console.WriteLine(jsonString);
                 }
             }
             lock (TheWorld)
