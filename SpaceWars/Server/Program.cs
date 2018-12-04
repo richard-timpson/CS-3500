@@ -36,7 +36,7 @@ namespace Server
             while (true)
             {
                 watch.Start();
-                while (watch.ElapsedMilliseconds < 16) { }
+                while (watch.ElapsedMilliseconds < Convert.ToInt32(gameSettings["MSPerFrame"])) { }
                 Update();
                 watch.Reset();
             }
@@ -59,12 +59,14 @@ namespace Server
         /// <param name="ss"></param>
         private static void ReceiveName(Networking.SocketState ss)
         {
-            
             ss._call = ReceiveCommand;
             string totalData = ss.sb.ToString();
             string[] name = totalData.Split('\n');
             Client client = new Client(ss.ID, name[0], ss);
-            ClientConnections.Add(client);
+            lock (TheWorld)
+            {
+                ClientConnections.Add(client);
+            }
             string startupInfo = ss.ID + "\n" + gameSettings["UniverseSize"] + "\n";
             InsertShip(ss.ID, name[0], 0);
             Networking.NetworkController.Send(startupInfo, ss);
@@ -104,6 +106,7 @@ namespace Server
 
                 }
             }
+
             ss.sb.Clear();
             Networking.NetworkController.GetData(ss);
         }
@@ -296,14 +299,14 @@ namespace Server
                         if (c.left == true)
                         {
                             Vector2D temp = new Vector2D(s.dir);
-                            temp.Rotate(-15);
+                            temp.Rotate(-5);
                             s.SetDir(temp);
                             c.left = false;
                         }
                         if (c.right == true)
                         {
                             Vector2D temp = new Vector2D(s.dir);
-                            temp.Rotate(15);
+                            temp.Rotate(5);
                             s.SetDir(temp);
                             c.right = false;
                         }
@@ -368,12 +371,13 @@ namespace Server
                                         }
                                     }
                                 }
+                                p.SetAlive(false);
                             }
                             if (ship.hp == 0)
                             {
                                 ship.deathCounter++;
                             }
-                            p.SetAlive(false);
+                            
                         }
                     }
                     foreach (Star star in TheWorld.GetStars())
