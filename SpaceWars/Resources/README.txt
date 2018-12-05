@@ -93,5 +93,20 @@ random number positions of the ships when the client connects.
 Once we get the random positions we will have everything we need to start listening for moves,
 and then we can start working on the physics. 
 
+*****************************
+12/5
+
+We have most of the core functionality working. We can connect with multiple clients
+and the game physics are working for the most part. As of now, this our to-do list
+
+Unit test server code
+Extra game mode
+Error Handling/ clients disconnecting. 
+Update settings file
+Document code and finalize ReadMe. 
+
+We are thinking of implementing a "brick breaker" extra game mode, but we may not have time to do it.
+For now we are going to focus on unit tests and error handling. 
+
 
 

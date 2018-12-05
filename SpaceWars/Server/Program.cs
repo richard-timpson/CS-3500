@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace Server
 {
-    class Program
+    public class ServerClass
     {
         private static List<Client> ClientConnections { get; set; }
         //private static int IdCounter { get; set; }
@@ -27,7 +27,8 @@ namespace Server
         static void Main(string[] args)
         {
             ClientConnections = new List<Client>();
-            gameSettings = XmlSettingsReader();
+            string settingsFilePath = "..\\..\\..\\Resources\\settings.xml";
+            gameSettings = XmlSettingsReader(settingsFilePath);
             TheWorld = new World();
             InsertStars();
             projectileCounter = 0;
@@ -113,18 +114,17 @@ namespace Server
             ss.sb.Clear();
             Networking.NetworkController.GetData(ss);
         }
-        private static Dictionary<string, object> XmlSettingsReader()
+        public static Dictionary<string, object> XmlSettingsReader(string filePath)
         {
-            List<string[]> stars = new List<string[]>();
+            List<double[]> stars = new List<double[]>();
             Dictionary<string, object> gameSettings = new Dictionary<string, object>();
             gameSettings.Add("stars", stars);
             bool openfile = true;
-            string path = "..\\..\\..\\Resources\\settings.xml";
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.IgnoreWhitespace = true;
             try
             {
-                using (XmlReader reader = XmlReader.Create(path, settings))
+                using (XmlReader reader = XmlReader.Create(filePath, settings))
                 {
                     while (openfile)
                     {
@@ -135,41 +135,41 @@ namespace Server
                                 if (reader.Name == "UniverseSize")
                                 {
                                     reader.Read();
-                                    gameSettings.Add("UniverseSize", reader.Value);
+                                    gameSettings.Add("UniverseSize", Convert.ToInt32(reader.Value));
                                 }
                                 if (reader.Name == "EnginePower")
                                 {
                                     reader.Read();
-                                    gameSettings.Add("EnginePower", reader.Value);
+                                    gameSettings.Add("EnginePower", Convert.ToDouble(reader.Value));
                                 }
                                 if (reader.Name == "MSPerFrame")
                                 {
                                     reader.Read();
-                                    gameSettings.Add("MSPerFrame", reader.Value);
+                                    gameSettings.Add("MSPerFrame", Convert.ToInt32(reader.Value));
                                 }
                                 if (reader.Name == "FramesPerShot")
                                 {
                                     reader.Read();
-                                    gameSettings.Add("FramesPerShot", reader.Value);
+                                    gameSettings.Add("FramesPerShot", Convert.ToInt32(reader.Value));
                                 }
                                 if (reader.Name == "RespawnRate")
                                 {
                                     reader.Read();
-                                    gameSettings.Add("RespawnRate", reader.Value);
+                                    gameSettings.Add("RespawnRate", Convert.ToInt32(reader.Value));
                                 }
                                 if (reader.Name == "StartingHP")
                                 {
                                     reader.Read();
-                                    gameSettings.Add("StartingHP", reader.Value);
+                                    gameSettings.Add("StartingHP", Convert.ToInt32(reader.Value));
                                 }
                                 if (reader.Name == "RespawnTime")
                                 {
                                     reader.Read();
-                                    gameSettings.Add("RespawnTime", reader.Value);
+                                    gameSettings.Add("RespawnTime", Convert.ToInt32(reader.Value));
                                 }
                                 if (reader.Name == "Star")
                                 {
-                                    string[] star = new string[] { "", "", "" };
+                                    double[] star = new double[] {0,0, 0};
                                     bool starActive = true;
                                     while (starActive)
                                     {
@@ -180,17 +180,17 @@ namespace Server
                                                 if (reader.Name == "x")
                                                 {
                                                     reader.Read();
-                                                    star[0] = reader.Value;
+                                                    star[0] = Convert.ToDouble(reader.Value);
                                                 }
                                                 if (reader.Name == "y")
                                                 {
                                                     reader.Read();
-                                                    star[1] = reader.Value;
+                                                    star[1] = Convert.ToDouble(reader.Value);
                                                 }
                                                 if (reader.Name == "mass")
                                                 {
                                                     reader.Read();
-                                                    star[2] = reader.Value;
+                                                    star[2] = Convert.ToDouble(reader.Value);
                                                 }
                                             }
                                             if (reader.NodeType == XmlNodeType.EndElement)
@@ -201,13 +201,9 @@ namespace Server
                                                 }
                                             }
                                         }
-                                        else
-                                        {
-                                            starActive = false;
-                                        }
                                     }
-                                    List<string[]> temp = new List<string[]>();
-                                    temp = (List<string[]>)(gameSettings["stars"]);
+                                    List<double[]> temp = new List<double[]>();
+                                    temp = (List<double[]>)(gameSettings["stars"]);
                                     temp.Add(star);
                                     gameSettings["stars"] = temp;
                                 }
@@ -223,14 +219,19 @@ namespace Server
                 }
                 return gameSettings;
             }
+            catch (FormatException E)
+            {
+                Console.WriteLine(E.Message);
+                throw E;
+            }
             catch (Exception E)
             {
                 Console.WriteLine(E.Message);
-                return null;
+                throw E;
             }
         }
 
-        private static void InsertStars()
+        public static void InsertStars()
         {
             List<string[]> temp = new List<string[]>();
             temp = (List<string[]>)(gameSettings["stars"]);
@@ -250,7 +251,7 @@ namespace Server
             }
         }
 
-        private static void InsertShip(int id, string name, int score)
+        public static void InsertShip(int id, string name, int score)
         {
             Ship s = new Ship();
 
@@ -266,7 +267,7 @@ namespace Server
             }
         }
 
-        private static void InsertProjectile(int id, Vector2D loc, Vector2D dir, Vector2D vel, Ship ship)
+        public static void InsertProjectile(int id, Vector2D loc, Vector2D dir, Vector2D vel, Ship ship)
         {
             if (ship.hp > 0)
             {
@@ -277,13 +278,13 @@ namespace Server
             }
         }
 
-        private static void Update()
+        public static void Update()
         {
             UpdateWorld();
             SendWorld();
         }
 
-        private static void UpdateWorld()
+        public static void UpdateWorld()
         {
             lock (TheWorld)
             {
@@ -293,7 +294,7 @@ namespace Server
             }
         }
 
-        private static void ProcessCommands()
+        public static void ProcessCommands()
         {
             foreach (Client c in ClientConnections)
             {
@@ -338,7 +339,7 @@ namespace Server
             }
         }
 
-        private static void ProcessProjectiles()
+        public static void ProcessProjectiles()
         {
             int worldSize = Convert.ToInt32(gameSettings["UniverseSize"]) - 1;
             List<Projectile> projToDelete = new List<Projectile>();
@@ -402,7 +403,7 @@ namespace Server
             projToDelete.Clear();
         }
 
-        private static void ProcessShips()
+        public static void ProcessShips()
         {
             int worldSize = Convert.ToInt32(gameSettings["UniverseSize"]) - 1;
             foreach (Ship ship in TheWorld.GetShipsAll())
@@ -478,7 +479,7 @@ namespace Server
             }
         }
 
-        private static void SpawnShip(Ship s)
+        public static void SpawnShip(Ship s)
         {
             Random rand = new Random();
             int LocX;
@@ -534,7 +535,7 @@ namespace Server
             s.fireRateCounter = Convert.ToInt32(gameSettings["FramesPerShot"]);
         }
 
-        private static void SendWorld()
+        public static void SendWorld()
         {
             StringBuilder jsonString = new StringBuilder() ;
             lock (TheWorld)

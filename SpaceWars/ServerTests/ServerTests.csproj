@@ -87,6 +87,10 @@
       <Name>View</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="InValidXmlSettings.xml" />
+    <Content Include="ValidXmlSettings.xml" />
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
