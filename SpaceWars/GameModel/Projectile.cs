@@ -51,7 +51,6 @@ namespace GameModel
         [JsonProperty]
         public Vector.Vector2D dir { get; private set; }
 
-        [JsonProperty]
         public Vector.Vector2D vel { get; private set; }
 
         /// <summary>

@@ -40,7 +40,7 @@ namespace Server
                 Update();
                 watch.Reset();
             }
-            
+
 
         }
 
@@ -77,40 +77,43 @@ namespace Server
             string totalData = ss.sb.ToString();
             char[] commands = totalData.ToCharArray();
 
-            foreach(Client client in ClientConnections)
+            lock (TheWorld)
             {
-                if (client.ID == ss.ID)
+                foreach (Client client in ClientConnections)
                 {
-                    foreach(char s in commands)
+                    if (client.ID == ss.ID)
                     {
-                        if (s != '(' || s != ')')
+                        foreach (char s in commands)
                         {
-                            switch (s)
+                            if (s != '(' || s != ')')
                             {
-                                case 'L':
-                                    if (!client.right) client.left = true;
-                                    break;
-                                case 'R':
-                                    if (!client.left) client.right = true;
-                                    break;
-                                case 'T':
-                                    client.thrust = true;
-                                    break;
-                                case 'F':
-                                    client.fire = true;
-                                    break;
+                                switch (s)
+                                {
+                                    case 'L':
+                                        if (!client.right) client.left = true;
+                                        break;
+                                    case 'R':
+                                        if (!client.left) client.right = true;
+                                        break;
+                                    case 'T':
+                                        client.thrust = true;
+                                        break;
+                                    case 'F':
+                                        client.fire = true;
+                                        break;
+                                }
                             }
-                        }
-                     
-                    }
 
+                        }
+
+                    }
                 }
             }
 
             ss.sb.Clear();
             Networking.NetworkController.GetData(ss);
         }
-        private static  Dictionary<string, object> XmlSettingsReader()
+        private static Dictionary<string, object> XmlSettingsReader()
         {
             List<string[]> stars = new List<string[]>();
             Dictionary<string, object> gameSettings = new Dictionary<string, object>();
@@ -139,7 +142,7 @@ namespace Server
                                     reader.Read();
                                     gameSettings.Add("EnginePower", reader.Value);
                                 }
-                                if (reader.Name == "MSPerFrame") 
+                                if (reader.Name == "MSPerFrame")
                                 {
                                     reader.Read();
                                     gameSettings.Add("MSPerFrame", reader.Value);
@@ -232,7 +235,7 @@ namespace Server
             List<string[]> temp = new List<string[]>();
             temp = (List<string[]>)(gameSettings["stars"]);
             int StarIdCounter = 0;
-            lock(TheWorld)
+            lock (TheWorld)
             {
                 foreach (string[] s in temp)
                 {
@@ -251,12 +254,12 @@ namespace Server
         {
             Ship s = new Ship();
 
-           
+
             s.SetID(id);
             s.SetName(name);
             s.SetScore(score);
-           
-            lock(TheWorld)
+
+            lock (TheWorld)
             {
                 SpawnShip(s);
                 TheWorld.AddShipAll(s);
@@ -276,6 +279,12 @@ namespace Server
         {
             UpdateWorld();
             SendWorld();
+            lock (TheWorld)
+            {
+                foreach (Client client in ClientConnections)
+                {
+                }
+            }
         }
 
         private static void UpdateWorld()
@@ -377,7 +386,7 @@ namespace Server
                             {
                                 ship.deathCounter++;
                             }
-                            
+
                         }
                     }
                     foreach (Star star in TheWorld.GetStars())
@@ -526,27 +535,30 @@ namespace Server
 
         private static void SendWorld()
         {
-            string jsonString = "";
+            StringBuilder jsonString = new StringBuilder() ;
             lock (TheWorld)
             {
                 foreach (Ship ship in TheWorld.GetShipsAll())
                 {
-                    jsonString += JsonConvert.SerializeObject(ship) + "\n";
+                    jsonString.Append(JsonConvert.SerializeObject(ship) + "\n");
                 }
                 foreach (Star star in TheWorld.GetStars())
                 {
-                    jsonString += JsonConvert.SerializeObject(star) + "\n";
+                    jsonString.Append(JsonConvert.SerializeObject(star) + "\n");
                 }
                 foreach (Projectile projectile in TheWorld.GetProjectiles())
                 {
-                    jsonString += JsonConvert.SerializeObject(projectile) + "\n";
+                    jsonString.Append(JsonConvert.SerializeObject(projectile) + "\n");
                 }
             }
-            lock (TheWorld)
+            lock(TheWorld)
             {
-                foreach(Client client in ClientConnections)
+                foreach (Client client in ClientConnections)
                 {
-                    Networking.NetworkController.Send(jsonString, client.ss);
+                    if (client.ss.theSocket.Connected)
+                    {
+                        Networking.NetworkController.Send(jsonString.ToString(), client.ss);
+                    }
                 }
             }
         }
@@ -555,7 +567,7 @@ namespace Server
 
     public class Client
     {
-        public int ID { get; set;  }
+        public int ID { get; set; }
         public string name;
         public string command { get; set; }
 

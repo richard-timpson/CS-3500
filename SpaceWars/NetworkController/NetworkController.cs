@@ -133,10 +133,8 @@ namespace NetworkController
             }
             public static void ServerAwaitingClientLoop(SocketState.callMe callMe, int ID)
             {
-                IPAddress address = IPAddress.Parse("127.0.0.1");
                 int port = 11000;
-
-                TcpListener listener = new TcpListener(address, port);
+                TcpListener listener = new TcpListener(IPAddress.Any, port);
                 listener.Start();
                 ListenerState ls = new ListenerState(callMe, listener, ID);
                 listener.BeginAcceptSocket(AcceptNewClient, ls);
@@ -148,7 +146,7 @@ namespace NetworkController
                
                 Socket socket = ls.listener.EndAcceptSocket(ar);
                 SocketState ss = new SocketState(socket, ls._call, ls.ID);
-                ls._call(ss);
+                ss._call(ss);
                 ls.ID++;
                 ls.listener.BeginAcceptSocket(AcceptNewClient, ls);
             }
@@ -230,7 +228,8 @@ namespace NetworkController
                 {
                     ss.Connected = false;
                     ss.theSocket.Close();
-                    Error(e.Message);
+                    //Error(e.Message); 
+                    throw e;
                 }
 
             }
@@ -254,7 +253,7 @@ namespace NetworkController
             {
 
                 // Append a newline, since that is our protocol's terminating character for a message.
-                byte[] messageBytes = Encoding.UTF8.GetBytes(message + "\n");
+                byte[] messageBytes = Encoding.UTF8.GetBytes(message);
                 ss.theSocket.BeginSend(messageBytes, 0, messageBytes.Length, SocketFlags.None, SendCallback, ss.theSocket);
             }
 
@@ -264,7 +263,7 @@ namespace NetworkController
             /// <param name="ss"></param>
             public static void GetData(Networking.SocketState ss)
             {
-                ss.theSocket.BeginReceive(ss.messageBuffer, 0, ss.messageBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), ss);
+                ss.theSocket.BeginReceive(ss.messageBuffer, 0, ss.messageBuffer.Length, SocketFlags.None, ReceiveCallback, ss);
             }
         }
     }
