@@ -266,25 +266,21 @@ namespace Server
             }
         }
 
-        private static void InsertProjectile(int id, Vector2D loc, Vector2D dir, Vector2D vel)
+        private static void InsertProjectile(int id, Vector2D loc, Vector2D dir, Vector2D vel, Ship ship)
         {
+            if (ship.hp > 0)
+            {
+                Projectile p = new Projectile(projectileCounter, loc, dir, vel, true, id);
 
-            Projectile p = new Projectile(projectileCounter, loc, dir, vel, true, id);
-
-            TheWorld.AddProjectile(p);
-            projectileCounter++;
+                TheWorld.AddProjectile(p);
+                projectileCounter++;
+            }
         }
 
         private static void Update()
         {
             UpdateWorld();
             SendWorld();
-            lock (TheWorld)
-            {
-                foreach (Client client in ClientConnections)
-                {
-                }
-            }
         }
 
         private static void UpdateWorld()
@@ -333,9 +329,9 @@ namespace Server
                             Vector2D temp = new Vector2D(s.loc);
                             Vector2D projVel = new Vector2D(s.dir * 15);
                             Vector2D startPos = new Vector2D(s.loc + (s.dir * 20));
-                            InsertProjectile(c.ID, startPos, s.dir, projVel);
+                            InsertProjectile(c.ID, startPos, s.dir, projVel, s);
                             c.fire = false;
-                            s.fireRateCounter = 0;
+                            s.fireRateCounter = -1;
                         }
                     }
                 }
@@ -363,18 +359,17 @@ namespace Server
                     }
                     foreach (Ship ship in TheWorld.GetShipsAll())
                     {
-                        List<int> ScoreAdder = new List<int>();
                         if ((ship.loc - p.loc).Length() <= 20)
                         {
-                            if (ship.hp > 0)
+                            if (ship.hp > 0 && ship.ID != p.owner)
                             {
                                 int newHP = ship.hp - 1;
                                 ship.SetHp(newHP);
                                 if (newHP == 0)
                                 {
-                                    foreach (Ship owner in TheWorld.GetShipsAll())
+                                    foreach (Ship owner in TheWorld.GetShipsAll().Where(x => x.ID == p.owner))
                                     {
-                                        if (p.owner == owner.ID)
+                                        if (p.owner != ship.ID)
                                         {
                                             owner.SetScore(owner.score + 1);
                                         }
@@ -385,6 +380,7 @@ namespace Server
                             if (ship.hp == 0)
                             {
                                 ship.deathCounter++;
+                                
                             }
 
                         }
@@ -440,6 +436,11 @@ namespace Server
                     totalAccel += thrust;
                 }
                 Vector2D newVel = new Vector2D(ship.vel + totalAccel);
+                if (newVel.Length() > 20)
+                {
+                    newVel.Normalize();
+                    newVel = newVel * 20;
+                }
                 ship.SetVelocity(newVel);
                 Vector2D newLoc = new Vector2D(ship.loc + ship.vel);
                 ship.SetLoc(newLoc);
