@@ -15,12 +15,12 @@ namespace Server
 {
     public class ServerClass
     {
-        private static List<Client> ClientConnections { get; set; }
+        public static List<Client> ClientConnections { get; set; }
         //private static int IdCounter { get; set; }
 
-        private static Dictionary<string, object> gameSettings { get; set; }
+        public static Dictionary<string, object> gameSettings { get; set; }
 
-        private static World TheWorld { get; set; }
+        public static World TheWorld { get; set; }
 
         public static int projectileCounter { get; private set; }
 
@@ -233,18 +233,18 @@ namespace Server
 
         public static void InsertStars()
         {
-            List<string[]> temp = new List<string[]>();
-            temp = (List<string[]>)(gameSettings["stars"]);
+            List<double[]> temp = new List<double[]>();
+            temp = (List<double[]>)(gameSettings["stars"]);
             int StarIdCounter = 0;
             lock (TheWorld)
             {
-                foreach (string[] s in temp)
+                foreach (double[] s in temp)
                 {
                     Star star = new Star();
                     star.SetID(StarIdCounter);
-                    Vector2D loc = new Vector2D(Convert.ToDouble(s[0]), Convert.ToDouble(s[1]));
+                    Vector2D loc = new Vector2D(s[0], s[1]);
                     star.SetLoc(loc);
-                    star.SetMass(Convert.ToDouble(s[2]));
+                    star.SetMass(s[2]);
                     TheWorld.AddStar(star);
                     StarIdCounter++;
                 }
