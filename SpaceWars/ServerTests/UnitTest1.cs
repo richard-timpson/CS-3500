@@ -209,7 +209,7 @@ namespace ServerTests
             }
             Assert.AreEqual(1, projectileCount);
             Assert.AreEqual(-1, ship.fireRateCounter);
-            
+            ServerClass.ProcessShips();
         }
 
         [TestMethod()]
@@ -261,6 +261,7 @@ namespace ServerTests
             {
                 Assert.AreEqual(proj.dir, projectileCompare[proj.ID]);
             }
+            ServerClass.ProcessShips();
         }
 
 
@@ -310,6 +311,7 @@ namespace ServerTests
             }
 
             Assert.AreEqual(0, projCounter2);
+            ServerClass.ProcessShips();
         }
 
         [TestMethod()]
@@ -355,7 +357,7 @@ namespace ServerTests
             }
 
             Assert.AreEqual(0, ServerClass.TheWorld.GetShipAtId(1).hp);
-
+            ServerClass.ProcessShips();
         }
 
         [TestMethod()]
@@ -393,6 +395,62 @@ namespace ServerTests
             }
 
             Assert.AreEqual(0, projCounter);
+            ServerClass.ProcessShips();
+        }
+
+        [TestMethod()]
+        public void TestProcessShips()
+        {
+            ServerClass.TheWorld = new World();
+            string path = "../../ValidXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.ClientConnections = new List<Client>();
+            ServerClass.InsertStars();
+            List<Vector2D> locations = new List<Vector2D>();
+            for ( int i = 0; i < 20; i++)
+            {
+                ServerClass.InsertShip(i, "john" + 1, 0);
+                if (i == 5)
+                {
+                    ServerClass.TheWorld.GetShipAtId(i).SetLoc(new Vector2D(0,0));
+                }
+                if (i == 6)
+                {
+                    ServerClass.TheWorld.GetShipAtId(i).SetDir(new Vector2D(0,-1));
+                    ServerClass.TheWorld.GetShipAtId(i).SetThrust(true);
+                }
+                if (i == 7)
+                {
+                    ServerClass.TheWorld.GetShipAtId(i).SetDir(new Vector2D(-1, 0));
+                    ServerClass.TheWorld.GetShipAtId(i).SetThrust(true);
+                }
+                if (i == 8)
+                {
+                    ServerClass.TheWorld.GetShipAtId(i).SetDir(new Vector2D(1, 0));
+                    ServerClass.TheWorld.GetShipAtId(i).SetThrust(true);
+                }
+                if (i == 9)
+                {
+                    ServerClass.TheWorld.GetShipAtId(i).SetThrust(true);
+                }
+                locations.Add(ServerClass.TheWorld.GetShipAtId(i).loc);
+                ServerClass.ProcessShips();
+            }
+            ServerClass.ProcessShips();
+            int idCounter = 0;
+            foreach (Vector2D loc in locations)
+            {
+                Assert.AreNotEqual(ServerClass.TheWorld.GetShipAtId(idCounter).loc, loc);
+            }
+
+            int gameCounter = 0;
+            ServerClass.TheWorld.GetShipAtId(6).fireRateCounter = 3;
+            while (gameCounter< 1000)
+            {
+                ServerClass.UpdateWorld();
+                gameCounter++;
+            }
+
         }
 
     }
