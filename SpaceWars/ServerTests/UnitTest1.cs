@@ -166,14 +166,14 @@ namespace ServerTests
             ServerClass.TheWorld = new World();
             string path = "../../ValidXmlSettings.xml";
             ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
-            ServerClass.ClientConnections = new List<Client>();
+            ServerClass.ClientConnections = new Dictionary<int, Client>();
             for (int i = 0; i < 4; i++)
             {
                 SocketInformation si = new SocketInformation();
                 Socket s = null;
                 Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, i);
                 Client c = new Client(i, "JonDoe" + i, ss);
-                ServerClass.ClientConnections.Add(c);
+                ServerClass.ClientConnections.Add(c.ID, c);
                 ServerClass.InsertShip(i, "JonDoe" + 1, 0);
             }
 
@@ -218,7 +218,7 @@ namespace ServerTests
             ServerClass.TheWorld = new World();
             string path = "../../ValidXmlSettings.xml";
             ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
-            ServerClass.ClientConnections = new List<Client>();
+            ServerClass.ClientConnections = new Dictionary<int, Client>();
             Dictionary<int, Vector2D> projectileCompare = new Dictionary<int, Vector2D>();
             int clientCounter = 0;
             for (int i = 0; i < 4; i++)
@@ -226,13 +226,14 @@ namespace ServerTests
                 Socket s = null;
                 Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, i);
                 Client c = new Client(i, "JonDoe" + i, ss);
-                ServerClass.ClientConnections.Add(c);
+                ServerClass.ClientConnections.Add(c.ID, c);
                 ServerClass.InsertShip(i, "JonDoe" + 1, 0);
             }
 
-            
-            foreach (Client client in ServerClass.ClientConnections)
+
+            foreach (KeyValuePair<int, Client> c in ServerClass.ClientConnections)
             {
+                Client client = c.Value;
                 ServerClass.ClientConnections[clientCounter].fire = true;
                 ServerClass.ProcessCommands();
                 clientCounter++;
@@ -271,7 +272,7 @@ namespace ServerTests
             ServerClass.TheWorld = new World();
             string path = "../../ValidXmlSettings.xml";
             ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
-            ServerClass.ClientConnections = new List<Client>();
+            ServerClass.ClientConnections = new Dictionary<int, Client>();
             Dictionary<int, Vector2D> projectileCompare = new Dictionary<int, Vector2D>();
             int clientCounter = 0;
             int projCounter = 0;
@@ -281,13 +282,14 @@ namespace ServerTests
                 Socket s = null;
                 Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, i);
                 Client c = new Client(i, "JonDoe" + i, ss);
-                ServerClass.ClientConnections.Add(c);
+                ServerClass.ClientConnections.Add(c.ID, c);
                 ServerClass.InsertShip(i, "JonDoe" + i, 0);
             }
 
 
-            foreach (Client client in ServerClass.ClientConnections)
+            foreach (KeyValuePair<int, Client> c in ServerClass.ClientConnections)
             {
+                Client client = c.Value;
                 ServerClass.ClientConnections[clientCounter].fire = true;
                 ServerClass.ProcessCommands();
                 clientCounter++;
@@ -320,7 +322,7 @@ namespace ServerTests
             ServerClass.TheWorld = new World();
             string path = "../../ValidXmlSettings.xml";
             ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
-            ServerClass.ClientConnections = new List<Client>();
+            ServerClass.ClientConnections = new Dictionary<int, Client>();
             Dictionary<int, Vector2D> projectileCompare = new Dictionary<int, Vector2D>();
             int clientCounter = 0;
             int projCounter = 0;
@@ -330,7 +332,7 @@ namespace ServerTests
                 Socket s = null;
                 Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, i);
                 Client c = new Client(i, "JonDoe" + i, ss);
-                ServerClass.ClientConnections.Add(c);
+                ServerClass.ClientConnections.Add(c.ID, c);
                 ServerClass.InsertShip(i, "JonDoe" + i, 0);
             }
 
@@ -341,8 +343,9 @@ namespace ServerTests
 
             for (int i = 0; i < 10; i++)
             {
-                foreach (Client client in ServerClass.ClientConnections)
+                foreach (KeyValuePair<int, Client> c in ServerClass.ClientConnections)
                 {
+                    Client client = c.Value;
                     ServerClass.ClientConnections[clientCounter].fire = true;
                     ServerClass.ProcessCommands();
                     for (int j = 0; j < 10; j++)
@@ -366,13 +369,13 @@ namespace ServerTests
             ServerClass.TheWorld = new World();
             string path = "../../ValidXmlSettings.xml";
             ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
-            ServerClass.ClientConnections = new List<Client>();
+            ServerClass.ClientConnections = new Dictionary<int, Client>();
             Dictionary<int, Vector2D> projectileCompare = new Dictionary<int, Vector2D>();
             Socket s = null;
             Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, 0);
             ServerClass.InsertStars();
             Client c = new Client(0, "JonDoe", ss);
-            ServerClass.ClientConnections.Add(c);
+            ServerClass.ClientConnections.Add(c.ID, c);
             ServerClass.InsertShip(0, "JonDoe", 0);
             int projCounter = 0;
             Vector2D offset = new Vector2D(0, -50);
@@ -404,7 +407,7 @@ namespace ServerTests
             ServerClass.TheWorld = new World();
             string path = "../../ValidXmlSettings.xml";
             ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
-            ServerClass.ClientConnections = new List<Client>();
+            ServerClass.ClientConnections = new Dictionary<int, Client>();
             ServerClass.InsertStars();
             List<Vector2D> locations = new List<Vector2D>();
             for ( int i = 0; i < 20; i++)
