@@ -15,7 +15,7 @@ namespace Server
 {
     public class ServerClass
     {
-        public static List<Client> ClientConnections { get; set; }
+        public static Dictionary<int, Client> ClientConnections { get; set; }
         //private static int IdCounter { get; set; }
 
         public static Dictionary<string, object> gameSettings { get; set; }
@@ -26,7 +26,7 @@ namespace Server
 
         static void Main(string[] args)
         {
-            ClientConnections = new List<Client>();
+            ClientConnections = new Dictionary<int,Client>();
             string settingsFilePath = "..\\..\\..\\Resources\\settings.xml";
             gameSettings = XmlSettingsReader(settingsFilePath);
             TheWorld = new World();
@@ -34,7 +34,8 @@ namespace Server
             projectileCounter = 0;
             Networking.NetworkController.ServerAwaitingClientLoop(HandleNewClient, 0);
             Stopwatch watch = new Stopwatch();
-            Networking.NetworkController.Error += ErrorHandler;
+            Networking.NetworkController.Error += DisconnectMessageHandler;
+            Networking.NetworkController.Disconnect += DisconnectClientHandler;
             while (true)
             {
                 watch.Start();
@@ -67,7 +68,7 @@ namespace Server
             Client client = new Client(ss.ID, name[0], ss);
             lock (TheWorld)
             {
-                ClientConnections.Add(client);
+                ClientConnections.Add(client.ID, client);
             }
             string startupInfo = ss.ID + "\n" + gameSettings["UniverseSize"] + "\n";
             InsertShip(ss.ID, name[0], 0);
@@ -81,8 +82,9 @@ namespace Server
 
             lock (TheWorld)
             {
-                foreach (Client client in ClientConnections)
+                foreach (KeyValuePair<int, Client> c in ClientConnections)
                 {
+                    Client client = c.Value;
                     if (client.ID == ss.ID)
                     {
                         foreach (char s in commands)
@@ -347,8 +349,9 @@ namespace Server
 
         public static void ProcessCommands()
         {
-            foreach (Client c in ClientConnections)
+            foreach (KeyValuePair<int, Client> client in ClientConnections)
             {
+                Client c = client.Value;
                 foreach (Ship s in TheWorld.GetShipsAll())
                 {
                     if (s.ID == c.ID)
@@ -614,8 +617,9 @@ namespace Server
             }
             lock(TheWorld)
             {
-                foreach (Client client in ClientConnections)
+                foreach (KeyValuePair<int, Client> c in ClientConnections)
                 {
+                    Client client = c.Value;
                     if (client.ss.theSocket.Connected)
                     {
                         Networking.NetworkController.Send(jsonString.ToString(), client.ss);
@@ -623,9 +627,20 @@ namespace Server
                 }
             }
         }
-        public static void ErrorHandler(string message)
+        public static void DisconnectMessageHandler(string message)
         {
             Console.WriteLine(message);
+        }
+        public static void DisconnectClientHandler(Networking.SocketState ss)
+        {
+            Ship ship = TheWorld.GetShipAtId(ss.ID);
+            ship.SetHp(0);
+            SendWorld();
+            lock (TheWorld)
+            {
+                TheWorld.RemoveShipAll(ss.ID);
+                ClientConnections.Remove(ss.ID);
+            }
         }
 
     }

@@ -69,6 +69,8 @@ namespace NetworkController
         {
             public delegate void ErrorHandler(string message);
             public static event ErrorHandler Error;
+            public delegate void DisconnectHandler(SocketState ss);
+            public static event DisconnectHandler Disconnect;
             public const int DEFAULT_PORT = 11000;
             private static int clientCounter = 0;
 
@@ -227,8 +229,11 @@ namespace NetworkController
                 catch (Exception e)
                 {
                     ss.Connected = false;
-                    ss.theSocket.Close();
+                    Console.WriteLine(e);
+                    Disconnect(ss);
                     Error(e.Message);
+                    ss.theSocket.Close();
+
                 }
 
             }
