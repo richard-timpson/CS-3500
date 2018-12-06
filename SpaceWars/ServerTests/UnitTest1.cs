@@ -86,7 +86,7 @@ namespace ServerTests
             string path = "../../ValidXmlSettings.xml";
             ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
             ServerClass.InsertShip(0, "JohnDoe", 0);
-            ServerClass.InsertShip(0, "Timmy", 0);
+            ServerClass.InsertShip(1, "Timmy", 0);
             ServerClass.InsertStars();
             int shipCount = 0;
             Vector2D vel = new Vector2D(0, 0);
@@ -114,7 +114,7 @@ namespace ServerTests
             ServerClass.InsertStars();
             for (int i = 0; i < 150; i++)
             {
-                ServerClass.InsertShip(0, "JohnDoe" + i, 0);
+                ServerClass.InsertShip(i, "JohnDoe" + i, 0);
 
             }
             int shipCount = 0;
@@ -143,7 +143,7 @@ namespace ServerTests
             ServerClass.InsertStars();
             for (int i = 0; i < 10; i++)
             {
-                ServerClass.InsertShip(0, "JohnDoe" + i, 0);
+                ServerClass.InsertShip(i, "JohnDoe" + i, 0);
 
             }
             foreach (Ship s in ServerClass.TheWorld.GetShipsAll())
@@ -164,38 +164,58 @@ namespace ServerTests
         public void TestProcessCommands()
         {
             ServerClass.TheWorld = new World();
-            List<Client> temp = new List<Client>();
+            string path = "../../ValidXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.ClientConnections = new List<Client>();
             for (int i = 0; i < 4; i++)
             {
                 SocketInformation si = new SocketInformation();
-                Socket s = new Socket(si);
+                Socket s = null;
                 Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, i);
                 Client c = new Client(i, "JonDoe" + i, ss);
-                temp.Add(c);
+                ServerClass.ClientConnections.Add(c);
                 ServerClass.InsertShip(i, "JonDoe" + 1, 0);
             }
 
 
-            foreach (Client client in ServerClass.ClientConnections)
-            {
-
-            }
             ServerClass.ClientConnections[0].right = true;
+            Vector2D prevDir1 = ServerClass.TheWorld.GetShipAtId(0).dir;
             ServerClass.ProcessCommands();
             Assert.IsFalse(ServerClass.ClientConnections[0].right);
-            //Assert.AreNotEqual()
-            ServerClass.ClientConnections[0].thrust = true;
-            ServerClass.ClientConnections[0].fire = true;
-            ServerClass.ClientConnections[1].right = true;
-            ServerClass.ClientConnections[1].thrust = true;
-            ServerClass.ClientConnections[1].fire = true;
-            ServerClass.ClientConnections[2].left = true;
-            ServerClass.ClientConnections[2].fire = true;
-            ServerClass.ClientConnections[3].right = true;
-            ServerClass.ClientConnections[3].thrust = true;
+            Vector2D newDir1 = ServerClass.TheWorld.GetShipAtId(0).dir;
+            Assert.AreNotEqual(prevDir1, newDir1);
 
+            ServerClass.ClientConnections[0].left = true;
+            Vector2D prevDir2 = ServerClass.TheWorld.GetShipAtId(0).dir;
             ServerClass.ProcessCommands();
+            Assert.IsFalse(ServerClass.ClientConnections[0].right);
+            Vector2D newDir2 = ServerClass.TheWorld.GetShipAtId(0).dir;
+            Assert.AreNotEqual(prevDir2, newDir2);
+
+            ServerClass.ClientConnections[0].thrust = true;
+            ServerClass.ProcessCommands();
+            Ship ship = ServerClass.TheWorld.GetShipAtId(0);
+            Assert.IsTrue(ship.thrust);
+            Assert.IsFalse(ServerClass.ClientConnections[0].right);
+
+
+            ServerClass.ClientConnections[0].fire = true;
+            ServerClass.ProcessCommands();
+            int projectileCount = 0;
+            foreach (Projectile p in ServerClass.TheWorld.GetProjectiles())
+            {
+                Assert.AreEqual(ship.dir, p.dir);
+                projectileCount++;
+            }
+            Assert.AreEqual(1, projectileCount);
+            Assert.AreEqual(-1, ship.fireRateCounter);
             
+        }
+
+        [TestMethod()]
+        public void TestProcessProjectiles()
+        {
+
         }
 
     }

@@ -273,7 +273,7 @@ namespace Server
             {
                 Projectile p = new Projectile(projectileCounter, loc, dir, vel, true, id);
 
-                TheWorld.AddProjectile(p);
+                TheWorld.AddProjectile(ship.ID, p);
                 projectileCounter++;
             }
         }
@@ -368,13 +368,8 @@ namespace Server
                                 ship.SetHp(newHP);
                                 if (newHP == 0)
                                 {
-                                    foreach (Ship owner in TheWorld.GetShipsAll().Where(x => x.ID == p.owner))
-                                    {
-                                        if (p.owner != ship.ID)
-                                        {
-                                            owner.SetScore(owner.score + 1);
-                                        }
-                                    }
+                                    int score = TheWorld.GetShipAtId(p.owner).score;
+                                    TheWorld.GetShipAtId(p.owner).SetScore(score + 1);
                                 }
                                 p.SetAlive(false);
                             }
@@ -398,7 +393,7 @@ namespace Server
 
             foreach (Projectile p in projToDelete)
             {
-                TheWorld.RemoveProjectile(p.ID);
+                TheWorld.RemoveProjectile(p.owner, p.ID);
             }
             projToDelete.Clear();
         }

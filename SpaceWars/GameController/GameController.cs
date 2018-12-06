@@ -272,20 +272,20 @@ namespace Game
                 if (!theWorld.GetProjectiles().Any(item => item.ID == tempProj.ID))
                 {
                     // add projectile
-                    theWorld.AddProjectile(tempProj);
+                    theWorld.AddProjectile(tempProj.owner, tempProj);
                 }
                 // if projectile exists and is alive
                 if (theWorld.GetProjectiles().Any(item => item.ID == tempProj.ID) && tempProj.alive)
                 {
                     // remove the old projectile
-                    theWorld.RemoveProjectile(tempProj.ID);
+                    theWorld.RemoveProjectile(tempProj.owner, tempProj.ID);
                     // add the new one
-                    theWorld.AddProjectile(tempProj);
+                    theWorld.AddProjectile(tempProj.owner, tempProj);
                 }
                 // if projectile is dead
                 if (tempProj.alive == false)
                 {
-                    theWorld.RemoveProjectile(tempProj.ID);
+                    theWorld.RemoveProjectile(tempProj.owner, tempProj.ID);
                 }
             }
 
@@ -377,7 +377,7 @@ namespace Game
                 }
                 foreach (Projectile p in Projectiles)
                 {
-                    theWorld.RemoveProjectile(p.ID);
+                    theWorld.RemoveProjectile(p.owner, p.ID);
                 }
                 foreach (Star s in Stars)
                 {

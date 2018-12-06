@@ -10,8 +10,8 @@ namespace GameModel
     public class World
     {
         private List<Ship> ShipsActive;
-        private List<Ship> ShipsTotal;
-        private HashSet<Projectile> ProjectilesActive;
+        private Dictionary<int, Ship> ShipsTotal;
+        private Dictionary<int,Dictionary<int, Projectile>> ProjectilesActive;
         private List<Star> StarsActive;
         private List<Explosion> Explosions;
 
@@ -21,8 +21,8 @@ namespace GameModel
         public World()
         {
             ShipsActive = new List<Ship>();
-            ShipsTotal = new List<Ship>();
-            ProjectilesActive = new HashSet<Projectile>();
+            ShipsTotal = new Dictionary<int, Ship>();
+            ProjectilesActive = new Dictionary<int, Dictionary<int, Projectile>>();
             StarsActive = new List<Star>();
             Explosions = new List<Explosion>();
         }
@@ -62,8 +62,14 @@ namespace GameModel
         /// <returns></returns>
         public IEnumerable<Ship> GetShipsAll()
         {
-            foreach (Ship s in ShipsTotal)
-                yield return s;
+            foreach (KeyValuePair<int, Ship> ship in ShipsTotal)
+            {
+                yield return ship.Value;
+            }
+        }
+        public Ship GetShipAtId(int id)
+        {
+            return this.ShipsTotal[id];
         }
 
         /// <summary>
@@ -72,7 +78,7 @@ namespace GameModel
         /// <param name="s"></param>
         public void AddShipAll(Ship s)
         {
-            this.ShipsTotal.Add(s);
+            this.ShipsTotal.Add(s.ID, s);
         }
 
         /// <summary>
@@ -81,7 +87,7 @@ namespace GameModel
         /// <param name="ID"></param>
         public void RemoveShipAll(int ID)
         {
-            this.ShipsTotal.RemoveAll((item) => item.ID == ID);
+            this.ShipsTotal.Remove(ID);
         }
 
         /// <summary>
@@ -116,18 +122,30 @@ namespace GameModel
         /// Adds projectile to list of projectiles active.
         /// </summary>
         /// <param name="p"></param>
-        public void AddProjectile(Projectile p)
+        public void AddProjectile(int ownerID, Projectile p)
         {
-            this.ProjectilesActive.Add(p);
+            if (this.ProjectilesActive.ContainsKey(ownerID))
+            {
+                this.ProjectilesActive[ownerID].Add(p.ID,p);
+            }
+            else
+            {
+                Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
+                projectiles.Add(p.ID, p);
+                this.ProjectilesActive.Add(ownerID, projectiles);
+            }
         }
 
         /// <summary>
         /// Removes projectile from list of projectiles active.
         /// </summary>
         /// <param name="ID"></param>
-        public void RemoveProjectile(int ID)
+        public void RemoveProjectile(int ownerID, int projectileID)
         {
-            this.ProjectilesActive.RemoveWhere((item) => item.ID == ID);
+            if (this.ProjectilesActive.ContainsKey(ownerID))
+            {
+                this.ProjectilesActive[ownerID].Remove(projectileID);
+            }
 
         }
 
@@ -137,8 +155,13 @@ namespace GameModel
         /// <returns></returns>
         public IEnumerable<Projectile> GetProjectiles()
         {
-            foreach (Projectile p in ProjectilesActive)
-                yield return p;
+            foreach (KeyValuePair<int, Dictionary<int, Projectile>> dictionary in this.ProjectilesActive)
+            {
+                foreach(KeyValuePair<int, Projectile> projectile in dictionary.Value)
+                {
+                    yield return projectile.Value;
+                }
+            }
         }
 
         /// <summary>
