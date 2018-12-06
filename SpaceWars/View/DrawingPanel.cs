@@ -622,15 +622,6 @@ namespace View
         {
             lock (this.theWorld)
             {
-                //Draws each explosion according to the counter in the instance explosion class, and increments counter
-                foreach(Explosion s in theWorld.GetExplosions())
-                {
-                    if (s.GetCount() <= 108)
-                    {
-                        DrawObjectWithTransform(e, s, WorldSize, s.GetLoc().GetX(), s.GetLoc().GetY(), 0, ExplosionDrawer);
-                        s.IncrementCount();
-                    }
-                }
 
                 //Draws each ship with healthbar, name and score above the ship.
                 foreach (Ship s in theWorld.GetShipsActive())
@@ -649,6 +640,16 @@ namespace View
                 foreach (Projectile p in theWorld.GetProjectiles())
                 {
                     DrawObjectWithTransform(e, p, WorldSize, p.loc.GetX(), p.loc.GetY(), p.dir.ToAngle(), ProjectileDrawer);
+                }
+
+                //Draws each explosion according to the counter in the instance explosion class, and increments counter
+                foreach (Explosion s in theWorld.GetExplosions())
+                {
+                    if (s.GetCount() <= 108)
+                    {
+                        DrawObjectWithTransform(e, s, WorldSize, s.GetLoc().GetX(), s.GetLoc().GetY(), 0, ExplosionDrawer);
+                        s.IncrementCount();
+                    }
                 }
             }
             // Do anything that Panel (from which we inherit) needs to do

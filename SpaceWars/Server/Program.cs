@@ -34,6 +34,7 @@ namespace Server
             projectileCounter = 0;
             Networking.NetworkController.ServerAwaitingClientLoop(HandleNewClient, 0);
             Stopwatch watch = new Stopwatch();
+            Networking.NetworkController.Error += ErrorHandler;
             while (true)
             {
                 watch.Start();
@@ -621,6 +622,10 @@ namespace Server
                     }
                 }
             }
+        }
+        public static void ErrorHandler(string message)
+        {
+            Console.WriteLine(message);
         }
 
     }

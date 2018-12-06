@@ -228,8 +228,7 @@ namespace NetworkController
                 {
                     ss.Connected = false;
                     ss.theSocket.Close();
-                    //Error(e.Message); 
-                    throw e;
+                    Error(e.Message);
                 }
 
             }
