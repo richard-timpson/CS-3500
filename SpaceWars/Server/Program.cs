@@ -605,7 +605,6 @@ namespace Server
                 foreach (Star star in TheWorld.GetStars())
                 {
                     jsonString.Append(JsonConvert.SerializeObject(star) + "\n");
-                    Console.WriteLine(star.loc);
                 }
                 foreach (Projectile projectile in TheWorld.GetProjectiles())
                 {
