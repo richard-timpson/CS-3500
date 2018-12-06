@@ -112,7 +112,7 @@ namespace ServerTests
             string path = "../../ValidStarsXmlSettings.xml";
             ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
             ServerClass.InsertStars();
-            for (int i = 0; i < 150; i++)
+            for (int i = 0; i < 100; i++)
             {
                 ServerClass.InsertShip(i, "JohnDoe" + i, 0);
 
@@ -130,7 +130,7 @@ namespace ServerTests
                 }
                 shipCount++;
             }
-            Assert.AreEqual(150, shipCount);
+            Assert.AreEqual(100, shipCount);
 
         }
 
@@ -215,8 +215,184 @@ namespace ServerTests
         [TestMethod()]
         public void TestProcessProjectiles()
         {
-            
+            ServerClass.TheWorld = new World();
+            string path = "../../ValidXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.ClientConnections = new List<Client>();
+            Dictionary<int, Vector2D> projectileCompare = new Dictionary<int, Vector2D>();
+            int clientCounter = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                Socket s = null;
+                Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, i);
+                Client c = new Client(i, "JonDoe" + i, ss);
+                ServerClass.ClientConnections.Add(c);
+                ServerClass.InsertShip(i, "JonDoe" + 1, 0);
+            }
 
+            
+            foreach (Client client in ServerClass.ClientConnections)
+            {
+                ServerClass.ClientConnections[clientCounter].fire = true;
+                ServerClass.ProcessCommands();
+                clientCounter++;
+            }
+            foreach(Projectile proj in ServerClass.TheWorld.GetProjectiles())
+            {
+                projectileCompare.Add(proj.ID, proj.loc);
+            }
+
+            ServerClass.ProcessProjectiles();
+
+            foreach(Projectile proj in ServerClass.TheWorld.GetProjectiles())
+            {
+                Assert.AreEqual(15, (proj.loc - projectileCompare[proj.ID]).Length());
+            }
+
+
+            foreach (Projectile proj in ServerClass.TheWorld.GetProjectiles())
+            {
+                projectileCompare[proj.ID] = proj.dir;
+            }
+
+            ServerClass.ProcessProjectiles();
+
+            foreach (Projectile proj in ServerClass.TheWorld.GetProjectiles())
+            {
+                Assert.AreEqual(proj.dir, projectileCompare[proj.ID]);
+            }
+        }
+
+
+        [TestMethod()]
+        public void TestProcessProjectilesDeadProjectile()
+        {
+            ServerClass.TheWorld = new World();
+            string path = "../../ValidXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.ClientConnections = new List<Client>();
+            Dictionary<int, Vector2D> projectileCompare = new Dictionary<int, Vector2D>();
+            int clientCounter = 0;
+            int projCounter = 0;
+            int projCounter2 = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                Socket s = null;
+                Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, i);
+                Client c = new Client(i, "JonDoe" + i, ss);
+                ServerClass.ClientConnections.Add(c);
+                ServerClass.InsertShip(i, "JonDoe" + i, 0);
+            }
+
+
+            foreach (Client client in ServerClass.ClientConnections)
+            {
+                ServerClass.ClientConnections[clientCounter].fire = true;
+                ServerClass.ProcessCommands();
+                clientCounter++;
+            }
+            
+            foreach (Projectile p in ServerClass.TheWorld.GetProjectiles())
+            {
+                projCounter++;
+            }
+
+            Assert.IsTrue(projCounter > 0);
+
+            for (int i = 0; i < 50; i++)
+            {
+                ServerClass.ProcessProjectiles();
+            }
+
+            foreach (Projectile p in ServerClass.TheWorld.GetProjectiles())
+            {
+                projCounter2++;
+            }
+
+            Assert.AreEqual(0, projCounter2);
+        }
+
+        [TestMethod()]
+        public void TestProcessProjectilesKillShot()
+        {
+            ServerClass.TheWorld = new World();
+            string path = "../../ValidXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.ClientConnections = new List<Client>();
+            Dictionary<int, Vector2D> projectileCompare = new Dictionary<int, Vector2D>();
+            int clientCounter = 0;
+            int projCounter = 0;
+            int projCounter2 = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                Socket s = null;
+                Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, i);
+                Client c = new Client(i, "JonDoe" + i, ss);
+                ServerClass.ClientConnections.Add(c);
+                ServerClass.InsertShip(i, "JonDoe" + i, 0);
+            }
+
+            Vector2D shipLoc = new Vector2D(ServerClass.TheWorld.GetShipAtId(0).loc);
+            Vector2D offset = new Vector2D(0, 50);
+            ServerClass.TheWorld.GetShipAtId(1).SetLoc(shipLoc + offset);
+
+
+            for (int i = 0; i < 10; i++)
+            {
+                foreach (Client client in ServerClass.ClientConnections)
+                {
+                    ServerClass.ClientConnections[clientCounter].fire = true;
+                    ServerClass.ProcessCommands();
+                    for (int j = 0; j < 10; j++)
+                    {
+                        ServerClass.ProcessProjectiles();
+                    }
+                    ServerClass.TheWorld.GetShipAtId(0).fireRateCounter = Convert.ToInt32(ServerClass.gameSettings["FramesPerShot"]);
+                    clientCounter++;
+                }
+
+                clientCounter = 0;
+            }
+
+            Assert.AreEqual(0, ServerClass.TheWorld.GetShipAtId(1).hp);
+
+        }
+
+        [TestMethod()]
+        public void TestProcessProjectilesStarShot()
+        {
+            ServerClass.TheWorld = new World();
+            string path = "../../ValidXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.ClientConnections = new List<Client>();
+            Dictionary<int, Vector2D> projectileCompare = new Dictionary<int, Vector2D>();
+            Socket s = null;
+            Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, 0);
+            ServerClass.InsertStars();
+            Client c = new Client(0, "JonDoe", ss);
+            ServerClass.ClientConnections.Add(c);
+            ServerClass.InsertShip(0, "JonDoe", 0);
+            int projCounter = 0;
+            Vector2D offset = new Vector2D(0, -50);
+            ServerClass.TheWorld.GetShipAtId(0).SetLoc(offset);
+
+            for (int i = 0; i < 20; i++)
+            {
+                ServerClass.ClientConnections[0].fire = true;
+                ServerClass.ProcessCommands();
+                for (int j = 0; j < 10; j++)
+                {
+                    ServerClass.ProcessProjectiles();
+                }
+                ServerClass.TheWorld.GetShipAtId(0).fireRateCounter = Convert.ToInt32(ServerClass.gameSettings["FramesPerShot"]);
+            }
+
+            foreach (Projectile p in ServerClass.TheWorld.GetProjectiles())
+            {
+                projCounter++;
+            }
+
+            Assert.AreEqual(0, projCounter);
         }
 
     }
