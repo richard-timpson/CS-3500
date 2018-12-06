@@ -237,9 +237,13 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Inserts star into the world's list of stars based on settings from the game settings xml file
+        /// </summary>
         public static void InsertStars()
         {
-            if ((string)gameSettings["FancyGame"] != "Yes")
+            //If the fancy game mode is off, loads stars from the settings file
+            if ((string)gameSettings["FancyGame"] != "Yes" || (string)gameSettings["FancyGame"] != "yes")
             {
                 List<double[]> temp = new List<double[]>();
                 temp = (List<double[]>)(gameSettings["stars"]);
@@ -258,6 +262,7 @@ namespace Server
                     }
                 }
             }
+            //If the fancy game mode is on, loads 4 stars and prepares them for orbit
             else
             {
                 double radius = (int)gameSettings["UniverseSize"] / 3.5;
@@ -297,6 +302,12 @@ namespace Server
 
         }
 
+        /// <summary>
+        /// Inserts ship into the world's dictionary of ships
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <param name="score"></param>
         public static void InsertShip(int id, string name, int score)
         {
             Ship s = new Ship();
@@ -308,11 +319,21 @@ namespace Server
 
             lock (TheWorld)
             {
+                //Spawn ship randomizes location and sets direction
                 SpawnShip(s);
+                //Adds ship to dictionary
                 TheWorld.AddShipAll(s);
             }
         }
 
+        /// <summary>
+        /// Inserts projectile into the world's dictionary of projectiles
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="loc"></param>
+        /// <param name="dir"></param>
+        /// <param name="vel"></param>
+        /// <param name="ship"></param>
         public static void InsertProjectile(int id, Vector2D loc, Vector2D dir, Vector2D vel, Ship ship)
         {
             if (ship.hp > 0)
@@ -320,16 +341,23 @@ namespace Server
                 Projectile p = new Projectile(projectileCounter, loc, dir, vel, true, id);
 
                 TheWorld.AddProjectile(ship.ID, p);
-                projectileCounter++;
+                projectileCounter++; //increment so that each projectile has a unique ID
             }
         }
 
+        /// <summary>
+        /// Update called every frame based on framerate timer in main()
+        /// Updates world and sends world to every client on every frame.
+        /// </summary>
         public static void Update()
         {
             UpdateWorld();
             SendWorld();
         }
 
+        /// <summary>
+        /// Updates the state of the world.
+        /// </summary>
         public static void UpdateWorld()
         {
             lock (TheWorld)
@@ -338,13 +366,18 @@ namespace Server
                 ProcessProjectiles();
                 ProcessShips();
 
-                if ((string)gameSettings["FancyGame"] == "Yes")
+                //Process star movement if fancy game mode is on
+                if ((string)gameSettings["FancyGame"] == "Yes" || (string)gameSettings["FancyGame"] == "yes")
                 {
                     ProcessStars();
                 }
             }
         }
 
+        /// <summary>
+        /// Commands from client are stored in each instance of the client class, unique to each player.
+        /// On every frame, if a client command is set to true, process the command and reset flag.
+        /// </summary>
         public static void ProcessCommands()
         {
             foreach (Client c in ClientConnections)
@@ -376,6 +409,7 @@ namespace Server
                             s.SetThrust(true);
                             c.thrust = false;
                         }
+                        //Checks fireRateCounter to prevent ship from firing too fast (LASERS ARE BAD!!)
                         if (c.fire == true && s.fireRateCounter == Convert.ToInt32(gameSettings["FramesPerShot"]))
                         {
                             Vector2D temp = new Vector2D(s.loc);
@@ -383,13 +417,16 @@ namespace Server
                             Vector2D startPos = new Vector2D(s.loc + (s.dir * 20));
                             InsertProjectile(c.ID, startPos, s.dir, projVel, s);
                             c.fire = false;
-                            s.fireRateCounter = -1;
+                            s.fireRateCounter = -1; //Reset fireRateCounter after a ship fires
                         }
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Moves projectile at constant speed based on direction of ship upon initial fire
+        /// </summary>
         public static void ProcessProjectiles()
         {
             int worldSize = Convert.ToInt32(gameSettings["UniverseSize"]) - 1;
@@ -397,6 +434,7 @@ namespace Server
 
             foreach (Projectile p in TheWorld.GetProjectiles())
             {
+                //If projectile is dead, add it to list of projectiles to delete.
                 if (p.alive == false)
                 {
                     projToDelete.Add(p);
@@ -405,25 +443,32 @@ namespace Server
                 {
                     Vector2D newLoc = new Vector2D(p.loc + p.vel);
                     p.SetLoc(newLoc);
+                    //Kills projectiles that reach the boundary of the world.
                     if (p.loc.GetX() >= worldSize / 2 || p.loc.GetY() >= worldSize / 2 || p.loc.GetX() <= -worldSize / 2 || p.loc.GetY() <= -worldSize / 2)
                     {
                         p.SetAlive(false);
                     }
                     foreach (Ship ship in TheWorld.GetShipsAll())
                     {
+                        //Collision detection check
                         if ((ship.loc - p.loc).Length() <= 20)
                         {
+                            //If ship is alive and not the same as the owner of the projectile (the ship that fired it)
                             if (ship.hp > 0 && ship.ID != p.owner)
                             {
+                                //decrements health by one
                                 int newHP = ship.hp - 1;
                                 ship.SetHp(newHP);
+                                //if the ship is dead after removing 1 hp, increment score of ship that fired projectile
                                 if (newHP == 0)
                                 {
                                     int score = TheWorld.GetShipAtId(p.owner).score;
                                     TheWorld.GetShipAtId(p.owner).SetScore(score + 1);
                                 }
+                                //kill projectile after collision
                                 p.SetAlive(false);
                             }
+                            //start deathCounter (respawn counter) for dead ship
                             if (ship.hp == 0)
                             {
                                 ship.deathCounter++;
@@ -432,6 +477,7 @@ namespace Server
 
                         }
                     }
+                    //kills projectile if it collides with a star
                     foreach (Star star in TheWorld.GetStars())
                     {
                         if ((star.loc - p.loc).Length() <= 35)
@@ -441,7 +487,7 @@ namespace Server
                     }
                 }
             }
-
+            //deletes projectiles that are flagged to delete
             foreach (Projectile p in projToDelete)
             {
                 TheWorld.RemoveProjectile(p.owner, p.ID);
@@ -449,6 +495,9 @@ namespace Server
             projToDelete.Clear();
         }
 
+        /// <summary>
+        /// Moves stars in orbit for fancy game mode
+        /// </summary>
         public static void ProcessStars()
         {
             foreach (Star s in TheWorld.GetStars())
@@ -462,11 +511,16 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Updates ship based on gravity of star(s). Checks deathCounter to respawn if ship is ready to respawn.
+        /// Increements fireRateCounter if ship is waiting to fire again.
+        /// </summary>
         public static void ProcessShips()
         {
             int worldSize = Convert.ToInt32(gameSettings["UniverseSize"]) - 1;
             foreach (Ship ship in TheWorld.GetShipsAll())
             {
+                //DeathCounter checks for ability to respawn if needed
                 if (ship.deathCounter > 0 && ship.deathCounter < Convert.ToInt32(gameSettings["RespawnTime"]))
                 {
                     ship.deathCounter++;
@@ -475,10 +529,12 @@ namespace Server
                 {
                     SpawnShip(ship);
                 }
+                //Increemnts fireRateCounter if ship has recently fired and is awaiting ability to fire again
                 if (ship.fireRateCounter < Convert.ToInt32(gameSettings["FramesPerShot"]))
                 {
                     ship.fireRateCounter++;
                 }
+                //Calculates acceleration due to gravity of all stars in the world.
                 Vector2D totalAccel = new Vector2D(0, 0);
                 foreach (Star star in TheWorld.GetStars())
                 {
@@ -487,7 +543,7 @@ namespace Server
                     grav = grav * star.mass;
                     totalAccel += grav;
                 }
-
+                //Caclulates acceleration due to thrust if ship is thrusting and adds it to totalAccel
                 double enginePower = Convert.ToDouble(gameSettings["EnginePower"]);
                 if (ship.thrust == true)
                 {
@@ -495,6 +551,7 @@ namespace Server
                     thrust = thrust * enginePower;
                     totalAccel += thrust;
                 }
+                //Calculates new velocity based on prev velocity and sum of forces
                 Vector2D newVel = new Vector2D(ship.vel + totalAccel);
                 if (newVel.Length() > 20)
                 {
@@ -505,6 +562,7 @@ namespace Server
                 Vector2D newLoc = new Vector2D(ship.loc + ship.vel);
                 ship.SetLoc(newLoc);
 
+                //Checks for ship hitting world boundary, and 'teleports' ship to other side of map
                 if (newLoc.GetX() >= worldSize / 2)
                 {
                     Vector2D temp = new Vector2D(-worldSize / 2, newLoc.GetY());
@@ -526,6 +584,7 @@ namespace Server
                     ship.SetLoc(temp);
                 }
 
+                //Collission detection with star
                 foreach (Star star in TheWorld.GetStars())
                 {
                     if ((ship.loc - star.loc).Length() <= 35)
@@ -537,6 +596,7 @@ namespace Server
 
             }
         }
+
 
         public static void SpawnShip(Ship s)
         {
