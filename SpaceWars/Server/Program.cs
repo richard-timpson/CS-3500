@@ -261,13 +261,6 @@ namespace Server
             {
                 double radius = (int)gameSettings["UniverseSize"] / 3.5;
 
-                Star starCenter = new Star();
-                starCenter.SetID(0);
-                Vector2D loc = new Vector2D(0, 0);
-                starCenter.SetLoc(loc);
-                starCenter.SetMass(.01);
-                TheWorld.AddStar(starCenter);
-
                 Star star1 = new Star();
                 star1.SetID(1);
                 Vector2D loc1 = new Vector2D(0, radius);
@@ -459,15 +452,12 @@ namespace Server
         {
             foreach (Star s in TheWorld.GetStars())
             {
-                if (s.ID != 0)
-                {
                     Vector2D temp = new Vector2D(s.dir);
                     Vector2D temp2 = new Vector2D(s.dir);
                     temp.Rotate(-1);
                     s.SetDir(temp);
                     Vector2D tempLoc = new Vector2D(s.loc + (temp2 * Math.Tan(Math.PI/180) * (Convert.ToInt32(gameSettings["UniverseSize"]) / 3.5)));
                     s.SetLoc(tempLoc);
-                }
             }
         }
 
