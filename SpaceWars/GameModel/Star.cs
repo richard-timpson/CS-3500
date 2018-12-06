@@ -39,6 +39,10 @@ namespace GameModel
         [JsonProperty]
         public double mass { get; private set; }
 
+        public Vector2D vel { get; private set; }
+
+        public Vector2D dir { get; private set; }
+
         public void SetID(int id)
         {
             this.ID = id;

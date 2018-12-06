@@ -167,6 +167,11 @@ namespace Server
                                     reader.Read();
                                     gameSettings.Add("RespawnTime", Convert.ToInt32(reader.Value));
                                 }
+                                if (reader.Name == "FancyGame")
+                                {
+                                    reader.Read();
+                                    gameSettings.Add("FancyGame", reader.Value);
+                                }
                                 if (reader.Name == "Star")
                                 {
                                     double[] star = new double[] {0,0, 0};
@@ -233,22 +238,65 @@ namespace Server
 
         public static void InsertStars()
         {
-            List<double[]> temp = new List<double[]>();
-            temp = (List<double[]>)(gameSettings["stars"]);
-            int StarIdCounter = 0;
-            lock (TheWorld)
+            if (gameSettings["FancyGame"] != "Yes")
             {
-                foreach (double[] s in temp)
+                List<double[]> temp = new List<double[]>();
+                temp = (List<double[]>)(gameSettings["stars"]);
+                int StarIdCounter = 0;
+                lock (TheWorld)
                 {
-                    Star star = new Star();
-                    star.SetID(StarIdCounter);
-                    Vector2D loc = new Vector2D(s[0], s[1]);
-                    star.SetLoc(loc);
-                    star.SetMass(s[2]);
-                    TheWorld.AddStar(star);
-                    StarIdCounter++;
+                    foreach (double[] s in temp)
+                    {
+                        Star star = new Star();
+                        star.SetID(StarIdCounter);
+                        Vector2D loc = new Vector2D(s[0], s[1]);
+                        star.SetLoc(loc);
+                        star.SetMass(s[2]);
+                        TheWorld.AddStar(star);
+                        StarIdCounter++;
+                    }
                 }
             }
+            else
+            {
+                double radius = (int)gameSettings["UniverseSize"] / 5;
+
+                Star starCenter = new Star();
+                starCenter.SetID(0);
+                Vector2D loc = new Vector2D(0, 0);
+                starCenter.SetLoc(loc);
+                starCenter.SetMass(.05);
+                TheWorld.AddStar(starCenter);
+
+                Star star1 = new Star();
+                starCenter.SetID(0);
+                Vector2D loc1 = new Vector2D(0, radius);
+                starCenter.SetLoc(loc);
+                starCenter.SetMass(.05);
+                TheWorld.AddStar(star1);
+
+                Star star2 = new Star();
+                starCenter.SetID(0);
+                Vector2D loc2 = new Vector2D(0, -radius);
+                starCenter.SetLoc(loc);
+                starCenter.SetMass(.05);
+                TheWorld.AddStar(star2);
+
+                Star star3 = new Star();
+                starCenter.SetID(0);
+                Vector2D loc3 = new Vector2D(radius, 0);
+                starCenter.SetLoc(loc);
+                starCenter.SetMass(.05);
+                TheWorld.AddStar(star3);
+
+                Star star4 = new Star();
+                starCenter.SetID(0);
+                Vector2D loc4 = new Vector2D(-radius, 0);
+                starCenter.SetLoc(loc);
+                starCenter.SetMass(.05);
+                TheWorld.AddStar(star4);
+            }
+
         }
 
         public static void InsertShip(int id, string name, int score)
