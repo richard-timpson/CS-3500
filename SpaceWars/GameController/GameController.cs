@@ -263,6 +263,11 @@ namespace Game
                     // add star
                     theWorld.AddStar(tempStar);
                 }
+                else
+                {
+                    theWorld.RemoveStar(tempStar.ID);
+                    theWorld.AddStar(tempStar);
+                }
             }
             // if the object is a projectile
             if (s.Length >= 4 && s[2] == 'p')

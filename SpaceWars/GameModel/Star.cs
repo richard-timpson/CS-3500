@@ -43,6 +43,16 @@ namespace GameModel
 
         public Vector2D dir { get; private set; }
 
+        public void SetVel(Vector2D vel)
+        {
+            this.vel = vel;
+        }
+
+        public void SetDir(Vector2D dir)
+        {
+            this.dir = dir;
+        }
+
         public void SetID(int id)
         {
             this.ID = id;

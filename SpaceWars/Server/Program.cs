@@ -238,7 +238,7 @@ namespace Server
 
         public static void InsertStars()
         {
-            if (gameSettings["FancyGame"] != "Yes")
+            if ((string)gameSettings["FancyGame"] != "Yes")
             {
                 List<double[]> temp = new List<double[]>();
                 temp = (List<double[]>)(gameSettings["stars"]);
@@ -259,41 +259,45 @@ namespace Server
             }
             else
             {
-                double radius = (int)gameSettings["UniverseSize"] / 5;
+                double radius = (int)gameSettings["UniverseSize"] / 3.5;
 
                 Star starCenter = new Star();
                 starCenter.SetID(0);
                 Vector2D loc = new Vector2D(0, 0);
                 starCenter.SetLoc(loc);
-                starCenter.SetMass(.05);
+                starCenter.SetMass(.01);
                 TheWorld.AddStar(starCenter);
 
                 Star star1 = new Star();
-                starCenter.SetID(0);
+                star1.SetID(1);
                 Vector2D loc1 = new Vector2D(0, radius);
-                starCenter.SetLoc(loc);
-                starCenter.SetMass(.05);
+                star1.SetLoc(loc1);
+                star1.SetDir(new Vector2D(1, 0));
+                star1.SetMass(.01);
                 TheWorld.AddStar(star1);
 
                 Star star2 = new Star();
-                starCenter.SetID(0);
+                star2.SetID(2);
                 Vector2D loc2 = new Vector2D(0, -radius);
-                starCenter.SetLoc(loc);
-                starCenter.SetMass(.05);
+                star2.SetLoc(loc2);
+                star2.SetDir(new Vector2D(-1, 0));
+                star2.SetMass(.01);
                 TheWorld.AddStar(star2);
 
                 Star star3 = new Star();
-                starCenter.SetID(0);
+                star3.SetID(3);
                 Vector2D loc3 = new Vector2D(radius, 0);
-                starCenter.SetLoc(loc);
-                starCenter.SetMass(.05);
+                star3.SetLoc(loc3);
+                star3.SetDir(new Vector2D(0, -1));
+                star3.SetMass(.01);
                 TheWorld.AddStar(star3);
 
                 Star star4 = new Star();
-                starCenter.SetID(0);
+                star4.SetID(4);
                 Vector2D loc4 = new Vector2D(-radius, 0);
-                starCenter.SetLoc(loc);
-                starCenter.SetMass(.05);
+                star4.SetLoc(loc4);
+                star4.SetDir(new Vector2D(0, 1));
+                star4.SetMass(.01);
                 TheWorld.AddStar(star4);
             }
 
@@ -339,6 +343,11 @@ namespace Server
                 ProcessCommands();
                 ProcessProjectiles();
                 ProcessShips();
+
+                if ((string)gameSettings["FancyGame"] == "Yes")
+                {
+                    ProcessStars();
+                }
             }
         }
 
@@ -444,6 +453,22 @@ namespace Server
                 TheWorld.RemoveProjectile(p.owner, p.ID);
             }
             projToDelete.Clear();
+        }
+
+        public static void ProcessStars()
+        {
+            foreach (Star s in TheWorld.GetStars())
+            {
+                if (s.ID != 0)
+                {
+                    Vector2D temp = new Vector2D(s.dir);
+                    Vector2D temp2 = new Vector2D(s.dir);
+                    temp.Rotate(-1);
+                    s.SetDir(temp);
+                    Vector2D tempLoc = new Vector2D(s.loc + (temp2 * Math.Tan(Math.PI/180) * (Convert.ToInt32(gameSettings["UniverseSize"]) / 3.5)));
+                    s.SetLoc(tempLoc);
+                }
+            }
         }
 
         public static void ProcessShips()
@@ -590,6 +615,7 @@ namespace Server
                 foreach (Star star in TheWorld.GetStars())
                 {
                     jsonString.Append(JsonConvert.SerializeObject(star) + "\n");
+                    Console.WriteLine(star.loc);
                 }
                 foreach (Projectile projectile in TheWorld.GetProjectiles())
                 {
