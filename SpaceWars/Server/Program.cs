@@ -47,7 +47,10 @@ namespace Server
 
         }
 
-
+        /// <summary>
+        /// Sets callback to receive name and requests data from the client.
+        /// </summary>
+        /// <param name="ss"></param>
         private static void HandleNewClient(Networking.SocketState ss)
         {
             ss._call = ReceiveName;
@@ -75,6 +78,12 @@ namespace Server
             Networking.NetworkController.Send(startupInfo, ss);
             Networking.NetworkController.GetData(ss);
         }
+
+        /// <summary>
+        /// Parses messages sent from client for commands and sets bool flag for each individual client
+        /// based on the command string.
+        /// </summary>
+        /// <param name="ss"></param>
         private static void ReceiveCommand(Networking.SocketState ss)
         {
             string totalData = ss.sb.ToString();
@@ -117,6 +126,12 @@ namespace Server
             ss.sb.Clear();
             Networking.NetworkController.GetData(ss);
         }
+
+        /// <summary>
+        /// Reads settings file to load settings into the world.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public static Dictionary<string, object> XmlSettingsReader(string filePath)
         {
             List<double[]> stars = new List<double[]>();
@@ -600,7 +615,10 @@ namespace Server
             }
         }
 
-
+        /// <summary>
+        /// Randomize spawn location for ship
+        /// </summary>
+        /// <param name="s"></param>
         public static void SpawnShip(Ship s)
         {
             Random rand = new Random();
@@ -621,7 +639,7 @@ namespace Server
                 bool starSpawn = true;
                 bool shipSpawn = true;
 
-
+                //checks to see if potential spawn location is too close to a star
                 foreach (Star star in TheWorld.GetStars())
                 {
                     if ((star.loc - position).Length() <= 50)
@@ -631,6 +649,7 @@ namespace Server
 
                 }
 
+                //checks to see if potential spawn location is too close to a ship
                 foreach (Ship ship in TheWorld.GetShipsAll())
                 {
                     if ((ship.loc - position).Length() <= 50)
@@ -640,6 +659,7 @@ namespace Server
 
                 }
 
+                //If neither star or ship is hindering spawn, break out of loop
                 if (starSpawn == true && shipSpawn == true)
                 {
                     safeSpawn = true;
@@ -657,6 +677,9 @@ namespace Server
             s.fireRateCounter = Convert.ToInt32(gameSettings["FramesPerShot"]);
         }
 
+        /// <summary>
+        /// Serialize each object in the world and send to each client connection
+        /// </summary>
         public static void SendWorld()
         {
             StringBuilder jsonString = new StringBuilder() ;
@@ -687,10 +710,20 @@ namespace Server
                 }
             }
         }
+
+        /// <summary>
+        /// Error Message Handler for disconnected clients
+        /// </summary>
+        /// <param name="message"></param>
         public static void DisconnectMessageHandler(string message)
         {
             Console.WriteLine(message);
         }
+
+        /// <summary>
+        /// Kills ship of client that disconnects and removes client from world
+        /// </summary>
+        /// <param name="ss"></param>
         public static void DisconnectClientHandler(Networking.SocketState ss)
         {
             Ship ship = TheWorld.GetShipAtId(ss.ID);
@@ -705,6 +738,9 @@ namespace Server
 
     }
 
+    /// <summary>
+    /// Client class. Holds socketstate and bool flags for client commands
+    /// </summary>
     public class Client
     {
         public int ID { get; set; }
