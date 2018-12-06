@@ -260,7 +260,7 @@ namespace Server
         public static void InsertStars()
         {
             //If the fancy game mode is off, loads stars from the settings file
-            if ((string)gameSettings["FancyGame"] != "Yes" || (string)gameSettings["FancyGame"] != "yes")
+            if ((string)gameSettings["FancyGame"] != "Yes" && (string)gameSettings["FancyGame"] != "yes")
             {
                 List<double[]> temp = new List<double[]>();
                 temp = (List<double[]>)(gameSettings["stars"]);
