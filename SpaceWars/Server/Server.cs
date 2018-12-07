@@ -800,6 +800,7 @@ namespace Server
             SendWorld(); // make sure to send the world so that the client knows to terminate the ship. 
             lock (TheWorld)
             {
+
                 // remove ship and client connection associated with that ship. 
                 TheWorld.RemoveShipAll(ss.ID);
                 ClientConnections.Remove(ss.ID);
