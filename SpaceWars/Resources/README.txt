@@ -1,7 +1,30 @@
 ﻿CS 3500 - Software Practice
-Assignment 7: SpaceWars
+Assignment : SpaceWars
 Richard Timpson and Johnathan Smith
-11/8/18
+12/6/18
+
+Welcome to Space Wars! 
+The game should function as outlined in the assignment specs. For our server implemntation, we just added one project
+named server, and wrote all of our code to handle the networking call backs and the game physics. As of now, 
+the server is fairly optimized. Our view seems to have performance issues, so when you run the game with >10 clients
+it begins to lag. That's a problem for PS7 however, so we are ignoring it. We created a client class and a dictionary
+that holds a list of clients using their ID as the key. The client class holds the command coming from the socket, 
+as well as boolean flags for turning, firing, and thrusting, that are used to inform the logic for the game physics. 
+
+As far as our model goes, we have updated the model from PS7 to hold vectors that allow us to perform the physics calcuations. 
+We modified the data structures to be mostly dictionaries (with ID's as keys), so that we could access the various parts of the 
+model in constant time instead of linear time (which was happening when they were lists). This increased our performance quite a bit. 
+
+Our extra game feature implments multiple stars that rotate around the center of the world. This can be activated by specifying it in the settings.xml file
+Set the "FancyGame" property to "Yes" or "yes", for the game mode to activate, otherwise it won't. It took us a while to figure out
+the trig calculations for the orbit, but once we did, it was fairly simple to add the lines of code it to make it work. We were hoping
+to get it working so that you could dynamically specify the number of stars to orbit, but we didn't have the time to implement it. 
+
+Other than that, the game logic and networking logic are pretty standar, and the game works well. We had a ton of fun implementing the game, 
+and learned an immense amount. 
+
+The following shows our logs that tracked our progress as we worked our way through, beginning with the start of PS7
+
 
 We are just beginning the assignment. We have decided to outline the folder structurs as follows
 
