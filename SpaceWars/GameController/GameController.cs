@@ -40,7 +40,7 @@ namespace Game
         public GameController()
         {
             this.theWorld = new World();
-            Networking.NetworkController.Error += StopConnection;
+            Networking.NetworkController.DisconnectError += StopConnection;
 
         }
 
@@ -352,7 +352,7 @@ namespace Game
         /// redraws from scratch upon reconnecting to the server.
         /// </summary>
         /// <param name="message"></param>
-        private void StopConnection(string message)
+        private void StopConnection(Networking.SocketState ss, string message)
         {
             Connected = false;
 

@@ -35,7 +35,7 @@ namespace View
             this.Size = new Size(820, 500);
             KeyPreview = true;
             this.FormClosed += Form1_FormClosed;
-            Networking.NetworkController.Error += DisplayError;
+            Networking.NetworkController.DisconnectError += DisplayError;
             Controller = new GameController();
         }
 
@@ -46,7 +46,11 @@ namespace View
         /// <param name="e"></param>
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            System.Environment.Exit(1);
+            try
+            {
+                System.Environment.Exit(1);
+            }
+            catch (Exception) { }
         }
 
         /// <summary>
@@ -209,7 +213,7 @@ namespace View
         /// Restores the connect button and input fields if there is a connection error to allow for reconnection.
         /// </summary>
         /// <param name="message"></param>
-        private void DisplayError(string message)
+        private void DisplayError(Networking.SocketState ss, string message)
         {
             MessageBox.Show(message);
             MethodInvoker me = new MethodInvoker(() =>

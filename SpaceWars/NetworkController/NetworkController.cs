@@ -11,7 +11,7 @@ namespace NetworkController
 
     public class Networking
     {
-        
+
         /// <summary>
         /// This class holds all the necessary state to represent a socket connection
         /// Note that all of its fields are public because we are using it like a "struct"
@@ -53,9 +53,8 @@ namespace NetworkController
         public class ListenerState
         {
             public TcpListener listener;
-            public delegate void callMe(SocketState ss);
             public SocketState.callMe _call;
-            public int ID { get;  set; }
+            public int ID { get; set; }
             public ListenerState(SocketState.callMe callMeCallBack, TcpListener _listener, int _id)
             {
                 listener = _listener;
@@ -67,12 +66,9 @@ namespace NetworkController
 
         public class NetworkController
         {
-            public delegate void ErrorHandler(string message);
-            public static event ErrorHandler Error;
-            public delegate void DisconnectHandler(SocketState ss);
-            public static event DisconnectHandler Disconnect;
+            public delegate void DisconnectErrorHandler(SocketState ss, string message);
+            public static event DisconnectErrorHandler DisconnectError;
             public const int DEFAULT_PORT = 11000;
-            private static int clientCounter = 0;
 
 
             /// <summary>
@@ -129,10 +125,15 @@ namespace NetworkController
                 catch (Exception e)
                 {
                     System.Diagnostics.Debug.WriteLine("Unable to create socket. Error occured: " + e);
-                    Error(e.Message);
+                    //DisconnectError(ss, e.Message);
                     throw e;
                 }
             }
+            /// <summary>
+            /// The function that triggers the event loop for client connections
+            /// </summary>
+            /// <param name="callMe"></param>
+            /// <param name="ID"></param>
             public static void ServerAwaitingClientLoop(SocketState.callMe callMe, int ID)
             {
                 int port = 11000;
@@ -142,10 +143,13 @@ namespace NetworkController
                 listener.BeginAcceptSocket(AcceptNewClient, ls);
 
             }
+            /// <summary>
+            /// The function that continues the event loop for each new client connection
+            /// </summary>
+            /// <param name="ar"></param>
             public static void AcceptNewClient(IAsyncResult ar)
             {
                 ListenerState ls = (ListenerState)ar.AsyncState;
-               
                 Socket socket = ls.listener.EndAcceptSocket(ar);
                 SocketState ss = new SocketState(socket, ls._call, ls.ID);
                 ss._call(ss);
@@ -153,9 +157,12 @@ namespace NetworkController
                 ls.listener.BeginAcceptSocket(AcceptNewClient, ls);
             }
 
-            // TODO: Move all networking code to this class. Left as an exercise.
-            // Networking code should be completely general-purpose, and useable by any other application.
-            // It should contain no references to a specific project.
+            /// <summary>
+            /// Function used to connect view to server. 
+            /// </summary>
+            /// <param name="hostName"></param>
+            /// <param name="cb"></param>
+            /// <returns></returns>
             public static Socket ConnectToServer(string hostName, SocketState.callMe cb)
             {
                 System.Diagnostics.Debug.WriteLine("connecting  to " + hostName);
@@ -177,7 +184,6 @@ namespace NetworkController
 
             /// <summary>
             /// This function is "called" by the operating system when the remote site acknowledges the connect request
-            /// Move this function to a standalone networking library.
             /// </summary>
             /// <param name="ar"></param>
             private static void ConnectedCallback(IAsyncResult ar)
@@ -192,14 +198,13 @@ namespace NetworkController
                 }
                 catch (Exception e)
                 {
-                    Error(e.Message);
+                    System.Diagnostics.Debug.WriteLine(e.Message);
                 }
 
             }
 
             /// <summary>
             /// This function is "called" by the operating system when data arrives on the socket
-            /// Move this function to a standalone networking library. 
             /// </summary>
             /// <param name="ar"></param>
             private static void ReceiveCallback(IAsyncResult ar)
@@ -222,17 +227,18 @@ namespace NetworkController
                     }
                     else
                     {
-                        Error("Stopped getting data from server");
+                        DisconnectError(ss, "Stopped getting data from server");
                         ss.theSocket.Close();
                     }
                 }
                 catch (Exception e)
                 {
+                    // set the connection to false to
                     ss.Connected = false;
-                    Console.WriteLine(e);
-                    Disconnect(ss);
-                    Error(e.Message);
-                    ss.theSocket.Close();
+
+                    // trigger a disconnect event that passes in a socket state. Calling it here because this seems to be where
+                    // exceptions are thrown after a disconnect. 
+                    DisconnectError(ss, e.Message);
 
                 }
 
@@ -245,7 +251,15 @@ namespace NetworkController
             private static void SendCallback(IAsyncResult ar)
             {
                 Socket s = (Socket)ar.AsyncState;
-                s.EndSend(ar);
+                try
+                {
+                    s.EndSend(ar);
+                }
+                catch (SocketException E)
+                {
+                    System.Diagnostics.Debug.WriteLine(E.Message);
+                    Console.WriteLine(E.Message);
+                }
             }
 
             /// <summary>
@@ -258,7 +272,14 @@ namespace NetworkController
 
                 // Append a newline, since that is our protocol's terminating character for a message.
                 byte[] messageBytes = Encoding.UTF8.GetBytes(message);
-                ss.theSocket.BeginSend(messageBytes, 0, messageBytes.Length, SocketFlags.None, SendCallback, ss.theSocket);
+                try
+                {
+                    ss.theSocket.BeginSend(messageBytes, 0, messageBytes.Length, SocketFlags.None, SendCallback, ss.theSocket);
+                }
+                catch (SocketException E)
+                {
+                    System.Diagnostics.Debug.WriteLine(E.Message);
+                }
             }
 
             /// <summary>
@@ -267,6 +288,7 @@ namespace NetworkController
             /// <param name="ss"></param>
             public static void GetData(Networking.SocketState ss)
             {
+                // not wrapping this in a try catch because for some reason the exceptions always throw in the receive callback. 
                 ss.theSocket.BeginReceive(ss.messageBuffer, 0, ss.messageBuffer.Length, SocketFlags.None, ReceiveCallback, ss);
             }
         }

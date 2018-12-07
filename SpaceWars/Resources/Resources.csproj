@@ -57,6 +57,7 @@
     <Content Include="Graphics\ship-thrust-red.png" />
     <Content Include="Graphics\ship-thrust-violet.png" />
     <Content Include="Graphics\ship-thrust-white.png" />
+    <None Include="Graphics\Star.png" />
     <Content Include="settings.xml">
       <SubType>Designer</SubType>
     </Content>

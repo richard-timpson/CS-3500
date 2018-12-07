@@ -30,8 +30,7 @@ namespace Server
         static void Main(string[] args)
         {
             // registering event handlers for error handling
-            Networking.NetworkController.Disconnect += DisconnectClientHandler;
-            Networking.NetworkController.Error += DisconnectMessageHandler;
+            Networking.NetworkController.DisconnectError += DisconnectClientHandler;
 
             ClientConnections = new Dictionary<int, Client>();
 
@@ -788,21 +787,14 @@ namespace Server
             }
         }
 
-        /// <summary>
-        /// Error Message Handler for disconnected clients
-        /// </summary>
-        /// <param name="message"></param>
-        public static void DisconnectMessageHandler(string message)
-        {
-            Console.WriteLine(message);
-        }
 
         /// <summary>
         /// Kills ship of client that disconnects and removes client from world
         /// </summary>
         /// <param name="ss"></param>
-        public static void DisconnectClientHandler(Networking.SocketState ss)
+        public static void DisconnectClientHandler(Networking.SocketState ss, string message)
         {
+            Console.WriteLine(message);
             Ship ship = TheWorld.GetShipAtId(ss.ID);
             ship.SetHp(0);
             SendWorld(); // make sure to send the world so that the client knows to terminate the ship. 

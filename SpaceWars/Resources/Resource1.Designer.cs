@@ -245,7 +245,8 @@ namespace Resources {
         ///  &lt;UniverseSize&gt;850&lt;/UniverseSize&gt;
         ///  &lt;MSPerFrame&gt;16&lt;/MSPerFrame&gt;
         ///  &lt;FramesPerShot&gt;8&lt;/FramesPerShot&gt;
-        ///  &lt;RespawnRate&gt;300&lt;/RespawnRate&gt; 
+        ///  &lt;RespawnRate&gt;300&lt;/RespawnRate&gt;
+        ///  &lt;EnginePower&gt;10&lt;/EnginePower&gt;
         ///  &lt;Star&gt;
         ///    &lt;x&gt;0&lt;/x&gt;
         ///    &lt;y&gt;0&lt;/y&gt;

@@ -354,7 +354,7 @@ namespace View
         /// <param name="e"></param>
         private void StarDrawer(object o, PaintEventArgs e)
         {
-            int starWidth = 40;
+            int starWidth = 50;
 
             Star s = o as Star;
             
