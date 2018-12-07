@@ -6,6 +6,9 @@
   <StartingHP>5</StartingHP>
   <EnginePower>0.2</EnginePower>
   <RespawnTime>120</RespawnTime>
+  <ProjectileSpeed>15</ProjectileSpeed>
+  <MaxShipSpeed>20</MaxShipSpeed>
+  <ShipTurnRate>3</ShipTurnRate>
   <FancyGame>No</FancyGame>
   <Star>
     <x>0</x>

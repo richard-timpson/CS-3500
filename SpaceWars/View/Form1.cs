@@ -75,7 +75,7 @@ namespace View
                 });
                 this.Invoke(me);
             }
-            catch (Exception E)
+            catch (Exception)
             {
 
             }

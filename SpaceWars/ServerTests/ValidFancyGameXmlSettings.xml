@@ -9,7 +9,6 @@
   <ProjectileSpeed>15</ProjectileSpeed>
   <MaxShipSpeed>20</MaxShipSpeed>
   <ShipTurnRate>3</ShipTurnRate>
-  <FancyGame>No</FancyGame>
   <Star>
     <x>0</x>
     <y>0</y>
@@ -20,5 +19,6 @@
     <y>1</y>
     <mass>0.02</mass>
   </Star>
+  <FancyGame>Yes</FancyGame>
 </SpaceSettings>
 

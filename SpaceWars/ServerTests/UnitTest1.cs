@@ -148,7 +148,7 @@ namespace ServerTests
             }
             foreach (Ship s in ServerClass.TheWorld.GetShipsAll())
             {
-                ServerClass.InsertProjectile(ServerClass.projectileCounter, (s.loc + (s.dir * 20)), s.dir, s.dir * 15, s);
+                ServerClass.InsertProjectile((s.loc + (s.dir * 20)), s.dir, s.dir * 15, s);
             }
             int projectileCounter = 0;
             foreach (Projectile p in ServerClass.TheWorld.GetProjectiles())
@@ -169,7 +169,6 @@ namespace ServerTests
             ServerClass.ClientConnections = new Dictionary<int, Client>();
             for (int i = 0; i < 4; i++)
             {
-                SocketInformation si = new SocketInformation();
                 Socket s = null;
                 Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, i);
                 Client c = new Client(i, "JonDoe" + i, ss);
@@ -325,8 +324,6 @@ namespace ServerTests
             ServerClass.ClientConnections = new Dictionary<int, Client>();
             Dictionary<int, Vector2D> projectileCompare = new Dictionary<int, Vector2D>();
             int clientCounter = 0;
-            int projCounter = 0;
-            int projCounter2 = 0;
             for (int i = 0; i < 4; i++)
             {
                 Socket s = null;
@@ -352,7 +349,7 @@ namespace ServerTests
                     {
                         ServerClass.ProcessProjectiles();
                     }
-                    ServerClass.TheWorld.GetShipAtId(0).fireRateCounter = Convert.ToInt32(ServerClass.gameSettings["FramesPerShot"]);
+                    ServerClass.TheWorld.GetShipAtId(0).SetFireRateCounter((int)ServerClass.gameSettings["FramesPerShot"]);
                     clientCounter++;
                 }
 
@@ -389,7 +386,7 @@ namespace ServerTests
                 {
                     ServerClass.ProcessProjectiles();
                 }
-                ServerClass.TheWorld.GetShipAtId(0).fireRateCounter = Convert.ToInt32(ServerClass.gameSettings["FramesPerShot"]);
+                ServerClass.TheWorld.GetShipAtId(0).SetFireRateCounter((int)(ServerClass.gameSettings["FramesPerShot"]));
             }
 
             foreach (Projectile p in ServerClass.TheWorld.GetProjectiles())
@@ -447,13 +444,23 @@ namespace ServerTests
             }
 
             int gameCounter = 0;
-            ServerClass.TheWorld.GetShipAtId(6).fireRateCounter = 3;
+            ServerClass.TheWorld.GetShipAtId(6).SetFireRateCounter(3);
             while (gameCounter< 1000)
             {
                 ServerClass.UpdateWorld();
                 gameCounter++;
             }
 
+        }
+        [TestMethod()]
+        public void TestFancyGame()
+        {
+            ServerClass.TheWorld = new World();
+            string path = "../../ValidFancyGameXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.ClientConnections = new Dictionary<int, Client>();
+            ServerClass.InsertStars();
+            ServerClass.ProcessStars();
         }
 
     }
