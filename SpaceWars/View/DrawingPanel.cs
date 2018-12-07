@@ -10,7 +10,7 @@ namespace View
     {
         public World theWorld;
         private int WorldSize;
-
+        
         private Image explosionFire;
         private Image explosionFire2;
         private Image explosionFire3;
@@ -54,7 +54,7 @@ namespace View
         private Image shot_yellow;
         private Image shot_white;
         private Image star1;
-
+    
         /// <summary>
         /// DrawingPanel constructor that takes in a worldsize value and the world.
         /// </summary>
@@ -225,115 +225,69 @@ namespace View
             Ship s = o as Ship;
             Image ship1;
 
+            int ID = s.ID % 8;
+            
             //if thrust is not active, set image for ship to draw based on player ID
             if (s.thrust == false)
             {
-                switch(s.ID)
+                switch(ID)
                 {
                     case 0:
-                    case 8:
-                    case 16:
-                    case 24:
                         ship1 = ship_coast_red;
                         break;
                     case 1:
-                    case 9:
-                    case 17:
-                    case 25:
                         ship1 = ship_coast_blue;
                         break;
                     case 2:
-                    case 10:
-                    case 18:
-                    case 26:
                         ship1 = ship_coast_yellow;
                         break;
                     case 3:
-                    case 11:
-                    case 19:
-                    case 27:
                         ship1 = ship_coast_violet;
                         break;
                     case 4:
-                    case 12:
-                    case 20:
-                    case 28:
                         ship1 = ship_coast_green;
                         break;
                     case 5:
-                    case 13:
-                    case 21:
-                    case 29:
                         ship1 = ship_coast_grey;
                         break;
                     case 6:
-                    case 14:
-                    case 22:
-                    case 30:
                         ship1 = ship_coast_brown;
                         break;
                     case 7:
-                    case 15:
-                    case 23:
-                    case 31:
-                        ship1 = Resource1.ship_coast_white;
+                        ship1 = ship_coast_white;
                         break;
                     default:
-                        ship1 = Resource1.ship_coast_white;
+                        ship1 = ship_coast_white;
                         break;
                 }
             }
             //if thrust is active, set image for ship to draw based on player ID
             else
             {
-                switch (s.ID)
+                switch (ID)
                 {
                     case 0:
-                    case 8:
-                    case 16:
-                    case 24:
                         ship1 = ship_thrust_red;
                         break;
                     case 1:
-                    case 9:
-                    case 17:
-                    case 25:
                         ship1 = ship_thrust_blue;
                         break;
                     case 2:
-                    case 10:
-                    case 18:
-                    case 26:
                         ship1 = ship_thrust_yellow;
                         break;
                     case 3:
-                    case 11:
-                    case 19:
-                    case 27:
                         ship1 = ship_thrust_violet;
                         break;
                     case 4:
-                    case 12:
-                    case 20:
-                    case 28:
                         ship1 = ship_thrust_green;
                         break;
                     case 5:
-                    case 13:
-                    case 21:
-                    case 29:
                         ship1 = ship_thrust_grey;
                         break;
                     case 6:
-                    case 14:
-                    case 22:
-                    case 30:
                         ship1 = ship_thrust_brown;
                         break;
                     case 7:
-                    case 15:
-                    case 23:
-                    case 31:
                         ship1 = ship_thrust_white;
                         break;
                     default:
@@ -554,54 +508,32 @@ namespace View
             Image proj1;
 
             //sets the image of the projectile based on owner
-            switch (p.owner)
+            int owner = p.owner % 8;
+
+            switch (owner)
             {
                 case 0:
-                case 8:
-                case 16:
-                case 24:
-                    proj1 = Resource1.shot_red;
+                    proj1 = shot_red;
                     break;
                 case 1:
-                case 9:
-                case 17:
-                case 25:
                     proj1 = shot_blue;
                     break;
                 case 2:
-                case 10:
-                case 18:
-                case 26:
                     proj1 = shot_yellow;
                     break;
                 case 3:
-                case 11:
-                case 19:
-                case 27:
                     proj1 = shot_violet;
                     break;
                 case 4:
-                case 12:
-                case 20:
-                case 28:
                     proj1 = shot_green;
                     break;
                 case 5:
-                case 13:
-                case 21:
-                case 29:
                     proj1 = shot_grey;
                     break;
                 case 6:
-                case 14:
-                case 22:
-                case 30:
                     proj1 = shot_brown;
                     break;
                 case 7:
-                case 15:
-                case 23:
-                case 31:
                     proj1 = shot_white;
                     break;
                 default:
