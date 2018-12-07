@@ -20,6 +20,10 @@ Set the "FancyGame" property to "Yes" or "yes", for the game mode to activate, o
 the trig calculations for the orbit, but once we did, it was fairly simple to add the lines of code it to make it work. We were hoping
 to get it working so that you could dynamically specify the number of stars to orbit, but we didn't have the time to implement it. 
 
+Our unit tests are by no means robust, but we made sure to hit as much code coverage as we could to verify that all of our code was running without any errors. 
+Obviously, anything that has to do with networking or asynchronous callbacks, we couldn't tests. The tests cover all of our code that has to do with the model
+and it's calcuations. 
+
 Other than that, the game logic and networking logic are pretty standar, and the game works well. We had a ton of fun implementing the game, 
 and learned an immense amount. 
 
