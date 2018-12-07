@@ -5,19 +5,15 @@
   <RespawnRate>300</RespawnRate>
   <StartingHP>5</StartingHP>
   <EnginePower>0.2</EnginePower>
+  <MaxShipSpeed>20</MaxShipSpeed>
+  <ProjectileSpeed>15</ProjectileSpeed>
+  <ShipTurnRate>3</ShipTurnRate>
   <RespawnTime>120</RespawnTime>
-  <Star>
+  <!--<Star>
     <x>0</x>
     <y>0</y>
     <mass>0.01</mass>
-  </Star>
+  </Star>-->
   <FancyGame>Yes</FancyGame>
 
-<!-- We can add other stars too (or none) 
-  <Star>
-    <x>100</x>
-    <y>100</y>
-    <mass>0.005</mass>
-  </Star>
- -->
 </SpaceSettings>

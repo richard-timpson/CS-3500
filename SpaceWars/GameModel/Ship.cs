@@ -18,20 +18,14 @@ namespace GameModel
         /// </summary>
         public Ship()
         {
-            int ID = this.ID;
-            Vector.Vector2D loc = this.loc;
-            Vector.Vector2D dir = this.dir;
-            bool thrust = this.thrust;
-            string name = this.name;
-            int hp = this.hp;
-            int score = this.score;
+
         }
 
         /// <summary>
         /// Unique ID of the player that owns the ship.
         /// </summary>
         [JsonProperty(PropertyName = "ship")]
-        public int ID { get; private set; }
+        public int ID { get ; private set; }
 
         /// <summary>
         /// Location of the ship.
@@ -72,13 +66,22 @@ namespace GameModel
 
         public Vector.Vector2D vel { get; private set; }
 
-        public int deathCounter { get; set; }
+        public int deathCounter { get; private set; }
 
-        public int fireRateCounter { get; set; }
+        public int fireRateCounter { get; private set; }
 
         public void SetID(int _id)
         {
             this.ID = _id;
+        }
+
+        public void SetDeathCounter(int _deathCounter)
+        {
+            this.deathCounter = _deathCounter;
+        }
+        public void SetFireRateCounter(int _fireRateCounter)
+        {
+            this.fireRateCounter = _fireRateCounter;
         }
 
         public void SetLoc(Vector2D _loc)
