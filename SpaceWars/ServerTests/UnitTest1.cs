@@ -47,6 +47,7 @@ namespace ServerTests
                 counter++;
             }
         }
+
         [TestMethod]
         [ExpectedException(typeof(FormatException))]
         public void TestInvalidXmlPropertyType()
@@ -55,6 +56,7 @@ namespace ServerTests
             Dictionary<string, object> gameSettings = ServerClass.XmlSettingsReader(path);
 
         }
+
         [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
         public void TestInvalidFilePath()
@@ -63,6 +65,22 @@ namespace ServerTests
             Dictionary<string, object> gameSettings = ServerClass.XmlSettingsReader(path);
 
         }
+
+        [TestMethod()]
+        public void TestFancyGameStars()
+        {
+            ServerClass.TheWorld = new World();
+            string path = "../../ValidFancyGameXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.InsertStars();
+            int starCount = 0;
+            foreach (Star s in ServerClass.TheWorld.GetStars())
+            {
+                starCount++;
+            }
+            Assert.AreEqual(4, starCount);
+        }
+
 
         [TestMethod()]
         public void TestInsertStar()
@@ -102,7 +120,46 @@ namespace ServerTests
                 shipCount++;
             }
             Assert.AreEqual(2, shipCount);
-            
+
+        }
+
+        [TestMethod()]
+        public void TestInsertShipRand()
+        {
+            ServerClass.TheWorld = new World();
+            string path = "../../ValidXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.InsertShip(0, "JohnDoe", 0);
+            ServerClass.InsertShip(1, "Timmy", 0);
+            ServerClass.InsertShip(2, "Jim", 0);
+            ServerClass.InsertStars();
+            List<Ship> ships = new List<Ship>();
+            int shipCount = 0;
+            Vector2D vel = new Vector2D(0, 0);
+            foreach (Ship s in ServerClass.TheWorld.GetShipsAll())
+            {
+                ships.Add(s);
+                shipCount++;
+            }
+            Assert.AreEqual(3, shipCount);
+            Assert.AreNotEqual(ships[0].loc, ships[1].loc);
+            Assert.AreNotEqual(ships[0].loc, ships[2].loc);
+            Assert.AreNotEqual(ships[1].loc, ships[2].loc);
+        }
+
+        [TestMethod()]
+        public void TestInsertShipDeathCounter()
+        {
+            ServerClass.TheWorld = new World();
+            string path = "../../ValidXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.InsertShip(0, "JohnDoe", 0);
+            ServerClass.InsertShip(1, "Timmy", 0);
+            ServerClass.InsertShip(2, "Jim", 0);
+
+            Assert.AreEqual(0, ServerClass.TheWorld.GetShipAtId(0).deathCounter);
+            Assert.AreEqual(0, ServerClass.TheWorld.GetShipAtId(1).deathCounter);
+            Assert.AreEqual(0, ServerClass.TheWorld.GetShipAtId(2).deathCounter);
         }
 
         [TestMethod()]
@@ -237,14 +294,14 @@ namespace ServerTests
                 ServerClass.ProcessCommands();
                 clientCounter++;
             }
-            foreach(Projectile proj in ServerClass.TheWorld.GetProjectiles())
+            foreach (Projectile proj in ServerClass.TheWorld.GetProjectiles())
             {
                 projectileCompare.Add(proj.ID, proj.loc);
             }
 
             ServerClass.ProcessProjectiles();
 
-            foreach(Projectile proj in ServerClass.TheWorld.GetProjectiles())
+            foreach (Projectile proj in ServerClass.TheWorld.GetProjectiles())
             {
                 Assert.AreEqual(15, (proj.loc - projectileCompare[proj.ID]).Length());
             }
@@ -263,7 +320,6 @@ namespace ServerTests
             }
             ServerClass.ProcessShips();
         }
-
 
         [TestMethod()]
         public void TestProcessProjectilesDeadProjectile()
@@ -293,7 +349,7 @@ namespace ServerTests
                 ServerClass.ProcessCommands();
                 clientCounter++;
             }
-            
+
             foreach (Projectile p in ServerClass.TheWorld.GetProjectiles())
             {
                 projCounter++;
@@ -407,16 +463,16 @@ namespace ServerTests
             ServerClass.ClientConnections = new Dictionary<int, Client>();
             ServerClass.InsertStars();
             List<Vector2D> locations = new List<Vector2D>();
-            for ( int i = 0; i < 20; i++)
+            for (int i = 0; i < 20; i++)
             {
                 ServerClass.InsertShip(i, "john" + 1, 0);
                 if (i == 5)
                 {
-                    ServerClass.TheWorld.GetShipAtId(i).SetLoc(new Vector2D(0,0));
+                    ServerClass.TheWorld.GetShipAtId(i).SetLoc(new Vector2D(0, 0));
                 }
                 if (i == 6)
                 {
-                    ServerClass.TheWorld.GetShipAtId(i).SetDir(new Vector2D(0,-1));
+                    ServerClass.TheWorld.GetShipAtId(i).SetDir(new Vector2D(0, -1));
                     ServerClass.TheWorld.GetShipAtId(i).SetThrust(true);
                 }
                 if (i == 7)
@@ -445,7 +501,7 @@ namespace ServerTests
 
             int gameCounter = 0;
             ServerClass.TheWorld.GetShipAtId(6).SetFireRateCounter(3);
-            while (gameCounter< 1000)
+            while (gameCounter < 1000)
             {
                 ServerClass.UpdateWorld();
                 gameCounter++;
@@ -461,6 +517,78 @@ namespace ServerTests
             ServerClass.ClientConnections = new Dictionary<int, Client>();
             ServerClass.InsertStars();
             ServerClass.ProcessStars();
+        }
+
+        [TestMethod()]
+        public void TestSetThrust()
+        {
+            ServerClass.TheWorld = new World();
+            string path = "../../ValidXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.ClientConnections = new Dictionary<int, Client>();
+            for (int i = 0; i < 4; i++)
+            {
+                Socket s = null;
+                Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, i);
+                Client c = new Client(i, "JonDoe" + i, ss);
+                ServerClass.ClientConnections.Add(c.ID, c);
+                ServerClass.InsertShip(i, "JonDoe" + 1, 0);
+            }
+
+            ServerClass.ClientConnections[0].thrust = true;
+            ServerClass.ProcessCommands();
+            Ship ship = ServerClass.TheWorld.GetShipAtId(0);
+            Assert.IsTrue(ship.thrust);
+            Assert.IsFalse(ServerClass.ClientConnections[0].right);
+        }
+
+        [TestMethod()]
+        public void TestSetRight()
+        {
+            ServerClass.TheWorld = new World();
+            string path = "../../ValidXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.ClientConnections = new Dictionary<int, Client>();
+            for (int i = 0; i < 4; i++)
+            {
+                Socket s = null;
+                Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, i);
+                Client c = new Client(i, "JonDoe" + i, ss);
+                ServerClass.ClientConnections.Add(c.ID, c);
+                ServerClass.InsertShip(i, "JonDoe" + 1, 0);
+            }
+
+
+            ServerClass.ClientConnections[0].right = true;
+            Vector2D prevDir1 = ServerClass.TheWorld.GetShipAtId(0).dir;
+            ServerClass.ProcessCommands();
+            Assert.IsFalse(ServerClass.ClientConnections[0].right);
+            Vector2D newDir1 = ServerClass.TheWorld.GetShipAtId(0).dir;
+            Assert.AreNotEqual(prevDir1, newDir1);
+        }
+
+        [TestMethod()]
+        public void TestSetLeft()
+        {
+            ServerClass.TheWorld = new World();
+            string path = "../../ValidXmlSettings.xml";
+            ServerClass.gameSettings = ServerClass.XmlSettingsReader(path);
+            ServerClass.ClientConnections = new Dictionary<int, Client>();
+            for (int i = 0; i < 4; i++)
+            {
+                Socket s = null;
+                Networking.SocketState ss = new Networking.SocketState(s, socketstate => { }, i);
+                Client c = new Client(i, "JonDoe" + i, ss);
+                ServerClass.ClientConnections.Add(c.ID, c);
+                ServerClass.InsertShip(i, "JonDoe" + 1, 0);
+            }
+
+            ServerClass.ClientConnections[0].left = true;
+            Vector2D prevDir2 = ServerClass.TheWorld.GetShipAtId(0).dir;
+            ServerClass.ProcessCommands();
+            Assert.IsFalse(ServerClass.ClientConnections[0].right);
+            Vector2D newDir2 = ServerClass.TheWorld.GetShipAtId(0).dir;
+            Assert.AreNotEqual(prevDir2, newDir2);
         }
 
     }
