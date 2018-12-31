@@ -1,4 +1,7 @@
 # Multiplayer SpaceWars Game
+
+![alt text](./space-wars-img.png)
+
 This is a multiplayer spacewars game built as the final project of my CS 3500: Software Practice I course at the University of Utah. It was built using C# and the .NET framework, utilizing the windows form and console applications. It features both client and server applications, which when run together, allow the play of the game. Built using Sockets and TCP/IP, the server application will allow as many connections as reason permits. The client provides an input to specify which IP Address the server is running on. 
 
 ## Getting Started
