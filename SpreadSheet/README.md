@@ -2,7 +2,7 @@
 
 ![alt text](./spreadsheet-img.png)
 
-This project was an almagamation of projects for the first half of the semester from my Software Practice I course at the University of Utah. The spreadsheet was built using C# and the .NET framework utilizing the .NET's Windows Forms Application. The project includes a FormulaClass with an infix expression evaluator, a dependency graph data structure, a spreadsheet model, and a spreadsheet GUI. Each of these projects can be found as .NET solutions in this repository. The software can be tested/run by opening up the executable from the SpreadSheet-GUI solution.
+This project was an amalgamation of projects for the first half of the semester from my Software Practice I course at the University of Utah. The spreadsheet was built using C# and the .NET framework utilizing the .NET's Windows Forms Application. The project includes a FormulaClass with an infix expression evaluator, a dependency graph data structure, a spreadsheet model, and a spreadsheet GUI. Each of these projects can be found as .NET solutions in this repository. The software can be tested/run by opening up the executable from the SpreadSheet-GUI solution.
 
 ## Getting started
 
