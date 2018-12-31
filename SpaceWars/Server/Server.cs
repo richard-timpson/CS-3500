@@ -35,7 +35,7 @@ namespace Server
             ClientConnections = new Dictionary<int, Client>();
 
             // setting the game settings from xml file
-            string settingsFilePath = "..\\..\\..\\Resources\\settings.xml";
+            string settingsFilePath = "settings.xml";
             gameSettings = XmlSettingsReader(settingsFilePath);
 
             // initializing world. 
@@ -295,8 +295,16 @@ namespace Server
             // otherwise throw any other exception. Used for unit testing. 
             catch (Exception E)
             {
-                Console.WriteLine(E.Message);
-                throw E;
+                if (filePath == "settings.xml")
+                {
+                    string alternativeFilePath = "..\\..\\..\\Resources\\settings.xml";
+                    return XmlSettingsReader(alternativeFilePath);
+                }
+                else
+                {
+                    Console.WriteLine(E.Message);
+                    throw E;
+                }
             }
         }
 
