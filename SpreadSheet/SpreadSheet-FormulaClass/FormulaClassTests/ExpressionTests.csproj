@@ -55,9 +55,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PS3\Formula.csproj">
+    <ProjectReference Include="..\PS3\FormulaClass.csproj">
       <Project>{fdd7dcef-805d-48b9-bd86-c7ed2f2163ab}</Project>
-      <Name>Formula</Name>
+      <Name>FormulaClass</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

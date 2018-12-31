@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PS3")]
+[assembly: AssemblyTitle("FormulaClass")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("College of Engineering")]
-[assembly: AssemblyProduct("PS3")]
+[assembly: AssemblyProduct("FormulaClass")]
 [assembly: AssemblyCopyright("Copyright © College of Engineering 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
